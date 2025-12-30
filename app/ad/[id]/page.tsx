@@ -6,7 +6,7 @@ import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { useAuthStore } from '@/lib/stores/authStore';
-import { useAd } from '@/lib/hooks/useAds';
+import { useAd, useBookmarkAd, useUnbookmarkAd, useBookmarkedAds } from '@/lib/hooks/useAds';
 import { useSendMessage } from '@/lib/hooks/useMessages';
 import { useCreateReport } from '@/lib/hooks/useReports';
 import { useAdImages } from '@/lib/hooks/useImages';
@@ -23,9 +23,19 @@ export default function AdDetailPage() {
   const { isAuthenticated, user } = useAuthStore();
   const [showMessageForm, setShowMessageForm] = React.useState(false);
   const [message, setMessage] = React.useState('');
-  const [saved, setSaved] = React.useState(false);
   const [showReportModal, setShowReportModal] = React.useState(false);
   const [reportReason, setReportReason] = React.useState('');
+  
+  // Bookmark hooks
+  const bookmarkMutation = useBookmarkAd();
+  const unbookmarkMutation = useUnbookmarkAd();
+  
+  // Check if ad is bookmarked - use a separate query for better performance
+  const { data: bookmarkedAdsData } = useBookmarkedAds(1, 1000);
+  const isBookmarked = React.useMemo(() => {
+    if (!bookmarkedAdsData?.data) return false;
+    return bookmarkedAdsData.data.some((bookmarkedAd) => bookmarkedAd.id === adId);
+  }, [bookmarkedAdsData, adId]);
 
   // #region agent log
   React.useEffect(() => {
@@ -233,23 +243,42 @@ export default function AdDetailPage() {
             {/* Price Card */}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="text-3xl font-bold text-red-600 mb-2">{formatPrice(ad.price)}</div>
-              <div className="flex gap-2 mt-4">
-                <button
-                  onClick={() => setSaved(!saved)}
-                  className={`flex-1 px-4 py-2 rounded-lg border-2 transition-colors ${
-                    saved
-                      ? 'bg-red-50 border-red-500 text-red-600'
-                      : 'border-gray-300 text-gray-700 hover:border-red-500 hover:text-red-600'
-                  }`}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                    </svg>
-                    {saved ? (isRTL ? 'ذخیره شده' : 'Gespeichert') : (isRTL ? 'ذخیره' : 'Speichern')}
-                  </span>
-                </button>
-              </div>
+              {isAuthenticated && (
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={async () => {
+                      if (isBookmarked) {
+                        try {
+                          await unbookmarkMutation.mutateAsync(adId);
+                          toast.success(isRTL ? 'از نشان‌ها حذف شد' : 'Removed from bookmarks');
+                        } catch (error: any) {
+                          toast.error(error?.response?.data?.message || 'Failed to remove bookmark');
+                        }
+                      } else {
+                        try {
+                          await bookmarkMutation.mutateAsync(adId);
+                          toast.success(isRTL ? 'به نشان‌ها اضافه شد' : 'Added to bookmarks');
+                        } catch (error: any) {
+                          toast.error(error?.response?.data?.message || 'Failed to bookmark');
+                        }
+                      }
+                    }}
+                    disabled={bookmarkMutation.isPending || unbookmarkMutation.isPending}
+                    className={`flex-1 px-4 py-2 rounded-lg border-2 transition-colors ${
+                      isBookmarked
+                        ? 'bg-red-50 border-red-500 text-red-600'
+                        : 'border-gray-300 text-gray-700 hover:border-red-500 hover:text-red-600'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="w-5 h-5" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                      </svg>
+                      {isBookmarked ? (isRTL ? 'ذخیره شده' : 'Gespeichert') : (isRTL ? 'ذخیره' : 'Speichern')}
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Seller Info */}

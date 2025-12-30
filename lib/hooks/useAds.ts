@@ -321,3 +321,55 @@ export const useUnsuspendAd = () => {
     },
   });
 };
+
+/**
+ * API Hook: POST /api/ads/:id/bookmark
+ * Bookmark an ad (requires auth)
+ */
+export const useBookmarkAd = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiClient.post(`/ads/${id}/bookmark`);
+      return response.data;
+    },
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['ads', 'bookmarked'] });
+      queryClient.invalidateQueries({ queryKey: ['ad', id] });
+    },
+  });
+};
+
+/**
+ * API Hook: DELETE /api/ads/:id/bookmark
+ * Remove bookmark from an ad (requires auth)
+ */
+export const useUnbookmarkAd = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await apiClient.delete(`/ads/${id}/bookmark`);
+      return id;
+    },
+    onSuccess: (id) => {
+      queryClient.invalidateQueries({ queryKey: ['ads', 'bookmarked'] });
+      queryClient.invalidateQueries({ queryKey: ['ad', id] });
+    },
+  });
+};
+
+/**
+ * API Hook: GET /api/ads/bookmarked
+ * Get user's bookmarked ads (requires auth)
+ */
+export const useBookmarkedAds = (page: number = 1, limit: number = 20) => {
+  return useQuery({
+    queryKey: ['ads', 'bookmarked', page, limit],
+    queryFn: async () => {
+      const response = await apiClient.get<AdsResponse>('/ads/bookmarked', {
+        params: { page, limit },
+      });
+      return response.data;
+    },
+  });
+};
