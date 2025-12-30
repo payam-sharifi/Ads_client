@@ -9,6 +9,7 @@ import { useMyAds, useDeleteAd } from '@/lib/hooks/useAds';
 import { useAdminStats } from '@/lib/hooks/admin/useAdminStats';
 import { useAdminStore } from '@/lib/stores/adminStore';
 import { useCurrentAdminPermissions } from '@/lib/hooks/admin/useCurrentAdminPermissions';
+import { useLogout } from '@/lib/hooks/useAuth';
 import AdCard from '@/components/common/AdCard';
 import Button from '@/components/common/Button';
 import { toast } from 'react-toastify';
@@ -18,6 +19,7 @@ export default function DashboardPage() {
   const { t, locale, isRTL } = useI18n();
   const { isAuthenticated, user } = useAuthStore();
   const deleteAdMutation = useDeleteAd();
+  const logoutMutation = useLogout();
   const { hasPermission, isSuperAdmin, setPermissions } = useAdminStore();
   
   // Load permissions for admin users (needed for dashboard permission checks)
@@ -250,15 +252,34 @@ export default function DashboardPage() {
         <p className="text-gray-600">
           {isRTL ? 'خوش آمدید' : 'Willkommen'}, {user.name}!
         </p>
-        {/* Mobile: Profile link */}
-        <Link href="/profile" className="md:hidden">
-          <button className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors">
+        {/* Mobile: Profile link and Logout button */}
+        <div className="md:hidden flex items-center gap-3">
+          <Link href="/profile">
+            <button className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span className="text-sm">{isRTL ? 'پروفایل' : 'Profile'}</span>
+            </button>
+          </Link>
+          <button
+            onClick={async () => {
+              try {
+                await logoutMutation.mutateAsync();
+                router.push('/login');
+              } catch (error) {
+                toast.error(locale === 'fa' ? 'خروج ناموفق بود' : 'Failed to logout');
+              }
+            }}
+            disabled={logoutMutation.isPending}
+            className="flex items-center gap-2 text-red-600 hover:text-red-700 transition-colors disabled:opacity-50"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            <span className="text-sm">{isRTL ? 'پروفایل' : 'Profile'}</span>
+            <span className="text-sm">{isRTL ? 'خروج' : 'Logout'}</span>
           </button>
-        </Link>
+        </div>
       </div>
 
       <h2 className="text-2xl font-bold mb-6">{t('dashboard.myAds')}</h2>

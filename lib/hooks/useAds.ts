@@ -15,10 +15,12 @@ export interface Ad {
   subcategoryId?: string;
   userId: string;
   cityId: string;
-  status: 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'EXPIRED';
+  status: 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'EXPIRED' | 'SUSPENDED';
   condition?: 'NEW' | 'LIKE_NEW' | 'USED';
   views: number;
   isPremium: boolean;
+  showEmail?: boolean;
+  showPhone?: boolean;
   rejectionReason?: string;
   createdAt: string;
   updatedAt?: string;
@@ -59,6 +61,7 @@ export interface Ad {
     adId: string;
     order?: number;
   }>;
+  metadata?: Record<string, any>; // Category-specific fields (e.g., real estate details, vehicle specs)
 }
 
 export interface FilterAdsParams {
@@ -135,21 +138,8 @@ export const useAd = (id: string) => {
   return useQuery({
     queryKey: ['ad', id],
     queryFn: async () => {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAds.ts:137',message:'useAd: queryFn entry',data:{id,hasId:!!id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
-      try {
-        const response = await apiClient.get<Ad>(`/ads/${id}`);
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAds.ts:141',message:'useAd: queryFn success',data:{status:response.status,adId:response.data?.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
-        return response.data;
-      } catch (error: any) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAds.ts:147',message:'useAd: queryFn error',data:{errorMessage:error?.message,errorResponse:error?.response?.data,statusCode:error?.response?.status,id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
-        throw error;
-      }
+      const response = await apiClient.get<Ad>(`/ads/${id}`);
+      return response.data;
     },
     enabled: !!id,
   });

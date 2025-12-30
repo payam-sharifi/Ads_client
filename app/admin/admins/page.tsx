@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAdminUsers, useAdminUser } from '@/lib/hooks/admin/useAdminUsers';
 import { useAdminPermissions, useAssignPermission, useRevokePermission } from '@/lib/hooks/admin/useAdminPermissions';
 import { useAdminUserPermissions } from '@/lib/hooks/admin/useAdminUserPermissions';
 import { useAdminStore } from '@/lib/stores/adminStore';
 import { useCreateAdmin } from '@/lib/hooks/admin/useAdminUsers';
+import { useLogout } from '@/lib/hooks/useAuth';
 import { toast } from 'react-toastify';
 import { AdminUser } from '@/lib/hooks/admin/useAdminUsers';
 import { Permission } from '@/lib/hooks/admin/useAdminPermissions';
@@ -21,8 +23,10 @@ import { useI18n } from '@/lib/contexts/I18nContext';
  * - Managing admin accounts
  */
 export default function AdminAdminsPage() {
+  const router = useRouter();
   const { isSuperAdmin, hasPermission } = useAdminStore();
-  const { t, isRTL } = useI18n();
+  const { t, isRTL, locale } = useI18n();
+  const logoutMutation = useLogout();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<AdminUser | null>(null);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
@@ -75,6 +79,15 @@ export default function AdminAdminsPage() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      router.push('/login');
+    } catch (error) {
+      toast.error(locale === 'fa' ? 'خروج ناموفق بود' : 'Failed to logout');
+    }
+  };
+
   return (
     <RequireSuperAdmin
       fallback={
@@ -84,6 +97,29 @@ export default function AdminAdminsPage() {
       }
     >
       <div>
+      {/* Mobile Header with Back and Logout buttons */}
+      <div className="md:hidden flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>{isRTL ? 'بازگشت' : 'Back'}</span>
+        </button>
+        <button
+          onClick={handleLogout}
+          disabled={logoutMutation.isPending}
+          className="flex items-center gap-2 px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span>{isRTL ? 'خروج' : 'Logout'}</span>
+        </button>
+      </div>
+
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Admins & Permissions</h1>

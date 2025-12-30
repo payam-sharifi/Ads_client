@@ -23,6 +23,7 @@ function HomePageContent() {
   const { selectedCityId, hasSelectedCity, setSelectedCity } = useCityStore();
 
   // Use cityId from URL or store
+  // 'all' means show all cities, empty means show landing page
   const activeCityId = cityIdFromUrl || selectedCityId;
 
   // If cityId is in URL, save it to store
@@ -50,7 +51,7 @@ function HomePageContent() {
   } = useInfiniteAds({
     status: 'APPROVED', // Backend only shows APPROVED ads to public
     search: searchQuery || undefined,
-    cityId: activeCityId || undefined,
+    cityId: activeCityId && activeCityId !== 'all' ? activeCityId : undefined, // Don't send 'all' to API
     limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'DESC',
@@ -90,8 +91,8 @@ function HomePageContent() {
     };
   }, [activeCityId, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Show landing page only if no city is selected
-  if (!activeCityId) {
+  // Show landing page only if no city is selected (not 'all')
+  if (!activeCityId || activeCityId === '') {
     return <CitySelectionLanding />;
   }
 
@@ -102,7 +103,7 @@ function HomePageContent() {
   const parentCategories = categories?.filter(cat => !cat.parentId) || [];
   
   // Get selected city name
-  const selectedCity = cities.find(city => city.id === activeCityId);
+  const selectedCity = activeCityId && activeCityId !== 'all' ? cities.find(city => city.id === activeCityId) : null;
   const selectedCityName = selectedCity ? getLocalizedName(selectedCity.name, locale) : '';
   
   // Filter cities for selector (exclude Tehran)
@@ -113,10 +114,16 @@ function HomePageContent() {
     return !cityNameFa.includes('تهران') && !cityNameDe.includes('tehran') && !cityNameEn.includes('tehran');
   });
   
-  const handleCityChange = (cityId: string) => {
-    setSelectedCity(cityId);
+  const handleCityChange = (cityId: string | null) => {
+    if (cityId) {
+      setSelectedCity(cityId);
+      router.push(`/?cityId=${cityId}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`);
+    } else {
+      // Show all cities - use 'all' as special value
+      setSelectedCity('all');
+      router.push(`/?cityId=all${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`);
+    }
     setShowCitySelector(false);
-    router.push(`/?cityId=${cityId}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`);
   };
 
   return (
@@ -172,7 +179,10 @@ function HomePageContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span className="text-sm font-medium whitespace-nowrap">
-                {selectedCityName || (isRTL ? 'انتخاب شهر' : 'Stadt wählen')}
+                {activeCityId === 'all' 
+                  ? (isRTL ? 'همه شهرها' : 'Alle Städte')
+                  : (selectedCityName || (isRTL ? 'انتخاب شهر' : 'Stadt wählen'))
+                }
               </span>
             </button>
           </form>
@@ -202,6 +212,22 @@ function HomePageContent() {
             </div>
             <div className="p-4">
               <div className="space-y-2">
+                {/* All Cities Option */}
+                <button
+                  onClick={() => handleCityChange(null)}
+                  className={`
+                    w-full text-right px-4 py-3 rounded-lg border transition-all
+                    ${activeCityId === 'all'
+                      ? 'bg-red-50 border-red-300 text-red-700 font-medium'
+                      : 'bg-white border-gray-200 text-gray-700 hover:border-red-300 hover:bg-gray-50'
+                    }
+                  `}
+                  dir={isRTL ? 'rtl' : 'ltr'}
+                >
+                  {isRTL ? 'همه شهرها' : 'Alle Städte'}
+                </button>
+                
+                {/* Cities List */}
                 {availableCities.map((city) => {
                   const cityName = getLocalizedName(city.name, locale) || 'Unknown';
                   const isSelected = city.id === activeCityId;

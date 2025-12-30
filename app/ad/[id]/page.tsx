@@ -37,12 +37,6 @@ export default function AdDetailPage() {
     return bookmarkedAdsData.data.some((bookmarkedAd) => bookmarkedAd.id === adId);
   }, [bookmarkedAdsData, adId]);
 
-  // #region agent log
-  React.useEffect(() => {
-    fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ad/[id]/page.tsx:21',message:'AdDetailPage: params and adId',data:{params,adId,hasAdId:!!adId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  }, [params, adId]);
-  // #endregion
-
   // Fetch ad with React Query
   // API: GET /api/ads/:id
   const { data: ad, isLoading, error } = useAd(adId);
@@ -50,14 +44,6 @@ export default function AdDetailPage() {
   const { data: images } = useAdImages(adId);
   const sendMessageMutation = useSendMessage();
   const createReportMutation = useCreateReport();
-
-  // #region agent log
-  React.useEffect(() => {
-    if (error) {
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ad/[id]/page.tsx:40',message:'AdDetailPage: error occurred',data:{errorMessage:error?.message,errorResponse:error?.response?.data,statusCode:error?.response?.status,adId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    }
-  }, [error, adId]);
-  // #endregion
 
   // Show error toast
   React.useEffect(() => {
@@ -199,28 +185,246 @@ export default function AdDetailPage() {
                 )}
               </div>
 
-              <div className="text-3xl sm:text-4xl font-bold text-red-600 mb-6">{formatPrice(ad.price)}</div>
-
               <div className="border-t border-gray-200 pt-6">
                 <h2 className="text-xl font-bold mb-4 text-gray-900">{t('ad.description')}</h2>
                 <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{ad.description}</p>
               </div>
 
+              {/* Category-specific Details */}
+              {ad.metadata && Object.keys(ad.metadata).length > 0 && (
+                <div className="border-t border-gray-200 pt-6 mt-6">
+                  <h2 className="text-xl font-bold mb-4 text-gray-900">
+                    {isRTL ? 'جزئیات' : 'Details'}
+                  </h2>
+                  
+                  {/* Real Estate Details */}
+                  {ad.metadata.type && (ad.metadata.type === 'rent' || ad.metadata.type === 'sale') && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-sm text-gray-500 block mb-1">
+                          {isRTL ? 'نوع معامله' : 'Transaction Type'}
+                        </span>
+                        <span className="font-medium text-gray-900">
+                          {ad.metadata.type === 'rent' ? (isRTL ? 'اجاره' : 'Rent') : (isRTL ? 'فروش' : 'Sale')}
+                        </span>
+                      </div>
+                      
+                      {ad.metadata.type === 'rent' && (
+                        <>
+                          {ad.metadata.rentPrice && (
+                            <div>
+                              <span className="text-sm text-gray-500 block mb-1">
+                                {isRTL ? 'اجاره ماهانه' : 'Monthly Rent'}
+                              </span>
+                              <span className="font-medium text-gray-900" dir="ltr">
+                                {formatPrice(Number(ad.metadata.rentPrice))}
+                              </span>
+                            </div>
+                          )}
+                          {ad.metadata.deposit && (
+                            <div>
+                              <span className="text-sm text-gray-500 block mb-1">
+                                {isRTL ? 'رهن' : 'Deposit'}
+                              </span>
+                              <span className="font-medium text-gray-900" dir="ltr">
+                                {formatPrice(Number(ad.metadata.deposit))}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                      
+                      {ad.metadata.type === 'sale' && ad.metadata.salePrice && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'قیمت فروش' : 'Sale Price'}
+                          </span>
+                          <span className="font-medium text-gray-900" dir="ltr">
+                            {formatPrice(Number(ad.metadata.salePrice))}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.area && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'متراژ' : 'Area'}
+                          </span>
+                          <span className="font-medium text-gray-900" dir="ltr">
+                            {ad.metadata.area} m²
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.floor !== undefined && ad.metadata.floor !== null && ad.metadata.floor !== '' && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'طبقه' : 'Floor'}
+                          </span>
+                          <span className="font-medium text-gray-900" dir="ltr">
+                            {ad.metadata.floor}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.yearBuilt && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'سال ساخت' : 'Year Built'}
+                          </span>
+                          <span className="font-medium text-gray-900" dir="ltr">
+                            {ad.metadata.yearBuilt}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.heating && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'گرمایش' : 'Heating'}
+                          </span>
+                          <span className="font-medium text-gray-900">
+                            {ad.metadata.heating === 'central' ? (isRTL ? 'مرکزی' : 'Central') :
+                             ad.metadata.heating === 'gas' ? (isRTL ? 'گاز' : 'Gas') :
+                             ad.metadata.heating === 'electric' ? (isRTL ? 'برق' : 'Electric') :
+                             ad.metadata.heating === 'oil' ? (isRTL ? 'نفت' : 'Oil') :
+                             ad.metadata.heating === 'wood' ? (isRTL ? 'چوب' : 'Wood') :
+                             ad.metadata.heating === 'solar' ? (isRTL ? 'خورشیدی' : 'Solar') :
+                             ad.metadata.heating}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.renovated !== undefined && ad.metadata.renovated !== null && ad.metadata.renovated !== '' && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'بازسازی شده' : 'Renovated'}
+                          </span>
+                          <span className="font-medium text-gray-900">
+                            {ad.metadata.renovated === true || ad.metadata.renovated === 'true' 
+                              ? (isRTL ? 'بله' : 'Yes') 
+                              : (isRTL ? 'خیر' : 'No')}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.additionalCosts && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'هزینه‌های جانبی' : 'Additional Costs'}
+                          </span>
+                          <span className="font-medium text-gray-900" dir="ltr">
+                            {formatPrice(Number(ad.metadata.additionalCosts))} / {isRTL ? 'ماه' : 'month'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Vehicle Details */}
+                  {ad.metadata.brand || ad.metadata.model ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {ad.metadata.brand && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'برند' : 'Brand'}
+                          </span>
+                          <span className="font-medium text-gray-900">
+                            {ad.metadata.brand}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.model && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'مدل' : 'Model'}
+                          </span>
+                          <span className="font-medium text-gray-900">
+                            {ad.metadata.model}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.year && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'سال ساخت' : 'Year'}
+                          </span>
+                          <span className="font-medium text-gray-900" dir="ltr">
+                            {ad.metadata.year}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.mileage && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'کیلومتر' : 'Mileage'}
+                          </span>
+                          <span className="font-medium text-gray-900" dir="ltr">
+                            {Number(ad.metadata.mileage).toLocaleString('de-DE')} km
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.fuelType && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'نوع سوخت' : 'Fuel Type'}
+                          </span>
+                          <span className="font-medium text-gray-900">
+                            {ad.metadata.fuelType === 'petrol' ? (isRTL ? 'بنزین' : 'Petrol') :
+                             ad.metadata.fuelType === 'diesel' ? (isRTL ? 'دیزل' : 'Diesel') :
+                             ad.metadata.fuelType === 'electric' ? (isRTL ? 'برقی' : 'Electric') :
+                             ad.metadata.fuelType === 'hybrid' ? (isRTL ? 'هیبرید' : 'Hybrid') :
+                             ad.metadata.fuelType === 'lpg' ? (isRTL ? 'گاز' : 'LPG') :
+                             ad.metadata.fuelType}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.metadata.transmission && (
+                        <div>
+                          <span className="text-sm text-gray-500 block mb-1">
+                            {isRTL ? 'نوع گیربکس' : 'Transmission'}
+                          </span>
+                          <span className="font-medium text-gray-900">
+                            {ad.metadata.transmission === 'manual' ? (isRTL ? 'دستی' : 'Manual') :
+                             ad.metadata.transmission === 'automatic' ? (isRTL ? 'اتوماتیک' : 'Automatic') :
+                             ad.metadata.transmission}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
+                  
+                  {/* Other metadata fields (for other categories) */}
+                  {!ad.metadata.type && !ad.metadata.brand && Object.keys(ad.metadata).length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {Object.entries(ad.metadata).map(([key, value]) => {
+                        if (value === null || value === undefined || value === '') return null;
+                        return (
+                          <div key={key}>
+                            <span className="text-sm text-gray-500 block mb-1 capitalize">
+                              {key.replace(/([A-Z])/g, ' $1').trim()}
+                            </span>
+                            <span className="font-medium text-gray-900">
+                              {typeof value === 'boolean' ? (value ? (isRTL ? 'بله' : 'Yes') : (isRTL ? 'خیر' : 'No')) : String(value)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Ad Info Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
                 <div>
-                  <span className="text-sm text-gray-500 block mb-1">{t('ad.status')}</span>
-                  <span className="font-medium text-gray-900">{t(`category.${ad.status}`)}</span>
-                </div>
-                <div>
                   <span className="text-sm text-gray-500 block mb-1">{t('ad.views')}</span>
                   <span className="font-medium text-gray-900">{ad.views}</span>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500 block mb-1">{t('ad.category')}</span>
-                  <span className="font-medium text-gray-900" dir={isRTL ? 'rtl' : 'ltr'}>
-                    {getLocalizedCategoryName(ad.category?.name, locale) || 'N/A'}
-                  </span>
                 </div>
               </div>
 
@@ -240,46 +444,43 @@ export default function AdDetailPage() {
 
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Price Card */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="text-3xl font-bold text-red-600 mb-2">{formatPrice(ad.price)}</div>
-              {isAuthenticated && (
-                <div className="flex gap-2 mt-4">
-                  <button
-                    onClick={async () => {
-                      if (isBookmarked) {
-                        try {
-                          await unbookmarkMutation.mutateAsync(adId);
-                          toast.success(isRTL ? 'از نشان‌ها حذف شد' : 'Removed from bookmarks');
-                        } catch (error: any) {
-                          toast.error(error?.response?.data?.message || 'Failed to remove bookmark');
-                        }
-                      } else {
-                        try {
-                          await bookmarkMutation.mutateAsync(adId);
-                          toast.success(isRTL ? 'به نشان‌ها اضافه شد' : 'Added to bookmarks');
-                        } catch (error: any) {
-                          toast.error(error?.response?.data?.message || 'Failed to bookmark');
-                        }
+            {/* Bookmark Card */}
+            {isAuthenticated && (
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <button
+                  onClick={async () => {
+                    if (isBookmarked) {
+                      try {
+                        await unbookmarkMutation.mutateAsync(adId);
+                        toast.success(isRTL ? 'از نشان‌ها حذف شد' : 'Removed from bookmarks');
+                      } catch (error: any) {
+                        toast.error(error?.response?.data?.message || 'Failed to remove bookmark');
                       }
-                    }}
-                    disabled={bookmarkMutation.isPending || unbookmarkMutation.isPending}
-                    className={`flex-1 px-4 py-2 rounded-lg border-2 transition-colors ${
-                      isBookmarked
-                        ? 'bg-red-50 border-red-500 text-red-600'
-                        : 'border-gray-300 text-gray-700 hover:border-red-500 hover:text-red-600'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="w-5 h-5" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                      </svg>
-                      {isBookmarked ? (isRTL ? 'ذخیره شده' : 'Gespeichert') : (isRTL ? 'ذخیره' : 'Speichern')}
-                    </span>
-                  </button>
-                </div>
-              )}
-            </div>
+                    } else {
+                      try {
+                        await bookmarkMutation.mutateAsync(adId);
+                        toast.success(isRTL ? 'به نشان‌ها اضافه شد' : 'Added to bookmarks');
+                      } catch (error: any) {
+                        toast.error(error?.response?.data?.message || 'Failed to bookmark');
+                      }
+                    }
+                  }}
+                  disabled={bookmarkMutation.isPending || unbookmarkMutation.isPending}
+                  className={`w-full px-4 py-2 rounded-lg border-2 transition-colors ${
+                    isBookmarked
+                      ? 'bg-red-50 border-red-500 text-red-600'
+                      : 'border-gray-300 text-gray-700 hover:border-red-500 hover:text-red-600'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                    {isBookmarked ? (isRTL ? 'ذخیره شده' : 'Gespeichert') : (isRTL ? 'ذخیره' : 'Speichern')}
+                  </span>
+                </button>
+              </div>
+            )}
 
             {/* Seller Info */}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -290,11 +491,13 @@ export default function AdDetailPage() {
                     <span className="text-sm text-gray-500 block mb-1">{t('auth.name')}</span>
                     <span className="font-medium text-gray-900">{ad.user.name}</span>
                   </div>
-                  <div>
-                    <span className="text-sm text-gray-500 block mb-1">{t('auth.email')}</span>
-                    <span className="font-medium text-gray-900">{ad.user.email}</span>
-                  </div>
-                  {ad.user.phone && (
+                  {ad.showEmail && (
+                    <div>
+                      <span className="text-sm text-gray-500 block mb-1">{t('auth.email')}</span>
+                      <span className="font-medium text-gray-900">{ad.user.email}</span>
+                    </div>
+                  )}
+                  {ad.showPhone && ad.user.phone && (
                     <div>
                       <span className="text-sm text-gray-500 block mb-1">{t('auth.phone')}</span>
                       <span className="font-medium text-gray-900">{ad.user.phone}</span>

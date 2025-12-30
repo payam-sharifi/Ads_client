@@ -29,6 +29,8 @@ export default function EditAdPage() {
     subcategoryId: '',
     cityId: '',
     condition: 'USED' as 'NEW' | 'LIKE_NEW' | 'USED',
+    showEmail: false,
+    showPhone: false,
   });
 
   // Redirect if not authenticated
@@ -89,6 +91,8 @@ export default function EditAdPage() {
         subcategoryId: ad.subcategoryId || '',
         cityId: ad.cityId,
         condition: conditionMap[conditionFromBackend] || 'USED',
+        showEmail: ad.showEmail || false,
+        showPhone: ad.showPhone || false,
       });
     }
   }, [ad, user, router]);
@@ -137,9 +141,10 @@ export default function EditAdPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setFormData((prev) => {
-      const newData = { ...prev, [name]: value };
+      const newData = { ...prev, [name]: type === 'checkbox' ? checked : value };
       if (name === 'categoryId') {
         newData.subcategoryId = '';
       }
@@ -176,6 +181,8 @@ export default function EditAdPage() {
           subcategoryId: formData.subcategoryId || undefined,
           cityId: formData.cityId,
           condition: conditionMap[formData.condition] || formData.condition.toLowerCase(),
+          showEmail: formData.showEmail || false,
+          showPhone: formData.showPhone || false,
         },
       });
 
@@ -337,6 +344,37 @@ export default function EditAdPage() {
               <option value="LIKE_NEW">Like New</option>
               <option value="USED">Used</option>
             </select>
+          </div>
+        </div>
+
+        {/* Privacy Settings */}
+        <div className="border-t border-gray-200 pt-6 mt-6">
+          <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تنظیمات حریم خصوصی' : 'Privacy Settings'}</h3>
+          <div className="space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="showEmail"
+                checked={formData.showEmail}
+                onChange={handleChange}
+                className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+              />
+              <span className="text-sm text-gray-700">
+                {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
+              </span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="showPhone"
+                checked={formData.showPhone}
+                onChange={handleChange}
+                className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+              />
+              <span className="text-sm text-gray-700">
+                {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
+              </span>
+            </label>
           </div>
         </div>
 

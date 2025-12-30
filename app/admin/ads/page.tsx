@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAdminAds, useApproveAd, useRejectAd } from '@/lib/hooks/admin/useAdminAds';
+import { useAdminAds, useApproveAd, useRejectAd, AdminAdsResponse } from '@/lib/hooks/admin/useAdminAds';
 import { useSuspendAd, useUnsuspendAd, useDeleteAd } from '@/lib/hooks/useAds';
 import { useSendMessage } from '@/lib/hooks/useMessages';
 import { useAdminStore } from '@/lib/stores/adminStore';
@@ -12,7 +12,9 @@ import { useCities } from '@/lib/hooks/useCities';
 import { useCurrentAdminPermissions } from '@/lib/hooks/admin/useCurrentAdminPermissions';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { toast } from 'react-toastify';
-import { Ad, AdStatus } from '@/lib/hooks/useAds';
+import { Ad } from '@/lib/hooks/useAds';
+
+type AdStatus = Ad['status'];
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
 
@@ -270,7 +272,7 @@ export default function AdminAdsPage() {
     return badges[status] || badges.DRAFT;
   };
 
-  const ads = adsData?.data || [];
+  const ads = (adsData as AdminAdsResponse | undefined)?.data || [];
   const hasActiveFilters = status || categoryId || cityId || search;
 
   const handleClearFilters = () => {
@@ -825,11 +827,11 @@ export default function AdminAdsPage() {
         )}
 
         {/* Pagination */}
-        {adsData?.pagination && adsData.pagination.totalPages > 1 && (
+        {(adsData as AdminAdsResponse | undefined)?.pagination && (adsData as AdminAdsResponse)?.pagination.totalPages > 1 && (
           <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
             <div className="text-sm text-gray-700">
-              Showing {((page - 1) * 20) + 1} to {Math.min(page * 20, adsData.pagination.total)} of{' '}
-              {adsData.pagination.total} ads
+              Showing {((page - 1) * 20) + 1} to {Math.min(page * 20, (adsData as AdminAdsResponse).pagination.total)} of{' '}
+              {(adsData as AdminAdsResponse).pagination.total} ads
             </div>
             <div className="flex gap-2">
               <button
@@ -841,7 +843,7 @@ export default function AdminAdsPage() {
               </button>
               <button
                 onClick={() => router.push(`/admin/ads?page=${page + 1}`)}
-                disabled={page >= adsData.pagination.totalPages}
+                disabled={page >= (adsData as AdminAdsResponse).pagination.totalPages}
                 className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
                 Next

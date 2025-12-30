@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { useAuthStore } from '@/lib/stores/authStore';
+import { useCityStore } from '@/lib/stores/cityStore';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useCities } from '@/lib/hooks/useCities';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
@@ -14,20 +15,42 @@ import { useUploadImage } from '@/lib/hooks/useImages';
 import Button from '@/components/common/Button';
 import { toast } from 'react-toastify';
 
+type FormStep = 1 | 2 | 3;
+
 export default function CreateAdPage() {
   const router = useRouter();
   const { t, locale, isRTL } = useI18n();
   const { isAuthenticated, user } = useAuthStore();
-  const [imageFiles, setImageFiles] = React.useState<File[]>([]);
-  const [formData, setFormData] = React.useState({
-    title: '',
-    description: '',
-    price: '',
+  const { selectedCityId, setSelectedCity } = useCityStore();
+  const [currentStep, setCurrentStep] = useState<FormStep>(1);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  
+  // Step 1: Category & City
+  const [step1Data, setStep1Data] = useState({
     categoryId: '',
     subcategoryId: '',
-    cityId: '',
-    condition: 'USED' as 'NEW' | 'LIKE_NEW' | 'USED',
+    cityId: selectedCityId || '',
   });
+
+  // Step 2: Basic Info
+  const [step2Data, setStep2Data] = useState({
+    title: '',
+    description: '',
+    condition: 'USED' as 'NEW' | 'LIKE_NEW' | 'USED',
+    showEmail: false,
+    showPhone: false,
+  });
+
+  // Step 3: Category-specific details (metadata)
+  const [step3Data, setStep3Data] = useState<Record<string, any>>({});
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  React.useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -36,13 +59,17 @@ export default function CreateAdPage() {
     }
   }, [isAuthenticated, user, router]);
 
-  // Fetch data with React Query
-  // API: GET /api/categories
+  // Load city from store on mount
+  useEffect(() => {
+    if (selectedCityId && !step1Data.cityId) {
+      setStep1Data(prev => ({ ...prev, cityId: selectedCityId }));
+    }
+  }, [selectedCityId]);
+
+  // Fetch data
   const { data: categories } = useCategories();
-  // API: GET /api/cities
   const { data: cities } = useCities();
   
-  // Filter out Tehran
   const filteredCities = cities?.filter(city => {
     const cityNameFa = city.name?.fa?.toLowerCase() || '';
     const cityNameDe = city.name?.de?.toLowerCase() || '';
@@ -50,10 +77,16 @@ export default function CreateAdPage() {
     return !cityNameFa.includes('تهران') && !cityNameDe.includes('tehran') && !cityNameEn.includes('tehran');
   }) || [];
   
-  // API: POST /api/ads
   const createAdMutation = useCreateAd();
-  // API: POST /api/images/:adId
   const uploadImageMutation = useUploadImage();
+
+  const selectedCategory = categories?.find((c) => c.id === step1Data.categoryId);
+  const subcategories = selectedCategory?.children || [];
+  const categoryName = selectedCategory ? getLocalizedCategoryName(selectedCategory.name, locale).toLowerCase() : '';
+
+  // Check if category is Real Estate or Vehicles
+  const isRealEstate = categoryName.includes('immobilien') || categoryName.includes('real estate') || categoryName.includes('املاک') || categoryName.includes('مسکن');
+  const isVehicle = categoryName.includes('fahrzeuge') || categoryName.includes('vehicle') || categoryName.includes('خودرو') || categoryName.includes('ماشین');
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setImageFiles((prev) => {
@@ -73,124 +106,157 @@ export default function CreateAdPage() {
       'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp'],
     },
     multiple: true,
+    noClick: false, // Enable click on mobile
+    noKeyboard: false,
+    disabled: imageFiles.length >= 3,
   });
 
   const removeImage = (index: number) => {
     setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => {
+  const handleStep1Change = (name: string, value: string) => {
+    setStep1Data((prev) => {
       const newData = { ...prev, [name]: value };
-      // Reset subcategory when category changes
       if (name === 'categoryId') {
         newData.subcategoryId = '';
+        setStep3Data({}); // Reset category-specific data when category changes
       }
       return newData;
     });
   };
 
+  const handleStep2Change = (name: string, value: string) => {
+    setStep2Data((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleStep3Change = (name: string, value: any) => {
+    setStep3Data((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateStep1 = () => {
+    if (!step1Data.categoryId) {
+      toast.error(isRTL ? 'لطفا دسته‌بندی را انتخاب کنید' : 'Please select a category');
+      return false;
+    }
+    if (!step1Data.cityId) {
+      toast.error(isRTL ? 'لطفا شهر را انتخاب کنید' : 'Please select a city');
+      return false;
+    }
+    // Save city to store
+    if (step1Data.cityId) {
+      setSelectedCity(step1Data.cityId);
+    }
+    return true;
+  };
+
+  const validateStep2 = () => {
+    if (!step2Data.title.trim() || step2Data.title.trim().length < 3) {
+      toast.error(isRTL ? 'عنوان باید حداقل 3 کاراکتر باشد' : 'Title must be at least 3 characters');
+      return false;
+    }
+    if (!step2Data.description.trim() || step2Data.description.trim().length < 10) {
+      toast.error(isRTL ? 'توضیحات باید حداقل 10 کاراکتر باشد' : 'Description must be at least 10 characters');
+      return false;
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (currentStep === 1) {
+      if (validateStep1()) {
+        setCurrentStep(2);
+      }
+    } else if (currentStep === 2) {
+      if (validateStep2()) {
+        setCurrentStep(3);
+      }
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep((prev) => (prev - 1) as FormStep);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
-    if (!formData.title.trim() || formData.title.trim().length < 3) {
-      toast.error('Title must be at least 3 characters');
+    if (!validateStep1() || !validateStep2()) {
       return;
     }
-    
-    if (!formData.description.trim() || formData.description.trim().length < 10) {
-      toast.error('Description must be at least 10 characters');
+
+    // Validate Real Estate specific fields
+    if (isRealEstate && !step3Data.type) {
+      toast.error(isRTL ? 'لطفا نوع معامله (اجاره/فروش) را انتخاب کنید' : 'Please select transaction type (rent/sale)');
       return;
     }
-    
-    if (!formData.categoryId) {
-      toast.error('Please select a category');
-      return;
-    }
-    
-    if (!formData.cityId) {
-      toast.error('Please select a city');
-      return;
-    }
-    
-    // Validate images count doesn't exceed 3
+
     if (imageFiles.length > 3) {
       toast.error(isRTL ? 'شما می‌توانید حداکثر 3 عکس آپلود کنید' : 'You can upload a maximum of 3 images');
       return;
     }
     
     try {
-      // API: POST /api/ads
-      // Status is automatically set to PENDING_APPROVAL by backend
-      // Convert condition from 'NEW'/'LIKE_NEW'/'USED' to 'new'/'like-new'/'used'
       const conditionMap: Record<string, string> = {
         'NEW': 'new',
         'LIKE_NEW': 'like-new',
         'USED': 'used',
       };
       
-      // Prepare request data - only include fields that are in CreateAdDto
-      const requestData: {
-        title: string;
-        description: string;
-        price: number;
-        categoryId: string;
-        cityId: string;
-        subcategoryId?: string;
-        condition?: string;
-      } = {
-        title: formData.title.trim(),
-        description: formData.description.trim(),
-        price: Number(formData.price) || 0,
-        categoryId: formData.categoryId,
-        cityId: formData.cityId,
-      };
-      
-      // Only include subcategoryId if it's not empty (it's optional in DTO)
-      if (formData.subcategoryId && formData.subcategoryId.trim()) {
-        requestData.subcategoryId = formData.subcategoryId;
+      // Calculate price based on category
+      let price = 0;
+      if (isRealEstate) {
+        if (step3Data.type === 'rent') {
+          price = Number(step3Data.rentPrice) || 0;
+        } else if (step3Data.type === 'sale') {
+          price = Number(step3Data.salePrice) || 0;
+        }
+      } else if (isVehicle) {
+        price = Number(step3Data.price) || 0;
+      } else {
+        // For other categories, use price from step3Data or default to 0
+        price = Number(step3Data.price) || 0;
       }
       
-      // Only include condition if it's valid (it's optional in DTO)
-      if (formData.condition) {
-        const mappedCondition = conditionMap[formData.condition];
+      const requestData: any = {
+        title: step2Data.title.trim(),
+        description: step2Data.description.trim(),
+        price,
+        categoryId: step1Data.categoryId,
+        cityId: step1Data.cityId,
+        showEmail: step2Data.showEmail || false,
+        showPhone: step2Data.showPhone || false,
+      };
+      
+      if (step1Data.subcategoryId) {
+        requestData.subcategoryId = step1Data.subcategoryId;
+      }
+      
+      if (step2Data.condition) {
+        const mappedCondition = conditionMap[step2Data.condition];
         if (mappedCondition) {
           requestData.condition = mappedCondition;
         }
       }
-      
-      // Log request data in development
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Creating ad with data:', requestData);
+
+      // Add metadata for category-specific fields
+      if (Object.keys(step3Data).length > 0) {
+        requestData.metadata = step3Data;
       }
       
       const newAd = await createAdMutation.mutateAsync(requestData);
 
-      // Validate that ad was created successfully
       if (!newAd || !newAd.id) {
         throw new Error('Failed to create ad: No ID returned');
       }
 
-      // Upload images after ad is created
-      // API: POST /api/images/:adId
+      // Upload images
       if (imageFiles.length > 0 && newAd.id) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Uploading images for ad:', {
-            adId: newAd.id,
-            imageCount: imageFiles.length,
-            fullAd: newAd,
-          });
-        }
-        
-        // Upload images sequentially to avoid race conditions
         for (let index = 0; index < imageFiles.length; index++) {
           const file = imageFiles[index];
           try {
-            if (process.env.NODE_ENV === 'development') {
-              console.log(`Uploading image ${index + 1}/${imageFiles.length} for ad ${newAd.id}`);
-            }
             await uploadImageMutation.mutateAsync({
               adId: newAd.id,
               file,
@@ -198,30 +264,21 @@ export default function CreateAdPage() {
             });
           } catch (uploadError: any) {
             console.error(`Failed to upload image ${index + 1}:`, uploadError);
-            // Continue with other images even if one fails
             toast.error(`Failed to upload image ${index + 1}: ${uploadError?.response?.data?.message || uploadError?.message}`);
           }
         }
-        
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Image upload process completed');
-        }
       }
 
-      toast.success('Ad created successfully! It will be reviewed before being published.');
+      toast.success(isRTL ? 'آگهی با موفقیت ایجاد شد! پس از بررسی منتشر خواهد شد.' : 'Ad created successfully! It will be reviewed before being published.');
       setTimeout(() => {
         router.push('/dashboard');
       }, 1500);
     } catch (error: any) {
       console.error('Create ad error:', error);
-      
-      // Extract error message from validation errors
-      let errorMessage = 'Failed to create ad';
+      let errorMessage = isRTL ? 'خطا در ایجاد آگهی' : 'Failed to create ad';
       
       if (error?.response?.data) {
         const errorData = error.response.data;
-        
-        // Handle validation errors from class-validator
         if (errorData.message && Array.isArray(errorData.message)) {
           const validationErrors = errorData.message.map((err: any) => {
             if (typeof err === 'string') return err;
@@ -230,28 +287,12 @@ export default function CreateAdPage() {
           errorMessage = validationErrors;
         } else if (errorData.message) {
           errorMessage = errorData.message;
-        } else if (typeof errorData === 'string') {
-          errorMessage = errorData;
         }
       } else if (error?.message) {
         errorMessage = error.message;
       }
       
       toast.error(errorMessage);
-      
-      // Log full error for debugging
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Full error details:', {
-          status: error?.response?.status,
-          statusText: error?.response?.statusText,
-          data: error?.response?.data,
-          request: {
-            url: error?.config?.url,
-            method: error?.config?.method,
-            data: error?.config?.data,
-          },
-        });
-      }
     }
   };
 
@@ -259,198 +300,532 @@ export default function CreateAdPage() {
     return null;
   }
 
-  const selectedCategory = categories?.find((c) => c.id === formData.categoryId);
-  const subcategories = selectedCategory?.children || [];
-
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-8">{t('createAd.title')}</h1>
+    <div className="w-full min-h-screen">
+      <div className="container mx-auto px-4 py-8 max-w-4xl pb-40 md:pb-8">
+        <h1 className="text-3xl font-bold mb-8">{isRTL ? 'ثبت آگهی جدید' : 'Create New Ad'}</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md space-y-6">
-        {/* Title */}
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('createAd.form.title')}</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            placeholder={t('createAd.form.titlePlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-          />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('createAd.form.description')}</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-            rows={8}
-            placeholder={t('createAd.form.descriptionPlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-          />
-        </div>
-
-        {/* Price */}
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('createAd.form.price')}</label>
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            min="0"
-            step="0.01"
-            placeholder={t('createAd.form.pricePlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            dir="ltr"
-          />
-        </div>
-
-        {/* Category and Subcategory */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('createAd.form.category')}</label>
-            <select
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="">{isRTL ? 'انتخاب کنید' : 'Bitte wählen'}</option>
-              {categories?.filter(cat => !cat.parentId).map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {getLocalizedCategoryName(cat.name, locale)}
-                </option>
-              ))}
-            </select>
+        {/* Progress Steps */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            {[1, 2, 3].map((step) => (
+              <React.Fragment key={step}>
+                <div className="flex items-center">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                      currentStep >= step
+                        ? 'bg-red-600 text-white'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    {step}
+                  </div>
+                  <span className={`ml-2 text-sm font-medium ${currentStep >= step ? 'text-red-600' : 'text-gray-600'}`}>
+                    {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
+                    {step === 2 && (isRTL ? 'اطلاعات پایه' : 'Basic Info')}
+                    {step === 3 && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
+                  </span>
+                </div>
+                {step < 3 && (
+                  <div className={`flex-1 h-1 mx-4 ${currentStep > step ? 'bg-red-600' : 'bg-gray-200'}`} />
+                )}
+              </React.Fragment>
+            ))}
           </div>
+        </div>
 
-          {subcategories.length > 0 && (
+        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md space-y-6 mb-8">
+          {/* Step 1: Category & City */}
+        {currentStep === 1 && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold mb-4">{isRTL ? 'انتخاب دسته‌بندی و شهر' : 'Select Category & City'}</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">{isRTL ? 'دسته‌بندی' : 'Category'}</label>
+                <select
+                  value={step1Data.categoryId}
+                  onChange={(e) => handleStep1Change('categoryId', e.target.value)}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                  {categories?.filter(cat => !cat.parentId).map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {getLocalizedCategoryName(cat.name, locale)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {subcategories.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'زیردسته' : 'Subcategory'}</label>
+                  <select
+                    value={step1Data.subcategoryId}
+                    onChange={(e) => handleStep1Change('subcategoryId', e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                    {subcategories.map((sub) => (
+                      <option key={sub.id} value={sub.id}>
+                        {getLocalizedCategoryName(sub.name, locale)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
             <div>
-              <label className="block text-sm font-medium mb-2">{t('createAd.form.subcategory')}</label>
+              <label className="block text-sm font-medium mb-2">{isRTL ? 'شهر' : 'City'}</label>
               <select
-                name="subcategoryId"
-                value={formData.subcategoryId}
-                onChange={handleChange}
+                value={step1Data.cityId}
+                onChange={(e) => handleStep1Change('cityId', e.target.value)}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
               >
-                <option value="">{isRTL ? 'انتخاب کنید' : 'Bitte wählen'}</option>
-                {subcategories.map((sub) => (
-                  <option key={sub.id} value={sub.id}>
-                    {getLocalizedCategoryName(sub.name, locale)}
+                <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                {filteredCities.map((city) => (
+                  <option key={city.id} value={city.id}>
+                    {getLocalizedName(city.name, locale)}
                   </option>
                 ))}
               </select>
+              {selectedCityId && (
+                <p className="text-sm text-gray-500 mt-1">
+                  {isRTL ? 'شهر انتخاب شده از صفحه اصلی' : 'City selected from homepage'}
+                </p>
+              )}
             </div>
-          )}
-        </div>
-
-        {/* City and Status */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('createAd.form.city')}</label>
-            <select
-              name="cityId"
-              value={formData.cityId}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="">{isRTL ? 'انتخاب کنید' : 'Bitte wählen'}</option>
-              {filteredCities.map((city) => (
-                <option key={city.id} value={city.id}>
-                  {getLocalizedName(city.name, locale)}
-                </option>
-              ))}
-            </select>
           </div>
+        )}
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Condition</label>
-            <select
-              name="condition"
-              value={formData.condition}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="NEW">New</option>
-              <option value="LIKE_NEW">Like New</option>
-              <option value="USED">Used</option>
-            </select>
+        {/* Step 2: Basic Info */}
+        {currentStep === 2 && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold mb-4">{isRTL ? 'اطلاعات پایه آگهی' : 'Basic Ad Information'}</h2>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
+              <input
+                type="text"
+                value={step2Data.title}
+                onChange={(e) => handleStep2Change('title', e.target.value)}
+                required
+                placeholder={isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center'}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">{isRTL ? 'توضیحات' : 'Description'}</label>
+              <textarea
+                value={step2Data.description}
+                onChange={(e) => handleStep2Change('description', e.target.value)}
+                required
+                rows={8}
+                placeholder={isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...'}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
+
+            {/* Condition field - only show for non-Real Estate categories */}
+            {!isRealEstate && (
+              <div>
+                <label className="block text-sm font-medium mb-2">{isRTL ? 'وضعیت' : 'Condition'}</label>
+                <select
+                  value={step2Data.condition}
+                  onChange={(e) => handleStep2Change('condition', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  <option value="NEW">{isRTL ? 'نو' : 'New'}</option>
+                  <option value="LIKE_NEW">{isRTL ? 'در حد نو' : 'Like New'}</option>
+                  <option value="USED">{isRTL ? 'کارکرده' : 'Used'}</option>
+                </select>
+              </div>
+            )}
+
+            {/* Privacy Settings */}
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تنظیمات حریم خصوصی' : 'Privacy Settings'}</h3>
+              <div className="space-y-3">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={step2Data.showEmail}
+                    onChange={(e) => handleStep2Change('showEmail', e.target.checked)}
+                    className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                  />
+                  <span className="text-sm text-gray-700">
+                    {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
+                  </span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={step2Data.showPhone}
+                    onChange={(e) => handleStep2Change('showPhone', e.target.checked)}
+                    className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                  />
+                  <span className="text-sm text-gray-700">
+                    {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
+                  </span>
+                </label>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Image Upload */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            {t('createAd.form.images')} 
-            <span className="text-gray-500 text-xs ml-2">
-              ({isRTL ? 'حداکثر 3 عکس' : 'Max 3 images'}: {imageFiles.length}/3)
-            </span>
-          </label>
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-              imageFiles.length >= 3 
-                ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50' 
-                : isDragActive 
-                ? 'border-red-500 bg-red-50' 
-                : 'border-gray-300 hover:border-gray-400'
-            }`}
-            onClick={imageFiles.length >= 3 ? (e) => e.preventDefault() : undefined}
-          >
-            <input {...getInputProps()} disabled={imageFiles.length >= 3} />
-            <p className="text-gray-600">
-              {imageFiles.length >= 3
-                ? (isRTL ? 'حداکثر 3 عکس آپلود شده است' : 'Maximum 3 images uploaded')
-                : isDragActive
-                ? (isRTL ? 'تصاویر را اینجا رها کنید' : 'Bilder hier ablegen')
-                : (isRTL ? 'تصاویر را بکشید و رها کنید یا کلیک کنید' : 'Ziehen Sie Bilder hierher oder klicken Sie zum Auswählen')}
-            </p>
-          </div>
+        {/* Step 3: Category-specific Details & Images */}
+        {currentStep === 3 && (
+          <div className="space-y-6 w-full">
+            <h2 className="text-2xl font-bold mb-4">{isRTL ? 'جزئیات و تصاویر' : 'Details & Images'}</h2>
+            
+            {/* Real Estate Fields */}
+            {isRealEstate && (
+              <div 
+                className="space-y-4 p-4 bg-gray-50 rounded-lg overflow-y-auto"
+                style={{ 
+                  WebkitOverflowScrolling: 'touch', 
+                  overflowY: 'auto', 
+                  touchAction: 'pan-y',
+                  maxHeight: isMobile ? '400px' : '600px',
+                  height: 'auto'
+                }}
+              >
+                <h3 className="text-lg font-semibold sticky top-0 bg-gray-50 pb-2 z-10">{isRTL ? 'اطلاعات ملک' : 'Property Details'}</h3>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'نوع معامله' : 'Transaction Type'}</label>
+                  <select
+                    value={step3Data.type || ''}
+                    onChange={(e) => handleStep3Change('type', e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                    <option value="rent">{isRTL ? 'اجاره' : 'Rent'}</option>
+                    <option value="sale">{isRTL ? 'فروش' : 'Sale'}</option>
+                  </select>
+                </div>
 
-          {/* Image Preview */}
-          {imageFiles.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-              {imageFiles.map((file, index) => (
-                <div key={index} className="relative group">
-                  <div className="relative h-32 w-full rounded-lg overflow-hidden bg-gray-100">
-                    <Image
-                      src={URL.createObjectURL(file)}
-                      alt={`Preview ${index + 1}`}
-                      fill
-                      className="object-cover"
+                {step3Data.type === 'rent' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">{isRTL ? 'اجاره ماهانه (€)' : 'Monthly Rent (€)'}</label>
+                      <input
+                        type="number"
+                        value={step3Data.rentPrice || ''}
+                        onChange={(e) => handleStep3Change('rentPrice', e.target.value)}
+                        min="0"
+                        step="0.01"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                        dir="ltr"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">{isRTL ? 'رهن (€)' : 'Deposit (€)'}</label>
+                      <input
+                        type="number"
+                        value={step3Data.deposit || ''}
+                        onChange={(e) => handleStep3Change('deposit', e.target.value)}
+                        min="0"
+                        step="0.01"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                        dir="ltr"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {step3Data.type === 'sale' && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'قیمت فروش (€)' : 'Sale Price (€)'}</label>
+                    <input
+                      type="number"
+                      value={step3Data.salePrice || ''}
+                      onChange={(e) => handleStep3Change('salePrice', e.target.value)}
+                      min="0"
+                      step="0.01"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      dir="ltr"
                     />
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                )}
 
-        {/* Submit Button */}
-        <div className="flex gap-4">
-          <Button type="submit" className="flex-1" disabled={createAdMutation.isPending}>
-            {createAdMutation.isPending ? t('common.loading') : t('createAd.form.submit')}
-          </Button>
-          <Button type="button" variant="outline" onClick={() => router.back()}>
-            {t('common.cancel')}
-          </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'متراژ (m²)' : 'Area (m²)'}</label>
+                    <input
+                      type="number"
+                      value={step3Data.area || ''}
+                      onChange={(e) => handleStep3Change('area', e.target.value)}
+                      min="0"
+                      step="0.01"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'طبقه' : 'Floor'}</label>
+                    <input
+                      type="number"
+                      value={step3Data.floor || ''}
+                      onChange={(e) => handleStep3Change('floor', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'سال ساخت' : 'Year Built'}</label>
+                    <input
+                      type="number"
+                      value={step3Data.yearBuilt || ''}
+                      onChange={(e) => handleStep3Change('yearBuilt', e.target.value)}
+                      min="1800"
+                      max={new Date().getFullYear()}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'گرمایش' : 'Heating'}</label>
+                    <select
+                      value={step3Data.heating || ''}
+                      onChange={(e) => handleStep3Change('heating', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    >
+                      <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                      <option value="central">{isRTL ? 'مرکزی' : 'Central'}</option>
+                      <option value="gas">{isRTL ? 'گاز' : 'Gas'}</option>
+                      <option value="electric">{isRTL ? 'برق' : 'Electric'}</option>
+                      <option value="oil">{isRTL ? 'نفت' : 'Oil'}</option>
+                      <option value="wood">{isRTL ? 'چوب' : 'Wood'}</option>
+                      <option value="solar">{isRTL ? 'خورشیدی' : 'Solar'}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'بازسازی شده' : 'Renovated'}</label>
+                  <select
+                    value={step3Data.renovated || ''}
+                    onChange={(e) => handleStep3Change('renovated', e.target.value === 'true')}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                    <option value="true">{isRTL ? 'بله' : 'Yes'}</option>
+                    <option value="false">{isRTL ? 'خیر' : 'No'}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'هزینه‌های جانبی (€/ماه)' : 'Additional Costs (€/month)'}</label>
+                  <input
+                    type="number"
+                    value={step3Data.additionalCosts || ''}
+                    onChange={(e) => handleStep3Change('additionalCosts', e.target.value)}
+                    min="0"
+                    step="0.01"
+                    placeholder={isRTL ? 'مثال: هزینه آب، برق، گاز' : 'e.g., utilities, water, electricity'}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    dir="ltr"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Vehicle Fields */}
+            {isVehicle && (
+              <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                <h3 className="text-lg font-semibold">{isRTL ? 'اطلاعات خودرو' : 'Vehicle Details'}</h3>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'قیمت (€)' : 'Price (€)'}</label>
+                  <input
+                    type="number"
+                    value={step3Data.price || ''}
+                    onChange={(e) => handleStep3Change('price', e.target.value)}
+                    min="0"
+                    step="0.01"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    dir="ltr"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'برند' : 'Brand'}</label>
+                    <input
+                      type="text"
+                      value={step3Data.brand || ''}
+                      onChange={(e) => handleStep3Change('brand', e.target.value)}
+                      placeholder={isRTL ? 'مثال: BMW' : 'e.g., BMW'}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'مدل' : 'Model'}</label>
+                    <input
+                      type="text"
+                      value={step3Data.model || ''}
+                      onChange={(e) => handleStep3Change('model', e.target.value)}
+                      placeholder={isRTL ? 'مثال: 320d' : 'e.g., 320d'}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'سال ساخت' : 'Year'}</label>
+                    <input
+                      type="number"
+                      value={step3Data.year || ''}
+                      onChange={(e) => handleStep3Change('year', e.target.value)}
+                      min="1900"
+                      max={new Date().getFullYear() + 1}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'کیلومتر' : 'Mileage (km)'}</label>
+                    <input
+                      type="number"
+                      value={step3Data.mileage || ''}
+                      onChange={(e) => handleStep3Change('mileage', e.target.value)}
+                      min="0"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'نوع سوخت' : 'Fuel Type'}</label>
+                    <select
+                      value={step3Data.fuelType || ''}
+                      onChange={(e) => handleStep3Change('fuelType', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    >
+                      <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                      <option value="petrol">{isRTL ? 'بنزین' : 'Petrol'}</option>
+                      <option value="diesel">{isRTL ? 'دیزل' : 'Diesel'}</option>
+                      <option value="electric">{isRTL ? 'برقی' : 'Electric'}</option>
+                      <option value="hybrid">{isRTL ? 'هیبرید' : 'Hybrid'}</option>
+                      <option value="lpg">{isRTL ? 'گاز' : 'LPG'}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'نوع گیربکس' : 'Transmission'}</label>
+                    <select
+                      value={step3Data.transmission || ''}
+                      onChange={(e) => handleStep3Change('transmission', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    >
+                      <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                      <option value="manual">{isRTL ? 'دستی' : 'Manual'}</option>
+                      <option value="automatic">{isRTL ? 'اتوماتیک' : 'Automatic'}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Image Upload */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                {isRTL ? 'تصاویر' : 'Images'} 
+                <span className="text-gray-500 text-xs ml-2">
+                  ({isRTL ? 'حداکثر 3 عکس' : 'Max 3 images'}: {imageFiles.length}/3)
+                </span>
+              </label>
+              <div
+                {...getRootProps({
+                  onClick: (e) => {
+                    if (imageFiles.length >= 3) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      return;
+                    }
+                  }
+                })}
+                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors touch-manipulation relative ${
+                  imageFiles.length >= 3 
+                    ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50' 
+                    : isDragActive 
+                    ? 'border-red-500 bg-red-50' 
+                    : 'border-gray-300 hover:border-gray-400 active:bg-gray-50'
+                }`}
+                style={{ WebkitTapHighlightColor: 'transparent', minHeight: '120px' }}
+              >
+                <input 
+                  {...getInputProps({
+                    disabled: imageFiles.length >= 3,
+                    onClick: (e) => {
+                      e.stopPropagation();
+                    },
+                    style: { display: 'block', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, opacity: 0, cursor: 'pointer', zIndex: 10, pointerEvents: 'auto' }
+                  })} 
+                />
+                <p className="text-gray-600 pointer-events-none">
+                  {imageFiles.length >= 3
+                    ? (isRTL ? 'حداکثر 3 عکس آپلود شده است' : 'Maximum 3 images uploaded')
+                    : isDragActive
+                    ? (isRTL ? 'تصاویر را اینجا رها کنید' : 'Drop images here')
+                    : (isRTL ? 'تصاویر را بکشید و رها کنید یا کلیک کنید' : 'Drag and drop images or click to select')}
+                </p>
+              </div>
+
+              {imageFiles.length > 0 && (
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-3 mt-4">
+                  {imageFiles.map((file, index) => (
+                    <div key={index} className="relative group">
+                      <div className="relative h-20 md:h-24 w-full rounded-lg overflow-hidden bg-gray-100">
+                        <Image
+                          src={URL.createObjectURL(file)}
+                          alt={`Preview ${index + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Navigation Buttons */}
+        <div className="flex gap-4 justify-between">
+          <div>
+            {currentStep > 1 && (
+              <Button type="button" variant="outline" onClick={handleBack}>
+                {isRTL ? 'قبلی' : 'Back'}
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-4">
+            {currentStep < 3 ? (
+              <Button type="button" onClick={handleNext} className="flex-1">
+                {isRTL ? 'بعدی' : 'Next'}
+              </Button>
+            ) : (
+              <Button type="submit" className="flex-1" disabled={createAdMutation.isPending}>
+                {createAdMutation.isPending ? (isRTL ? 'در حال ایجاد...' : 'Creating...') : (isRTL ? 'ثبت آگهی' : 'Create Ad')}
+              </Button>
+            )}
+            <Button type="button" variant="outline" onClick={() => router.back()}>
+              {isRTL ? 'لغو' : 'Cancel'}
+            </Button>
+          </div>
         </div>
       </form>
+      </div>
     </div>
   );
 }

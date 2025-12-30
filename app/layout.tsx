@@ -38,7 +38,7 @@ export default function RootLayout({
         <QueryProvider>
           <I18nProvider>
             <Navbar />
-            <main className="flex-grow w-full overflow-x-hidden pb-16 md:pb-0" style={{ overflowX: 'hidden', width: '100%', maxWidth: '100vw' }}>
+            <main className="flex-grow w-full overflow-x-hidden overflow-y-auto pb-16 md:pb-0" style={{ overflowX: 'hidden', overflowY: 'auto', width: '100%', maxWidth: '100vw' }}>
               <div className="w-full max-w-full px-4 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8 overflow-x-hidden">
                 {children}
               </div>
