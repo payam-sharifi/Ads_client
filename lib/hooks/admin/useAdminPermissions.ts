@@ -42,9 +42,10 @@ export const useAssignPermission = () => {
       const response = await apiClient.post('/permissions/assign', data);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'permissions'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'permissions', 'user', variables.adminId] });
     },
   });
 };
@@ -57,9 +58,10 @@ export const useRevokePermission = () => {
       await apiClient.delete('/permissions/revoke', { data });
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'permissions'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'permissions', 'user', variables.adminId] });
     },
   });
 };

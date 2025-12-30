@@ -13,11 +13,6 @@ import { useAdminStore } from '@/lib/stores/adminStore';
 export default function AdminDashboardPage() {
   const { data: stats, isLoading, error } = useAdminStats();
   const { hasPermission, isSuperAdmin } = useAdminStore();
-  // #region agent log
-  React.useEffect(() => {
-    fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'admin/page.tsx:14',message:'AdminDashboardPage: render',data:{isLoading,hasError:!!error,errorMessage:error?.message,hasStats:!!stats},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  }, [isLoading, error, stats]);
-  // #endregion
 
   if (isLoading) {
     return (

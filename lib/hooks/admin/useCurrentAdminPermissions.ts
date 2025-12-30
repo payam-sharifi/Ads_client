@@ -13,16 +13,16 @@ export const useCurrentAdminPermissions = () => {
   const { user } = useAuthStore();
 
   return useQuery({
-    queryKey: ['admin', 'my-permissions', user?.id],
+    queryKey: ['admin', 'permissions', 'user', user?.id],
     queryFn: async () => {
-      // Note: This endpoint needs to be created in the backend
-      // GET /users/me/permissions or similar
-      // For now, return empty array - will be populated when endpoint exists
+      if (!user?.id) return [] as Permission[];
+      
       try {
-        const response = await apiClient.get<Permission[]>('/users/me/permissions');
+        // Use the same endpoint as useAdminUserPermissions but for current user
+        const response = await apiClient.get<Permission[]>(`/permissions/admin/${user.id}`);
         return response.data;
       } catch {
-        // If endpoint doesn't exist yet, return empty array
+        // If endpoint doesn't exist or user doesn't have access, return empty array
         return [] as Permission[];
       }
     },

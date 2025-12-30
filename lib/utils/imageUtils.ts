@@ -37,14 +37,21 @@ export function getImageUrl(url: string | undefined | null): string {
 
 /**
  * Get first image URL from array of images
- * @param images - Array of image objects with url property
- * @returns Full URL of first image or placeholder
+ * @param images - Array of image objects with url and optional order property
+ * @returns Full URL of first image (by order) or placeholder
  */
-export function getFirstImageUrl(images: Array<{ url: string }> | undefined | null): string {
+export function getFirstImageUrl(images: Array<{ url: string; order?: number }> | undefined | null): string {
   if (!images || images.length === 0) {
     return '/placeholder.svg';
   }
   
-  return getImageUrl(images[0].url);
+  // Sort by order if available, otherwise use first image
+  const sortedImages = [...images].sort((a, b) => {
+    const orderA = a.order ?? 999;
+    const orderB = b.order ?? 999;
+    return orderA - orderB;
+  });
+  
+  return getImageUrl(sortedImages[0].url);
 }
 

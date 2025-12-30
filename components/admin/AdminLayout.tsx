@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { useAdminStore } from '@/lib/stores/adminStore';
 import { useLogout } from '@/lib/hooks/useAuth';
-import { useAdminPermissions } from '@/lib/hooks/admin/useAdminPermissions';
+import { useCurrentAdminPermissions } from '@/lib/hooks/admin/useCurrentAdminPermissions';
 import { useUnreadMessagesCount } from '@/lib/hooks/useMessages';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { toast } from 'react-toastify';
@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const { user, isAuthenticated } = useAuthStore();
   const { sidebarOpen, setSidebarOpen, setPermissions, isSuperAdmin, hasPermission } = useAdminStore();
   const logoutMutation = useLogout();
-  const { data: permissions } = useAdminPermissions();
+  const { data: permissions } = useCurrentAdminPermissions();
   const { data: unreadCount = 0 } = useUnreadMessagesCount();
   const { locale, isRTL } = useI18n();
 

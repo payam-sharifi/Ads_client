@@ -101,8 +101,17 @@ export default function EditAdPage() {
   }, [adError]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setNewImageFiles((prev) => [...prev, ...acceptedFiles]);
-  }, []);
+    setNewImageFiles((prev) => {
+      const totalExisting = existingImages?.length || 0;
+      const total = totalExisting + prev.length + acceptedFiles.length;
+      if (total > 3) {
+        toast.error(isRTL ? 'شما می‌توانید حداکثر 3 عکس برای آگهی داشته باشید' : 'You can have a maximum of 3 images for an ad');
+        const remaining = 3 - totalExisting - prev.length;
+        return remaining > 0 ? [...prev, ...acceptedFiles.slice(0, remaining)] : prev;
+      }
+      return [...prev, ...acceptedFiles];
+    });
+  }, [existingImages, isRTL]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -140,6 +149,14 @@ export default function EditAdPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate total images count (existing + new) doesn't exceed 3
+    const totalImages = (existingImages?.length || 0) + newImageFiles.length;
+    if (totalImages > 3) {
+      toast.error(isRTL ? 'شما می‌توانید حداکثر 3 عکس برای آگهی داشته باشید' : 'You can have a maximum of 3 images for an ad');
+      return;
+    }
+    
     try {
       // API: PATCH /api/ads/:id
       // Convert condition from 'NEW'/'LIKE_NEW'/'USED' to 'new'/'like-new'/'used'
@@ -354,24 +371,33 @@ export default function EditAdPage() {
 
         {/* Image Upload */}
         <div>
-          <label className="block text-sm font-medium mb-2">Add New Images</label>
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-              isDragActive ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
-            }`}
-          >
-            <input {...getInputProps()} />
-            <p className="text-gray-600">
-              {isDragActive
-                ? isRTL
-                  ? 'تصاویر را اینجا رها کنید'
-                  : 'Bilder hier ablegen'
-                : isRTL
-                ? 'تصاویر را بکشید و رها کنید یا کلیک کنید'
-                : 'Ziehen Sie Bilder hierher oder klicken Sie zum Auswählen'}
-            </p>
-          </div>
+          <label className="block text-sm font-medium mb-2">
+            Add New Images
+            <span className="text-gray-500 text-xs ml-2">
+              ({isRTL ? 'حداکثر 3 عکس' : 'Max 3 images'}: {(existingImages?.length || 0) + newImageFiles.length}/3)
+            </span>
+          </label>
+          {((existingImages?.length || 0) + newImageFiles.length) >= 3 ? (
+            <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center bg-gray-50 opacity-50">
+              <p className="text-gray-600">
+                {isRTL ? 'حداکثر 3 عکس آپلود شده است' : 'Maximum 3 images uploaded'}
+              </p>
+            </div>
+          ) : (
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                isDragActive ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
+              }`}
+            >
+              <input {...getInputProps()} />
+              <p className="text-gray-600">
+                {isDragActive
+                  ? (isRTL ? 'تصاویر را اینجا رها کنید' : 'Bilder hier ablegen')
+                  : (isRTL ? 'تصاویر را بکشید و رها کنید یا کلیک کنید' : 'Ziehen Sie Bilder hierher oder klicken Sie zum Auswählen')}
+              </p>
+            </div>
+          )}
 
           {/* New Image Preview */}
           {newImageFiles.length > 0 && (

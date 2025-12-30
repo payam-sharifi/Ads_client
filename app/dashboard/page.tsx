@@ -8,6 +8,7 @@ import { useAuthStore } from '@/lib/stores/authStore';
 import { useMyAds, useDeleteAd } from '@/lib/hooks/useAds';
 import { useAdminStats } from '@/lib/hooks/admin/useAdminStats';
 import { useAdminStore } from '@/lib/stores/adminStore';
+import { useCurrentAdminPermissions } from '@/lib/hooks/admin/useCurrentAdminPermissions';
 import AdCard from '@/components/common/AdCard';
 import Button from '@/components/common/Button';
 import { toast } from 'react-toastify';
@@ -17,7 +18,17 @@ export default function DashboardPage() {
   const { t, locale, isRTL } = useI18n();
   const { isAuthenticated, user } = useAuthStore();
   const deleteAdMutation = useDeleteAd();
-  const { hasPermission } = useAdminStore();
+  const { hasPermission, isSuperAdmin, setPermissions } = useAdminStore();
+  
+  // Load permissions for admin users (needed for dashboard permission checks)
+  const { data: adminPermissions } = useCurrentAdminPermissions();
+  
+  // Update permissions in store when they're loaded
+  React.useEffect(() => {
+    if (adminPermissions && user?.role?.name === 'ADMIN') {
+      setPermissions(adminPermissions);
+    }
+  }, [adminPermissions, user, setPermissions]);
 
   // Check if user is Admin or Super Admin
   const isAdmin = user?.role?.name === 'ADMIN' || user?.role?.name === 'SUPER_ADMIN';
@@ -101,6 +112,14 @@ export default function DashboardPage() {
         permission: null,
       },
       {
+        title: 'Total Ads',
+        value: stats?.totalAds || 0,
+        icon: '📢',
+        color: 'blue',
+        href: '/admin/ads',
+        permission: null,
+      },
+      {
         title: 'Total Users',
         value: stats?.totalUsers || 0,
         icon: '👥',
@@ -117,12 +136,36 @@ export default function DashboardPage() {
         permission: 'users.view',
       },
       {
+        title: 'Total Messages',
+        value: stats?.totalMessages || 0,
+        icon: '💬',
+        color: 'purple',
+        href: '/admin/messages',
+        permission: 'messages.view',
+      },
+      {
         title: 'Pending Reports',
         value: stats?.pendingReports || 0,
         icon: '🚩',
         color: 'orange',
         href: '/admin/reports?status=pending',
         permission: 'reports.view',
+      },
+      {
+        title: 'Total Categories',
+        value: stats?.totalCategories || 0,
+        icon: '📂',
+        color: 'indigo',
+        href: '/admin/categories',
+        permission: 'categories.manage',
+      },
+      {
+        title: 'Total Cities',
+        value: stats?.totalCities || 0,
+        icon: '🏙️',
+        color: 'teal',
+        href: '/admin/cities',
+        permission: null,
       },
     ];
 
@@ -131,12 +174,27 @@ export default function DashboardPage() {
       return true;
     });
 
+    // Add admins count only for Super Admin
+    if (isSuperAdmin() && stats?.totalAdmins !== undefined) {
+      statCards.push({
+        title: 'Total Admins',
+        value: stats.totalAdmins,
+        icon: '🔐',
+        color: 'purple',
+        href: '/admin/admins',
+        permission: 'admins.manage',
+      });
+    }
+
     const colorClasses = {
       yellow: 'bg-yellow-50 border-yellow-200 text-yellow-800',
       green: 'bg-green-50 border-green-200 text-green-800',
       red: 'bg-red-50 border-red-200 text-red-800',
       blue: 'bg-blue-50 border-blue-200 text-blue-800',
       orange: 'bg-orange-50 border-orange-200 text-orange-800',
+      purple: 'bg-purple-50 border-purple-200 text-purple-800',
+      indigo: 'bg-indigo-50 border-indigo-200 text-indigo-800',
+      teal: 'bg-teal-50 border-teal-200 text-teal-800',
     };
 
     return (
@@ -173,18 +231,34 @@ export default function DashboardPage() {
   const userAds = ads || [];
 
   return (
-    <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8">
+    <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8 pb-20 md:pb-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">{t('dashboard.title')}</h1>
-        <Link href="/create-ad">
-          <Button>{t('dashboard.createNew')}</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/profile">
+            <Button variant="outline" size="sm" className="hidden md:flex">
+              {isRTL ? 'پروفایل' : 'Profile'}
+            </Button>
+          </Link>
+          <Link href="/create-ad">
+            <Button>{t('dashboard.createNew')}</Button>
+          </Link>
+        </div>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4 flex justify-between items-center">
         <p className="text-gray-600">
           {isRTL ? 'خوش آمدید' : 'Willkommen'}, {user.name}!
         </p>
+        {/* Mobile: Profile link */}
+        <Link href="/profile" className="md:hidden">
+          <button className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span className="text-sm">{isRTL ? 'پروفایل' : 'Profile'}</span>
+          </button>
+        </Link>
       </div>
 
       <h2 className="text-2xl font-bold mb-6">{t('dashboard.myAds')}</h2>
@@ -199,26 +273,19 @@ export default function DashboardPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-4">
           {userAds.map((ad) => (
-            <div key={ad.id} className="relative flex flex-col">
-              <AdCard ad={ad} />
-              <div className="mt-2 flex gap-2 justify-end">
-                <Link href={`/edit-ad/${ad.id}`}>
-                  <Button size="sm" variant="secondary" className="text-xs px-2 py-1">
-                    {t('common.edit')}
-                  </Button>
-                </Link>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={() => handleDelete(ad.id)}
-                  disabled={deleteAdMutation.isPending}
-                  className="text-xs px-2 py-1"
-                >
-                  {deleteAdMutation.isPending ? t('common.loading') : t('common.delete')}
-                </Button>
-              </div>
+            <div key={ad.id}>
+              <AdCard 
+                ad={ad} 
+                variant="dashboard"
+                showActions={true}
+                showStatusBadge={true}
+                onEdit={(adId) => {
+                  router.push(`/edit-ad/${adId}`);
+                }}
+                onDelete={handleDelete}
+              />
             </div>
           ))}
         </div>

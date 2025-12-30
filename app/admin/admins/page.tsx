@@ -22,7 +22,7 @@ import { useI18n } from '@/lib/contexts/I18nContext';
  */
 export default function AdminAdminsPage() {
   const { isSuperAdmin, hasPermission } = useAdminStore();
-  const { t } = useI18n();
+  const { t, isRTL } = useI18n();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<AdminUser | null>(null);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
@@ -62,14 +62,16 @@ export default function AdminAdminsPage() {
   const handleTogglePermission = async (adminId: string, permissionId: string, hasPerm: boolean) => {
     try {
       if (hasPerm) {
+        // Revoke permission (remove it)
         await revokePermissionMutation.mutateAsync({ adminId, permissionId });
-        toast.success('Permission revoked');
+        toast.success(isRTL ? 'دسترسی حذف شد' : 'Permission revoked');
       } else {
+        // Assign permission (add it)
         await assignPermissionMutation.mutateAsync({ adminId, permissionId });
-        toast.success('Permission assigned');
+        toast.success(isRTL ? 'دسترسی اضافه شد' : 'Permission assigned');
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to update permission');
+      toast.error(error?.response?.data?.message || (isRTL ? 'خطا در به‌روزرسانی دسترسی' : 'Failed to update permission'));
     }
   };
 
@@ -232,57 +234,175 @@ function PermissionsModal({
   onClose: () => void;
   onTogglePermission: (adminId: string, permissionId: string, hasPerm: boolean) => void;
 }) {
-  const { data: adminPermissions } = useAdminUserPermissions(admin.id);
+  const { data: adminPermissions, isLoading } = useAdminUserPermissions(admin.id);
   const adminPermissionIds = adminPermissions?.map((p) => p.id) || [];
-  const { t } = useI18n();
+  const { t, isRTL, locale } = useI18n();
+
+  // Helper function to translate resource names
+  const translateResource = (resource: string): string => {
+    const resourceTranslations: Record<string, { fa: string; de: string }> = {
+      ads: { fa: 'آگهی‌ها', de: 'Anzeigen' },
+      users: { fa: 'کاربران', de: 'Benutzer' },
+      messages: { fa: 'پیام‌ها', de: 'Nachrichten' },
+      categories: { fa: 'دسته‌بندی‌ها', de: 'Kategorien' },
+      admins: { fa: 'مدیران', de: 'Administratoren' },
+      reports: { fa: 'گزارش‌ها', de: 'Berichte' },
+    };
+    const translation = resourceTranslations[resource];
+    if (translation) {
+      return translation[locale as 'fa' | 'de'] || resource;
+    }
+    return resource;
+  };
+
+  // Helper function to translate action names
+  const translateAction = (action: string): string => {
+    const actionTranslations: Record<string, { fa: string; de: string }> = {
+      approve: { fa: 'تایید', de: 'Genehmigen' },
+      reject: { fa: 'رد', de: 'Ablehnen' },
+      edit: { fa: 'ویرایش', de: 'Bearbeiten' },
+      delete: { fa: 'حذف', de: 'Löschen' },
+      manage: { fa: 'مدیریت', de: 'Verwalten' },
+      view: { fa: 'مشاهده', de: 'Anzeigen' },
+      block: { fa: 'مسدود کردن', de: 'Sperren' },
+      suspend: { fa: 'معلق کردن', de: 'Aussetzen' },
+    };
+    const translation = actionTranslations[action];
+    if (translation) {
+      return translation[locale as 'fa' | 'de'] || action;
+    }
+    return action;
+  };
 
   // Helper function to translate permission names
   const translatePermission = (permissionName: string): string => {
     const translationKey = `permissions.${permissionName}`;
     const translated = t(translationKey);
-    // If translation exists, return it; otherwise return formatted permission name
-    return translated !== translationKey ? translated : permissionName.replace(/\./g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+    // If translation exists, return it; otherwise translate resource and action separately
+    if (translated !== translationKey) {
+      return translated;
+    }
+    const [resource, action] = permissionName.split('.');
+    if (resource && action) {
+      return `${translateResource(resource)} - ${translateAction(action)}`;
+    }
+    return permissionName.replace(/\./g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
-  return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg p-4 md:p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
-          {t('admin.managePermissions')}: {admin.name}
-        </h2>
-        <div className="space-y-3">
-          {allPermissions.map((permission) => {
-            const hasPerm = adminPermissionIds.includes(permission.id);
+  // Group permissions by resource
+  const groupedPermissions = allPermissions.reduce((acc, permission) => {
+    const resource = permission.resource || 'other';
+    if (!acc[resource]) {
+      acc[resource] = [];
+    }
+    acc[resource].push(permission);
+    return acc;
+  }, {} as Record<string, Permission[]>);
 
-            return (
-              <label
-                key={permission.id}
-                className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={hasPerm}
-                  onChange={() => onTogglePermission(admin.id, permission.id, hasPerm)}
-                  className="w-4 h-4 mt-0.5 text-red-600 border-gray-300 rounded focus:ring-red-500 flex-shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-gray-900 text-sm md:text-base break-words">
-                    {translatePermission(permission.name)}
-                  </div>
-                  {permission.description && (
-                    <div className="text-xs md:text-sm text-gray-500 mt-1 break-words">
-                      {permission.description}
-                    </div>
-                  )}
-                </div>
-              </label>
-            );
-          })}
-        </div>
-        <div className="flex justify-end mt-6">
+  return (
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div 
+        className="bg-white rounded-lg shadow-xl p-4 max-w-xl w-full max-h-[85vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-200">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">
+              {t('admin.managePermissions')}
+            </h2>
+            <p className="text-xs text-gray-600 mt-0.5">{admin.name}</p>
+          </div>
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm md:text-base bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors p-1 hover:bg-gray-100 rounded"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Permissions List */}
+        <div className="flex-1 overflow-y-auto pr-1">
+          {isLoading ? (
+            <div className="text-center py-4 text-gray-500 text-sm">
+              {isRTL ? 'در حال بارگذاری...' : 'Loading...'}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {Object.entries(groupedPermissions).map(([resource, permissions]) => (
+                <div key={resource} className="border border-gray-200 rounded-lg p-2 bg-gray-50">
+                  <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2 pb-1 border-b border-gray-300">
+                    {translateResource(resource)}
+                  </h3>
+                  <div className="space-y-1">
+                    {permissions.map((permission) => {
+                      const hasPerm = adminPermissionIds.includes(permission.id);
+
+                      return (
+                        <label
+                          key={permission.id}
+                          className={`
+                            flex items-center gap-2 p-1.5 border rounded cursor-pointer transition-all
+                            ${hasPerm 
+                              ? 'border-green-500 bg-green-50 hover:bg-green-100' 
+                              : 'border-gray-200 bg-white hover:bg-gray-50'
+                            }
+                          `}
+                        >
+                          {/* Checkbox */}
+                          <div className="relative flex-shrink-0">
+                            <input
+                              type="checkbox"
+                              checked={hasPerm}
+                              onChange={() => onTogglePermission(admin.id, permission.id, hasPerm)}
+                              className={`
+                                w-4 h-4 rounded border-2 cursor-pointer appearance-none
+                                ${hasPerm 
+                                  ? 'border-green-600 bg-green-600' 
+                                  : 'border-gray-300 bg-white'
+                                }
+                                focus:ring-2 focus:ring-green-500 focus:ring-offset-1
+                                checked:bg-green-600 checked:border-green-600
+                              `}
+                            />
+                            {hasPerm && (
+                              <svg 
+                                className="absolute top-0.5 left-0.5 w-3 h-3 text-white pointer-events-none" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                          
+                          {/* Permission Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className={`
+                              font-medium text-xs break-words
+                              ${hasPerm ? 'text-green-900' : 'text-gray-900'}
+                            `}>
+                              {translatePermission(permission.name)}
+                            </div>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end mt-3 pt-3 border-t border-gray-200">
+          <button
+            onClick={onClose}
+            className="px-4 py-1.5 text-sm font-medium bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
           >
             {t('common.close')}
           </button>

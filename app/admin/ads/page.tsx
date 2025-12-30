@@ -9,6 +9,8 @@ import { useSendMessage } from '@/lib/hooks/useMessages';
 import { useAdminStore } from '@/lib/stores/adminStore';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useCities } from '@/lib/hooks/useCities';
+import { useCurrentAdminPermissions } from '@/lib/hooks/admin/useCurrentAdminPermissions';
+import { useAuthStore } from '@/lib/stores/authStore';
 import { toast } from 'react-toastify';
 import { Ad, AdStatus } from '@/lib/hooks/useAds';
 import { useI18n } from '@/lib/contexts/I18nContext';
@@ -26,7 +28,20 @@ export default function AdminAdsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { locale, isRTL } = useI18n();
-  const { adsFilter, setAdsFilter, hasPermission } = useAdminStore();
+  const { user } = useAuthStore();
+  const { adsFilter, setAdsFilter, hasPermission, setPermissions, isSuperAdmin } = useAdminStore();
+  
+  // Load permissions for admin users (needed for permission checks)
+  const { data: adminPermissions } = useCurrentAdminPermissions();
+  
+  // Update permissions in store when they're loaded
+  // Note: AdminLayout also sets permissions, but we need to ensure they're set here too
+  // in case the component loads before AdminLayout
+  React.useEffect(() => {
+    if (adminPermissions && user?.role?.name === 'ADMIN') {
+      setPermissions(adminPermissions);
+    }
+  }, [adminPermissions, user, setPermissions]);
   const [selectedAd, setSelectedAd] = useState<Ad | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
@@ -565,7 +580,7 @@ export default function AdminAdsPage() {
                                     <span>{locale === 'fa' ? 'مشاهده' : 'View'}</span>
                         </Link>
                                   
-                        {ad.status === 'PENDING_APPROVAL' && hasPermission('ads.approve') && (
+                        {ad.status === 'PENDING_APPROVAL' && (
                           <button
                                       onClick={() => {
                                         handleApprove(ad.id);
@@ -581,7 +596,7 @@ export default function AdminAdsPage() {
                           </button>
                         )}
                                   
-                        {ad.status === 'PENDING_APPROVAL' && hasPermission('ads.reject') && (
+                        {ad.status === 'PENDING_APPROVAL' && (
                           <button
                             onClick={() => {
                               setSelectedAd(ad);
@@ -597,7 +612,7 @@ export default function AdminAdsPage() {
                           </button>
                         )}
                                   
-                        {ad.status === 'APPROVED' && hasPermission('ads.edit') && (
+                        {ad.status === 'APPROVED' && (
                           <button
                                       onClick={() => {
                                         handleSuspend(ad.id);
@@ -613,7 +628,7 @@ export default function AdminAdsPage() {
                           </button>
                         )}
                                   
-                        {ad.status === 'SUSPENDED' && hasPermission('ads.edit') && (
+                        {ad.status === 'SUSPENDED' && (
                           <button
                                       onClick={() => {
                                         handleUnsuspend(ad.id);
@@ -629,8 +644,7 @@ export default function AdminAdsPage() {
                           </button>
                         )}
                                   
-                        {hasPermission('ads.edit') && (
-                          <Link
+                        <Link
                             href={`/edit-ad/${ad.id}`}
                                       className="flex items-center gap-3 px-4 py-3 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
                                       onClick={() => setOpenActionsMenu(null)}
@@ -640,10 +654,8 @@ export default function AdminAdsPage() {
                                       </svg>
                                       <span>{locale === 'fa' ? 'ویرایش' : 'Edit'}</span>
                           </Link>
-                        )}
                                   
-                                  {hasPermission('ads.edit') && (
-                                    <button
+                                  <button
                                       onClick={() => {
                                         setSelectedAd(ad);
                                         setShowMessageModal(true);
@@ -656,9 +668,7 @@ export default function AdminAdsPage() {
                                       </svg>
                                       <span>{locale === 'fa' ? 'پیام' : 'Message'}</span>
                                     </button>
-                                  )}
                                   
-                        {hasPermission('ads.delete') && (
                                     <>
                                       <div className="border-t border-gray-200 my-2" />
                           <button
@@ -675,7 +685,6 @@ export default function AdminAdsPage() {
                                         <span>{locale === 'fa' ? 'حذف' : 'Delete'}</span>
                                       </button>
                                     </>
-                                  )}
                                 </div>
                               </div>
                               {/* Desktop: Dropdown Menu */}
@@ -696,7 +705,7 @@ export default function AdminAdsPage() {
                                   <span>{locale === 'fa' ? 'مشاهده' : 'View'}</span>
                                 </Link>
                                 
-                                {ad.status === 'PENDING_APPROVAL' && hasPermission('ads.approve') && (
+                                {ad.status === 'PENDING_APPROVAL' && (
                                   <button
                                     onClick={() => {
                                       handleApprove(ad.id);
@@ -712,7 +721,7 @@ export default function AdminAdsPage() {
                                   </button>
                                 )}
                                 
-                                {ad.status === 'PENDING_APPROVAL' && hasPermission('ads.reject') && (
+                                {ad.status === 'PENDING_APPROVAL' && (
                                   <button
                                     onClick={() => {
                                       setSelectedAd(ad);
@@ -728,7 +737,7 @@ export default function AdminAdsPage() {
                                   </button>
                                 )}
                                 
-                                {ad.status === 'APPROVED' && hasPermission('ads.edit') && (
+                                {ad.status === 'APPROVED' && (
                                   <button
                                     onClick={() => {
                                       handleSuspend(ad.id);
@@ -744,7 +753,7 @@ export default function AdminAdsPage() {
                                   </button>
                                 )}
                                 
-                                {ad.status === 'SUSPENDED' && hasPermission('ads.edit') && (
+                                {ad.status === 'SUSPENDED' && (
                                   <button
                                     onClick={() => {
                                       handleUnsuspend(ad.id);
@@ -757,11 +766,10 @@ export default function AdminAdsPage() {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     <span>{locale === 'fa' ? 'رفع تعلیق' : 'Unsuspend'}</span>
-                          </button>
-                        )}
+                                  </button>
+                                )}
                                 
-                                {hasPermission('ads.edit') && (
-                                  <Link
+                                <Link
                                     href={`/edit-ad/${ad.id}`}
                                     className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                                     onClick={() => setOpenActionsMenu(null)}
@@ -771,25 +779,21 @@ export default function AdminAdsPage() {
                                     </svg>
                                     <span>{locale === 'fa' ? 'ویرایش' : 'Edit'}</span>
                                   </Link>
-                                )}
                                 
-                        {hasPermission('ads.edit') && (
-                          <button
-                            onClick={() => {
-                              setSelectedAd(ad);
-                              setShowMessageModal(true);
+                                <button
+                                    onClick={() => {
+                                      setSelectedAd(ad);
+                                      setShowMessageModal(true);
                                       setOpenActionsMenu(null);
-                            }}
+                                    }}
                                     className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-blue-700 hover:bg-blue-50 transition-colors"
-                          >
+                                  >
                                     <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     </svg>
                                     <span>{locale === 'fa' ? 'پیام' : 'Message'}</span>
-                          </button>
-                        )}
+                                  </button>
                                 
-                                {hasPermission('ads.delete') && (
                                   <>
                                     <div className="border-t border-gray-200 my-1" />
                                     <button
@@ -806,7 +810,6 @@ export default function AdminAdsPage() {
                                       <span>{locale === 'fa' ? 'حذف' : 'Delete'}</span>
                                     </button>
                                   </>
-                                )}
                               </div>
                             </>
                           )}

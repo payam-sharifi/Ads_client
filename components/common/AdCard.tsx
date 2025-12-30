@@ -7,13 +7,25 @@ import { useI18n } from '@/lib/contexts/I18nContext';
 import { Ad } from '@/lib/hooks/useAds';
 import { getLocalizedName } from '@/lib/utils/localizedNames';
 import { getFirstImageUrl } from '@/lib/utils/imageUtils';
+import Button from './Button';
 
 interface AdCardProps {
   ad: Ad;
-  variant?: 'default' | 'compact';
+  variant?: 'default' | 'compact' | 'dashboard';
+  onEdit?: (adId: string) => void;
+  onDelete?: (adId: string) => void;
+  showActions?: boolean;
+  showStatusBadge?: boolean; // Show status badge only in admin/dashboard panels
 }
 
-export default function AdCard({ ad, variant = 'default' }: AdCardProps) {
+export default function AdCard({ 
+  ad, 
+  variant = 'default',
+  onEdit,
+  onDelete,
+  showActions = false,
+  showStatusBadge = false // Default: don't show status badge in public pages
+}: AdCardProps) {
   const { t, locale, isRTL } = useI18n();
 
   const formatPrice = (price: number) => {
@@ -55,8 +67,152 @@ export default function AdCard({ ad, variant = 'default' }: AdCardProps) {
     return conditions[ad.condition]?.[locale] || null;
   };
 
+  const getStatusBadge = () => {
+    if (!ad.status) return null;
+    
+    // Only show badge for specific statuses
+    const statusConfig: Record<string, { 
+      text: { fa: string; de: string }; 
+      bgColor: string; 
+      textColor: string;
+    }> = {
+      APPROVED: {
+        text: { fa: 'منتشر شده', de: 'Veröffentlicht' },
+        bgColor: 'bg-green-600',
+        textColor: 'text-white',
+      },
+      REJECTED: {
+        text: { fa: 'رد شده', de: 'Abgelehnt' },
+        bgColor: 'bg-red-600',
+        textColor: 'text-white',
+      },
+      PENDING_APPROVAL: {
+        text: { fa: 'در صف انتشار', de: 'Wartet auf Freigabe' },
+        bgColor: 'bg-yellow-500',
+        textColor: 'text-white',
+      },
+    };
+
+    const config = statusConfig[ad.status];
+    if (!config) return null;
+
+    return (
+      <div 
+        className={`
+          absolute top-2 left-2 ${config.bgColor} ${config.textColor}
+          px-2 py-1 text-xs font-bold z-10
+          shadow-lg
+        `}
+        style={{
+          transform: 'rotate(-12deg)',
+          transformOrigin: 'top left',
+        }}
+      >
+        {config.text[locale] || config.text.de}
+      </div>
+    );
+  };
+
   const cityName = getLocalizedName(ad.city?.name, locale);
   const firstImage = getFirstImageUrl(ad.images);
+
+  // Dashboard variant: horizontal layout with edit/delete buttons
+  if (variant === 'dashboard') {
+    return (
+      <div className={`
+        flex flex-col bg-white rounded-lg border border-red-200 hover:border-red-300 hover:shadow-md transition-all overflow-hidden
+        ${isRTL ? 'flex-row-reverse' : 'flex-row'}
+      `}>
+        {/* Image - Left (Right in RTL) */}
+        <Link href={`/ad/${ad.id}`} className="relative w-32 md:w-40 h-32 md:h-40 flex-shrink-0 overflow-hidden bg-gray-100 cursor-pointer">
+          <Image
+            src={firstImage}
+            alt={ad.title}
+            fill
+            className="object-cover transition-transform duration-300 hover:scale-105"
+            sizes="(max-width: 768px) 128px, 160px"
+            loading="lazy"
+            unoptimized={firstImage.startsWith('http://localhost') || firstImage.startsWith('http://127.0.0.1')}
+            onError={(e) => {
+              console.error('Image load error:', firstImage);
+              if (e.currentTarget.src !== '/placeholder.svg') {
+                e.currentTarget.src = '/placeholder.svg';
+              }
+            }}
+          />
+          {/* Status Badge - Diagonal top left (only in admin/dashboard panels) */}
+          {showStatusBadge && getStatusBadge()}
+          {ad.isPremium && (
+            <span className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded text-xs font-bold z-10">
+              {t('dashboard.premium')}
+            </span>
+          )}
+        </Link>
+
+        {/* Content - Right (Left in RTL) */}
+        <div className="flex flex-col flex-1 p-3 justify-between min-w-0">
+          <div className="flex-1">
+            <Link href={`/ad/${ad.id}`}>
+              <h3 className="font-medium text-sm text-gray-900 line-clamp-2 mb-2 hover:text-red-600 transition-colors cursor-pointer">
+                {ad.title}
+              </h3>
+            </Link>
+
+            {/* Condition Badge */}
+            {getConditionText() && (
+              <span className="inline-block px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded mb-2 w-fit">
+                {getConditionText()}
+              </span>
+            )}
+
+            <div className="text-red-600 font-bold text-base mb-2">{formatPrice(ad.price)}</div>
+            
+            <div className="text-xs text-gray-500 flex items-center gap-1.5 flex-wrap">
+              {cityName && (
+                <>
+                  <span>{cityName}</span>
+                  <span>•</span>
+                </>
+              )}
+              <span>{formatDate(ad.createdAt)}</span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          {showActions && (onEdit || onDelete) && (
+            <div className={`flex gap-2 mt-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              {onEdit && (
+                <Button 
+                  size="sm" 
+                  variant="secondary" 
+                  className="text-xs px-2 py-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(ad.id);
+                  }}
+                >
+                  {t('common.edit')}
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(ad.id);
+                  }}
+                  className="text-xs px-2 py-1"
+                >
+                  {t('common.delete')}
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // Mobile: horizontal layout (image left, content right)
   // Desktop: horizontal layout (image left, content right)
@@ -95,8 +251,10 @@ export default function AdCard({ ad, variant = 'default' }: AdCardProps) {
               }
             }}
           />
+          {/* Status Badge - Diagonal top left (only in admin/dashboard panels) */}
+          {showStatusBadge && getStatusBadge()}
           {ad.isPremium && (
-            <span className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded text-xs font-bold">
+            <span className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded text-xs font-bold z-10">
               {t('dashboard.premium')}
             </span>
           )}
@@ -163,10 +321,12 @@ export default function AdCard({ ad, variant = 'default' }: AdCardProps) {
             if (e.currentTarget.src !== '/placeholder.svg') {
               e.currentTarget.src = '/placeholder.svg';
             }
-          }}
-        />
+            }}
+          />
+        {/* Status Badge - Diagonal top left (only in admin/dashboard panels) */}
+        {showStatusBadge && getStatusBadge()}
         {ad.isPremium && (
-          <span className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded text-xs font-bold">
+          <span className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded text-xs font-bold z-10">
             {t('dashboard.premium')}
           </span>
         )}

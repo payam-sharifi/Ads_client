@@ -56,8 +56,16 @@ export default function CreateAdPage() {
   const uploadImageMutation = useUploadImage();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setImageFiles((prev) => [...prev, ...acceptedFiles]);
-  }, []);
+    setImageFiles((prev) => {
+      const total = prev.length + acceptedFiles.length;
+      if (total > 3) {
+        toast.error(isRTL ? 'شما می‌توانید حداکثر 3 عکس آپلود کنید' : 'You can upload a maximum of 3 images');
+        const remaining = 3 - prev.length;
+        return remaining > 0 ? [...prev, ...acceptedFiles.slice(0, remaining)] : prev;
+      }
+      return [...prev, ...acceptedFiles];
+    });
+  }, [isRTL]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -104,6 +112,12 @@ export default function CreateAdPage() {
     
     if (!formData.cityId) {
       toast.error('Please select a city');
+      return;
+    }
+    
+    // Validate images count doesn't exceed 3
+    if (imageFiles.length > 3) {
+      toast.error(isRTL ? 'شما می‌توانید حداکثر 3 عکس آپلود کنید' : 'You can upload a maximum of 3 images');
       return;
     }
     
@@ -374,22 +388,30 @@ export default function CreateAdPage() {
 
         {/* Image Upload */}
         <div>
-          <label className="block text-sm font-medium mb-2">{t('createAd.form.images')}</label>
+          <label className="block text-sm font-medium mb-2">
+            {t('createAd.form.images')} 
+            <span className="text-gray-500 text-xs ml-2">
+              ({isRTL ? 'حداکثر 3 عکس' : 'Max 3 images'}: {imageFiles.length}/3)
+            </span>
+          </label>
           <div
             {...getRootProps()}
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-              isDragActive ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
+              imageFiles.length >= 3 
+                ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50' 
+                : isDragActive 
+                ? 'border-red-500 bg-red-50' 
+                : 'border-gray-300 hover:border-gray-400'
             }`}
+            onClick={imageFiles.length >= 3 ? (e) => e.preventDefault() : undefined}
           >
-            <input {...getInputProps()} />
+            <input {...getInputProps()} disabled={imageFiles.length >= 3} />
             <p className="text-gray-600">
-              {isDragActive
-                ? isRTL
-                  ? 'تصاویر را اینجا رها کنید'
-                  : 'Bilder hier ablegen'
-                : isRTL
-                ? 'تصاویر را بکشید و رها کنید یا کلیک کنید'
-                : 'Ziehen Sie Bilder hierher oder klicken Sie zum Auswählen'}
+              {imageFiles.length >= 3
+                ? (isRTL ? 'حداکثر 3 عکس آپلود شده است' : 'Maximum 3 images uploaded')
+                : isDragActive
+                ? (isRTL ? 'تصاویر را اینجا رها کنید' : 'Bilder hier ablegen')
+                : (isRTL ? 'تصاویر را بکشید و رها کنید یا کلیک کنید' : 'Ziehen Sie Bilder hierher oder klicken Sie zum Auswählen')}
             </p>
           </div>
 
