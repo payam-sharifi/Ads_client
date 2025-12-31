@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { Ad } from '@/lib/hooks/useAds';
-import { getLocalizedName } from '@/lib/utils/localizedNames';
+import { getLocalizedName, getLocalizedCategoryName } from '@/lib/utils/localizedNames';
 import { getFirstImageUrl } from '@/lib/utils/imageUtils';
 import Button from './Button';
 
@@ -114,6 +114,7 @@ export default function AdCard({
   };
 
   const cityName = getLocalizedName(ad.city?.name, locale);
+  const categoryName = getLocalizedCategoryName(ad.category?.name, locale);
   const firstImage = getFirstImageUrl(ad.images);
 
   // Dashboard variant: horizontal layout with edit/delete buttons
@@ -157,6 +158,13 @@ export default function AdCard({
                 {ad.title}
               </h3>
             </Link>
+
+            {/* Category Name */}
+            {categoryName && (
+              <div className="text-xs text-gray-500 mb-1">
+                {categoryName}
+              </div>
+            )}
 
             {/* Condition Badge */}
             {getConditionText() && (
@@ -276,6 +284,13 @@ export default function AdCard({
               {ad.title}
             </h3>
 
+            {/* Category Name */}
+            {categoryName && (
+              <div className="text-xs text-gray-500 mb-1">
+                {categoryName}
+              </div>
+            )}
+
             {/* Condition Badge */}
             {getConditionText() && (
               <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded mb-1 w-fit">
@@ -335,6 +350,12 @@ export default function AdCard({
         <h3 className="font-medium text-xs text-gray-900 line-clamp-2 mb-1 group-hover:text-red-600 transition-colors leading-tight min-h-[2rem]">
           {ad.title}
         </h3>
+        {/* Category Name */}
+        {categoryName && (
+          <div className="text-xs text-gray-500 mb-1">
+            {categoryName}
+          </div>
+        )}
         {getConditionText() && (
           <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded mb-1 w-fit">
             {getConditionText()}

@@ -35,7 +35,7 @@ export default function CreateAdPage() {
   const [step1Data, setStep1Data] = useState({
     categoryId: '',
     subcategoryId: '',
-    cityId: selectedCityId || '',
+    cityId: '',
   });
 
   // Step 2: Basic Info
@@ -65,10 +65,17 @@ export default function CreateAdPage() {
     }
   }, [isAuthenticated, user, router]);
 
-  // Load city from store on mount
+  // Load city from store on mount and sync when selectedCityId changes
   useEffect(() => {
-    if (selectedCityId && !step1Data.cityId) {
-      setStep1Data(prev => ({ ...prev, cityId: selectedCityId }));
+    // Only set if we have a valid city ID (not null, not 'all', not empty)
+    if (selectedCityId && selectedCityId !== 'all' && typeof selectedCityId === 'string' && selectedCityId.trim() !== '') {
+      setStep1Data(prev => {
+        // Only update if different to avoid unnecessary re-renders
+        if (prev.cityId !== selectedCityId) {
+          return { ...prev, cityId: selectedCityId };
+        }
+        return prev;
+      });
     }
   }, [selectedCityId]);
 
