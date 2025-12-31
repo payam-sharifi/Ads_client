@@ -247,18 +247,18 @@ export default function CategoryPage() {
       
       <div className="container mx-auto px-4 py-6">
         {/* Category Header - Sticky */}
-        <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-6 mb-4 md:mb-6 sticky top-14 md:top-16 z-30 shadow-sm">
-          <div className="flex items-center justify-between gap-2 md:gap-4">
-            <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
-              {category.icon && <div className="text-3xl md:text-5xl flex-shrink-0">{category.icon}</div>}
+        <div className="bg-white rounded-lg border border-gray-200 p-2 md:p-3 mb-3 md:mb-4 sticky top-14 md:top-16 z-30 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              {category.icon && <div className="text-2xl md:text-3xl flex-shrink-0">{category.icon}</div>}
               <div className="flex-1 min-w-0">
-                <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2 truncate" dir={isRTL ? 'rtl' : 'ltr'}>
+                <h1 className="text-lg md:text-xl font-bold text-gray-900 truncate" dir={isRTL ? 'rtl' : 'ltr'}>
                   {getLocalizedCategoryName(category.name, locale)}
                 </h1>
                 {category.parent && (
                   <Link
                     href={`/category/${category.parent.id}`}
-                    className="text-xs md:text-sm text-blue-600 hover:text-blue-800"
+                    className="text-xs text-blue-600 hover:text-blue-800"
                     dir={isRTL ? 'rtl' : 'ltr'}
                   >
                     {isRTL ? '← ' : ''}{getLocalizedCategoryName(category.parent.name, locale)}{!isRTL ? ' ←' : ''}
@@ -270,30 +270,30 @@ export default function CategoryPage() {
             {/* Filter Button */}
             <button
               onClick={() => setShowFilterDrawer(true)}
-              className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
               dir={isRTL ? 'rtl' : 'ltr'}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
-              <span className="text-sm font-medium hidden sm:inline">
+              <span className="text-xs font-medium hidden sm:inline">
                 {isRTL ? 'فیلتر' : 'Filter'}
               </span>
             </button>
           </div>
           {category.children && category.children.length > 0 && (
-            <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-200">
-              <h3 className="text-xs md:text-sm font-semibold text-gray-700 mb-2 md:mb-3" dir={isRTL ? 'rtl' : 'ltr'}>
+            <div className="mt-2 pt-2 border-t border-gray-200">
+              <h3 className="text-xs font-semibold text-gray-700 mb-1.5" dir={isRTL ? 'rtl' : 'ltr'}>
                 {locale === 'fa' ? 'زیردسته‌بندی‌ها' : 'Unterkategorien'}
               </h3>
-              <div className="flex flex-wrap gap-1.5 md:gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {category.children.map((child) => (
                   <Link
                     key={child.id}
                     href={`/category/${child.id}`}
-                    className="px-2 md:px-4 py-1 md:py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs md:text-sm text-gray-700 transition-colors"
+                    className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs text-gray-700 transition-colors"
                   >
-                    {child.icon && <span className="mr-1 md:mr-2">{child.icon}</span>}
+                    {child.icon && <span className="mr-1">{child.icon}</span>}
                     <span dir={isRTL ? 'rtl' : 'ltr'}>{getLocalizedCategoryName(child.name, locale)}</span>
                   </Link>
                 ))}
@@ -356,7 +356,7 @@ export default function CategoryPage() {
         )}
 
         {/* Results */}
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 md:mb-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900" dir={isRTL ? 'rtl' : 'ltr'}>
             {adsLoading ? t('common.loading') : `${pagination?.total || 0} ${locale === 'fa' ? 'آگهی یافت شد' : 'Anzeigen gefunden'}`}
           </h2>
@@ -391,14 +391,9 @@ export default function CategoryPage() {
           </div>
         ) : (
           <>
-            <div className="flex flex-col">
-              {ads.map((ad, index) => (
-                <div 
-                  key={ad.id} 
-                  className={index < ads.length - 1 ? 'border-b border-gray-200 mb-0' : ''}
-                >
-                  <AdCard ad={ad} variant="compact" />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {ads.map((ad) => (
+                <AdCard key={ad.id} ad={ad} variant="compact" />
               ))}
             </div>
 
