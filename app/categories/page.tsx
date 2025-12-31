@@ -34,6 +34,9 @@ export default function CategoriesPage() {
     );
   }
 
+  // Filter only main categories (with categoryType, no parent)
+  const mainCategories = categories?.filter(cat => !cat.parentId && cat.categoryType) || [];
+
   const renderCategory = (category: Category, level = 0) => (
     <Link
       key={category.id}
@@ -89,7 +92,7 @@ export default function CategoriesPage() {
           </p>
         </div>
 
-        {!categories || categories.length === 0 ? (
+        {!mainCategories || mainCategories.length === 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <p className="text-gray-500" dir={isRTL ? 'rtl' : 'ltr'}>
               {locale === 'fa' ? 'هیچ دسته‌بندی موجود نیست' : 'Keine Kategorien verfügbar'}
@@ -97,7 +100,7 @@ export default function CategoriesPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {categories.map((category) => renderCategory(category))}
+            {mainCategories.map((category) => renderCategory(category))}
           </div>
         )}
       </div>

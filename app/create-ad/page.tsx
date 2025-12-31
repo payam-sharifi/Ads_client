@@ -12,6 +12,12 @@ import { useCities } from '@/lib/hooks/useCities';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
 import { useCreateAd } from '@/lib/hooks/useAds';
 import { useUploadImage } from '@/lib/hooks/useImages';
+import { MainCategoryType } from '@/lib/types/category.types';
+import RealEstateForm from '@/components/ads/RealEstateForm';
+import VehicleForm from '@/components/ads/VehicleForm';
+import ServiceForm from '@/components/ads/ServiceForm';
+import JobForm from '@/components/ads/JobForm';
+import { validateRealEstate, validateVehicle, validateService, validateJob } from '@/lib/validation/category-forms';
 import Button from '@/components/common/Button';
 import { toast } from 'react-toastify';
 
@@ -43,6 +49,7 @@ export default function CreateAdPage() {
 
   // Step 3: Category-specific details (metadata)
   const [step3Data, setStep3Data] = useState<Record<string, any>>({});
+  const [step3Errors, setStep3Errors] = useState<Record<string, string>>({});
   const [isMobile, setIsMobile] = React.useState(false);
   
   React.useEffect(() => {
@@ -81,12 +88,7 @@ export default function CreateAdPage() {
   const uploadImageMutation = useUploadImage();
 
   const selectedCategory = categories?.find((c) => c.id === step1Data.categoryId);
-  const subcategories = selectedCategory?.children || [];
-  const categoryName = selectedCategory ? getLocalizedCategoryName(selectedCategory.name, locale).toLowerCase() : '';
-
-  // Check if category is Real Estate or Vehicles
-  const isRealEstate = categoryName.includes('immobilien') || categoryName.includes('real estate') || categoryName.includes('املاک') || categoryName.includes('مسکن');
-  const isVehicle = categoryName.includes('fahrzeuge') || categoryName.includes('vehicle') || categoryName.includes('خودرو') || categoryName.includes('ماشین');
+  const categoryType = selectedCategory?.categoryType as MainCategoryType | undefined;
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setImageFiles((prev) => {
@@ -119,7 +121,6 @@ export default function CreateAdPage() {
     setStep1Data((prev) => {
       const newData = { ...prev, [name]: value };
       if (name === 'categoryId') {
-        newData.subcategoryId = '';
         setStep3Data({}); // Reset category-specific data when category changes
       }
       return newData;
@@ -130,8 +131,14 @@ export default function CreateAdPage() {
     setStep2Data((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleStep3Change = (name: string, value: any) => {
-    setStep3Data((prev) => ({ ...prev, [name]: value }));
+  const handleStep3Change = (data: Record<string, any>) => {
+    setStep3Data((prev) => ({ ...prev, ...data }));
+    // Clear errors for updated fields
+    const clearedErrors = { ...step3Errors };
+    Object.keys(data).forEach((key) => {
+      delete clearedErrors[key];
+    });
+    setStep3Errors(clearedErrors);
   };
 
   const validateStep1 = () => {
@@ -162,6 +169,44 @@ export default function CreateAdPage() {
     return true;
   };
 
+  const validateStep3 = () => {
+    if (!categoryType) {
+      return true; // No category selected, skip validation
+    }
+
+    let errors: any[] = [];
+    const errorMap: Record<string, string> = {};
+
+    switch (categoryType) {
+      case MainCategoryType.REAL_ESTATE:
+        errors = validateRealEstate(step3Data);
+        break;
+      case MainCategoryType.VEHICLES:
+        errors = validateVehicle(step3Data);
+        break;
+      case MainCategoryType.SERVICES:
+        errors = validateService(step3Data);
+        break;
+      case MainCategoryType.JOBS:
+        errors = validateJob(step3Data);
+        break;
+    }
+
+    // Convert errors array to error map
+    errors.forEach((error) => {
+      errorMap[error.field] = error.message;
+    });
+
+    setStep3Errors(errorMap);
+
+    if (errors.length > 0) {
+      toast.error(isRTL ? 'لطفا فیلدهای الزامی را تکمیل کنید' : 'Please fill in all required fields');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleNext = () => {
     if (currentStep === 1) {
       if (validateStep1()) {
@@ -174,6 +219,13 @@ export default function CreateAdPage() {
     }
   };
 
+  // Reset errors when step changes
+  useEffect(() => {
+    if (currentStep !== 3) {
+      setStep3Errors({});
+    }
+  }, [currentStep]);
+
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => (prev - 1) as FormStep);
@@ -183,13 +235,14 @@ export default function CreateAdPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateStep1() || !validateStep2()) {
+    if (!validateStep1() || !validateStep2() || !validateStep3()) {
       return;
     }
 
-    // Validate Real Estate specific fields
-    if (isRealEstate && !step3Data.type) {
-      toast.error(isRTL ? 'لطفا نوع معامله (اجاره/فروش) را انتخاب کنید' : 'Please select transaction type (rent/sale)');
+    // Validate images based on category
+    const requiresImages = categoryType !== MainCategoryType.JOBS;
+    if (requiresImages && imageFiles.length === 0) {
+      toast.error(isRTL ? 'حداقل یک تصویر الزامی است' : 'At least one image is required');
       return;
     }
 
@@ -205,45 +258,42 @@ export default function CreateAdPage() {
         'USED': 'used',
       };
       
-      // Calculate price based on category
-      let price = 0;
-      if (isRealEstate) {
-        if (step3Data.type === 'rent') {
-          price = Number(step3Data.rentPrice) || 0;
-        } else if (step3Data.type === 'sale') {
-          price = Number(step3Data.salePrice) || 0;
-        }
-      } else if (isVehicle) {
-        price = Number(step3Data.price) || 0;
-      } else {
-        // For other categories, use price from step3Data or default to 0
-        price = Number(step3Data.price) || 0;
-      }
-      
+      // Build request data with category-specific fields
       const requestData: any = {
         title: step2Data.title.trim(),
         description: step2Data.description.trim(),
-        price,
         categoryId: step1Data.categoryId,
         cityId: step1Data.cityId,
         showEmail: step2Data.showEmail || false,
         showPhone: step2Data.showPhone || false,
+        ...step3Data, // Merge all category-specific fields
       };
-      
-      if (step1Data.subcategoryId) {
-        requestData.subcategoryId = step1Data.subcategoryId;
+
+      // For vehicles, add condition from step2
+      if (categoryType === MainCategoryType.VEHICLES && step2Data.condition) {
+        requestData.condition = step2Data.condition;
       }
-      
-      if (step2Data.condition) {
-        const mappedCondition = conditionMap[step2Data.condition];
-        if (mappedCondition) {
-          requestData.condition = mappedCondition;
+
+      // For jobs, use jobTitle and jobDescription from step3Data, fallback to title/description
+      if (categoryType === MainCategoryType.JOBS) {
+        if (step3Data.jobTitle) {
+          requestData.title = step3Data.jobTitle;
+        }
+        if (step3Data.jobDescription) {
+          requestData.description = step3Data.jobDescription;
         }
       }
 
-      // Add metadata for category-specific fields
-      if (Object.keys(step3Data).length > 0) {
-        requestData.metadata = step3Data;
+      // Price handling
+      if (categoryType === MainCategoryType.REAL_ESTATE) {
+        // Real estate uses price or coldRent
+        requestData.price = step3Data.price || step3Data.coldRent || 0;
+      } else if (categoryType === MainCategoryType.VEHICLES) {
+        requestData.price = step3Data.price || 0;
+      } else if (categoryType === MainCategoryType.SERVICES) {
+        requestData.price = step3Data.price || 0;
+      } else {
+        requestData.price = 0; // Jobs don't have price
       }
       
       const newAd = await createAdMutation.mutateAsync(requestData);
@@ -301,8 +351,8 @@ export default function CreateAdPage() {
   }
 
   return (
-    <div className="w-full min-h-screen">
-      <div className="container mx-auto px-4 py-8 max-w-4xl pb-40 md:pb-8">
+    <div className="w-full min-h-screen overflow-visible">
+      <div className="container mx-auto px-4 py-8 max-w-4xl pb-40 md:pb-8 overflow-visible">
         <h1 className="text-3xl font-bold mb-8">{isRTL ? 'ثبت آگهی جدید' : 'Create New Ad'}</h1>
 
         {/* Progress Steps */}
@@ -334,23 +384,24 @@ export default function CreateAdPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md space-y-6 mb-8">
+        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md space-y-6 mb-8 overflow-visible relative">
           {/* Step 1: Category & City */}
         {currentStep === 1 && (
-          <div className="space-y-6">
+          <div className="space-y-6 overflow-visible">
             <h2 className="text-2xl font-bold mb-4">{isRTL ? 'انتخاب دسته‌بندی و شهر' : 'Select Category & City'}</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="relative z-10">
                 <label className="block text-sm font-medium mb-2">{isRTL ? 'دسته‌بندی' : 'Category'}</label>
                 <select
                   value={step1Data.categoryId}
                   onChange={(e) => handleStep1Change('categoryId', e.target.value)}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20"
+                  style={{ zIndex: 1000 }}
                 >
                   <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
-                  {categories?.filter(cat => !cat.parentId).map((cat) => (
+                  {categories?.filter(cat => !cat.parentId && cat.categoryType).map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {getLocalizedCategoryName(cat.name, locale)}
                     </option>
@@ -358,32 +409,16 @@ export default function CreateAdPage() {
                 </select>
               </div>
 
-              {subcategories.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'زیردسته' : 'Subcategory'}</label>
-                  <select
-                    value={step1Data.subcategoryId}
-                    onChange={(e) => handleStep1Change('subcategoryId', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  >
-                    <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
-                    {subcategories.map((sub) => (
-                      <option key={sub.id} value={sub.id}>
-                        {getLocalizedCategoryName(sub.name, locale)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
             </div>
 
-            <div>
+            <div className="relative z-10">
               <label className="block text-sm font-medium mb-2">{isRTL ? 'شهر' : 'City'}</label>
               <select
                 value={step1Data.cityId}
                 onChange={(e) => handleStep1Change('cityId', e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20"
+                style={{ zIndex: 1000 }}
               >
                 <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
                 {filteredCities.map((city) => (
@@ -430,14 +465,15 @@ export default function CreateAdPage() {
               />
             </div>
 
-            {/* Condition field - only show for non-Real Estate categories */}
-            {!isRealEstate && (
-              <div>
+            {/* Condition field - only show for Vehicles */}
+            {categoryType === MainCategoryType.VEHICLES && (
+              <div className="relative z-10">
                 <label className="block text-sm font-medium mb-2">{isRTL ? 'وضعیت' : 'Condition'}</label>
                 <select
                   value={step2Data.condition}
                   onChange={(e) => handleStep2Change('condition', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20"
+                  style={{ zIndex: 1000 }}
                 >
                   <option value="NEW">{isRTL ? 'نو' : 'New'}</option>
                   <option value="LIKE_NEW">{isRTL ? 'در حد نو' : 'Like New'}</option>
@@ -482,249 +518,47 @@ export default function CreateAdPage() {
           <div className="space-y-6 w-full">
             <h2 className="text-2xl font-bold mb-4">{isRTL ? 'جزئیات و تصاویر' : 'Details & Images'}</h2>
             
-            {/* Real Estate Fields */}
-            {isRealEstate && (
+            {/* Category-specific Forms */}
+            {categoryType && (
               <div 
-                className="space-y-4 p-4 bg-gray-50 rounded-lg overflow-y-auto"
+                className="space-y-4 p-4 bg-gray-50 rounded-lg overflow-y-auto overflow-x-visible"
                 style={{ 
                   WebkitOverflowScrolling: 'touch', 
-                  overflowY: 'auto', 
+                  overflowY: 'auto',
+                  overflowX: 'visible',
                   touchAction: 'pan-y',
                   maxHeight: isMobile ? '400px' : '600px',
                   height: 'auto'
                 }}
               >
-                <h3 className="text-lg font-semibold sticky top-0 bg-gray-50 pb-2 z-10">{isRTL ? 'اطلاعات ملک' : 'Property Details'}</h3>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'نوع معامله' : 'Transaction Type'}</label>
-                  <select
-                    value={step3Data.type || ''}
-                    onChange={(e) => handleStep3Change('type', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  >
-                    <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
-                    <option value="rent">{isRTL ? 'اجاره' : 'Rent'}</option>
-                    <option value="sale">{isRTL ? 'فروش' : 'Sale'}</option>
-                  </select>
-                </div>
-
-                {step3Data.type === 'rent' && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">{isRTL ? 'اجاره ماهانه (€)' : 'Monthly Rent (€)'}</label>
-                      <input
-                        type="number"
-                        value={step3Data.rentPrice || ''}
-                        onChange={(e) => handleStep3Change('rentPrice', e.target.value)}
-                        min="0"
-                        step="0.01"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                        dir="ltr"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">{isRTL ? 'رهن (€)' : 'Deposit (€)'}</label>
-                      <input
-                        type="number"
-                        value={step3Data.deposit || ''}
-                        onChange={(e) => handleStep3Change('deposit', e.target.value)}
-                        min="0"
-                        step="0.01"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                        dir="ltr"
-                      />
-                    </div>
-                  </>
-                )}
-
-                {step3Data.type === 'sale' && (
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'قیمت فروش (€)' : 'Sale Price (€)'}</label>
-                    <input
-                      type="number"
-                      value={step3Data.salePrice || ''}
-                      onChange={(e) => handleStep3Change('salePrice', e.target.value)}
-                      min="0"
-                      step="0.01"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                      dir="ltr"
-                    />
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'متراژ (m²)' : 'Area (m²)'}</label>
-                    <input
-                      type="number"
-                      value={step3Data.area || ''}
-                      onChange={(e) => handleStep3Change('area', e.target.value)}
-                      min="0"
-                      step="0.01"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                      dir="ltr"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'طبقه' : 'Floor'}</label>
-                    <input
-                      type="number"
-                      value={step3Data.floor || ''}
-                      onChange={(e) => handleStep3Change('floor', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                      dir="ltr"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'سال ساخت' : 'Year Built'}</label>
-                    <input
-                      type="number"
-                      value={step3Data.yearBuilt || ''}
-                      onChange={(e) => handleStep3Change('yearBuilt', e.target.value)}
-                      min="1800"
-                      max={new Date().getFullYear()}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                      dir="ltr"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'گرمایش' : 'Heating'}</label>
-                    <select
-                      value={step3Data.heating || ''}
-                      onChange={(e) => handleStep3Change('heating', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                    >
-                      <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
-                      <option value="central">{isRTL ? 'مرکزی' : 'Central'}</option>
-                      <option value="gas">{isRTL ? 'گاز' : 'Gas'}</option>
-                      <option value="electric">{isRTL ? 'برق' : 'Electric'}</option>
-                      <option value="oil">{isRTL ? 'نفت' : 'Oil'}</option>
-                      <option value="wood">{isRTL ? 'چوب' : 'Wood'}</option>
-                      <option value="solar">{isRTL ? 'خورشیدی' : 'Solar'}</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'بازسازی شده' : 'Renovated'}</label>
-                  <select
-                    value={step3Data.renovated || ''}
-                    onChange={(e) => handleStep3Change('renovated', e.target.value === 'true')}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  >
-                    <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
-                    <option value="true">{isRTL ? 'بله' : 'Yes'}</option>
-                    <option value="false">{isRTL ? 'خیر' : 'No'}</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'هزینه‌های جانبی (€/ماه)' : 'Additional Costs (€/month)'}</label>
-                  <input
-                    type="number"
-                    value={step3Data.additionalCosts || ''}
-                    onChange={(e) => handleStep3Change('additionalCosts', e.target.value)}
-                    min="0"
-                    step="0.01"
-                    placeholder={isRTL ? 'مثال: هزینه آب، برق، گاز' : 'e.g., utilities, water, electricity'}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                    dir="ltr"
+                {categoryType === MainCategoryType.REAL_ESTATE && (
+                  <RealEstateForm 
+                    data={step3Data} 
+                    onChange={handleStep3Change}
+                    errors={step3Errors}
                   />
-                </div>
-              </div>
-            )}
-
-            {/* Vehicle Fields */}
-            {isVehicle && (
-              <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                <h3 className="text-lg font-semibold">{isRTL ? 'اطلاعات خودرو' : 'Vehicle Details'}</h3>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'قیمت (€)' : 'Price (€)'}</label>
-                  <input
-                    type="number"
-                    value={step3Data.price || ''}
-                    onChange={(e) => handleStep3Change('price', e.target.value)}
-                    min="0"
-                    step="0.01"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                    dir="ltr"
+                )}
+                {categoryType === MainCategoryType.VEHICLES && (
+                  <VehicleForm 
+                    data={step3Data} 
+                    onChange={handleStep3Change}
+                    errors={step3Errors}
                   />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'برند' : 'Brand'}</label>
-                    <input
-                      type="text"
-                      value={step3Data.brand || ''}
-                      onChange={(e) => handleStep3Change('brand', e.target.value)}
-                      placeholder={isRTL ? 'مثال: BMW' : 'e.g., BMW'}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'مدل' : 'Model'}</label>
-                    <input
-                      type="text"
-                      value={step3Data.model || ''}
-                      onChange={(e) => handleStep3Change('model', e.target.value)}
-                      placeholder={isRTL ? 'مثال: 320d' : 'e.g., 320d'}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'سال ساخت' : 'Year'}</label>
-                    <input
-                      type="number"
-                      value={step3Data.year || ''}
-                      onChange={(e) => handleStep3Change('year', e.target.value)}
-                      min="1900"
-                      max={new Date().getFullYear() + 1}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                      dir="ltr"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'کیلومتر' : 'Mileage (km)'}</label>
-                    <input
-                      type="number"
-                      value={step3Data.mileage || ''}
-                      onChange={(e) => handleStep3Change('mileage', e.target.value)}
-                      min="0"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                      dir="ltr"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'نوع سوخت' : 'Fuel Type'}</label>
-                    <select
-                      value={step3Data.fuelType || ''}
-                      onChange={(e) => handleStep3Change('fuelType', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                    >
-                      <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
-                      <option value="petrol">{isRTL ? 'بنزین' : 'Petrol'}</option>
-                      <option value="diesel">{isRTL ? 'دیزل' : 'Diesel'}</option>
-                      <option value="electric">{isRTL ? 'برقی' : 'Electric'}</option>
-                      <option value="hybrid">{isRTL ? 'هیبرید' : 'Hybrid'}</option>
-                      <option value="lpg">{isRTL ? 'گاز' : 'LPG'}</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'نوع گیربکس' : 'Transmission'}</label>
-                    <select
-                      value={step3Data.transmission || ''}
-                      onChange={(e) => handleStep3Change('transmission', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                    >
-                      <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
-                      <option value="manual">{isRTL ? 'دستی' : 'Manual'}</option>
-                      <option value="automatic">{isRTL ? 'اتوماتیک' : 'Automatic'}</option>
-                    </select>
-                  </div>
-                </div>
+                )}
+                {categoryType === MainCategoryType.SERVICES && (
+                  <ServiceForm 
+                    data={step3Data} 
+                    onChange={handleStep3Change}
+                    errors={step3Errors}
+                  />
+                )}
+                {categoryType === MainCategoryType.JOBS && (
+                  <JobForm 
+                    data={step3Data} 
+                    onChange={handleStep3Change}
+                    errors={step3Errors}
+                  />
+                )}
               </div>
             )}
 

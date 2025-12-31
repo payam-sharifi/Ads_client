@@ -10,6 +10,7 @@ import { useAd, useBookmarkAd, useUnbookmarkAd, useBookmarkedAds } from '@/lib/h
 import { useSendMessage } from '@/lib/hooks/useMessages';
 import { useCreateReport } from '@/lib/hooks/useReports';
 import { useAdImages } from '@/lib/hooks/useImages';
+import AdMetadataDisplay from '@/components/ads/AdMetadataDisplay';
 import Button from '@/components/common/Button';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
@@ -321,102 +322,8 @@ export default function AdDetailPage() {
                     </div>
                   )}
                   
-                  {/* Vehicle Details */}
-                  {ad.metadata.brand || ad.metadata.model ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {ad.metadata.brand && (
-                        <div>
-                          <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'برند' : 'Brand'}
-                          </span>
-                          <span className="font-medium text-gray-900">
-                            {ad.metadata.brand}
-                          </span>
-                        </div>
-                      )}
-                      
-                      {ad.metadata.model && (
-                        <div>
-                          <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'مدل' : 'Model'}
-                          </span>
-                          <span className="font-medium text-gray-900">
-                            {ad.metadata.model}
-                          </span>
-                        </div>
-                      )}
-                      
-                      {ad.metadata.year && (
-                        <div>
-                          <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'سال ساخت' : 'Year'}
-                          </span>
-                          <span className="font-medium text-gray-900" dir="ltr">
-                            {ad.metadata.year}
-                          </span>
-                        </div>
-                      )}
-                      
-                      {ad.metadata.mileage && (
-                        <div>
-                          <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'کیلومتر' : 'Mileage'}
-                          </span>
-                          <span className="font-medium text-gray-900" dir="ltr">
-                            {Number(ad.metadata.mileage).toLocaleString('de-DE')} km
-                          </span>
-                        </div>
-                      )}
-                      
-                      {ad.metadata.fuelType && (
-                        <div>
-                          <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'نوع سوخت' : 'Fuel Type'}
-                          </span>
-                          <span className="font-medium text-gray-900">
-                            {ad.metadata.fuelType === 'petrol' ? (isRTL ? 'بنزین' : 'Petrol') :
-                             ad.metadata.fuelType === 'diesel' ? (isRTL ? 'دیزل' : 'Diesel') :
-                             ad.metadata.fuelType === 'electric' ? (isRTL ? 'برقی' : 'Electric') :
-                             ad.metadata.fuelType === 'hybrid' ? (isRTL ? 'هیبرید' : 'Hybrid') :
-                             ad.metadata.fuelType === 'lpg' ? (isRTL ? 'گاز' : 'LPG') :
-                             ad.metadata.fuelType}
-                          </span>
-                        </div>
-                      )}
-                      
-                      {ad.metadata.transmission && (
-                        <div>
-                          <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'نوع گیربکس' : 'Transmission'}
-                          </span>
-                          <span className="font-medium text-gray-900">
-                            {ad.metadata.transmission === 'manual' ? (isRTL ? 'دستی' : 'Manual') :
-                             ad.metadata.transmission === 'automatic' ? (isRTL ? 'اتوماتیک' : 'Automatic') :
-                             ad.metadata.transmission}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ) : null}
-                  
-                  {/* Other metadata fields (for other categories) */}
-                  {!ad.metadata.type && !ad.metadata.brand && Object.keys(ad.metadata).length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {Object.entries(ad.metadata).map(([key, value]) => {
-                        if (value === null || value === undefined || value === '') return null;
-                        return (
-                          <div key={key}>
-                            <span className="text-sm text-gray-500 block mb-1 capitalize">
-                              {key.replace(/([A-Z])/g, ' $1').trim()}
-                            </span>
-                            <span className="font-medium text-gray-900">
-                              {typeof value === 'boolean' ? (value ? (isRTL ? 'بله' : 'Yes') : (isRTL ? 'خیر' : 'No')) : String(value)}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                  {/* Category-specific metadata display */}
+                  <AdMetadataDisplay ad={ad} />
                 </div>
               )}
 

@@ -38,6 +38,7 @@ export interface Ad {
       de?: string;
       fa?: string;
     };
+    categoryType?: string;
   };
   subcategory?: {
     id: string;

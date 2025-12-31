@@ -1,26 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api/client';
+import { Category, MainCategoryType } from '@/lib/types/category.types';
 
-/**
- * Category Types and Interfaces
- * 
- * Matches backend Category entity structure
- */
-export interface Category {
-  id: string;
-  name: {
-    en?: string;
-    de?: string;
-    fa?: string;
-  };
-  icon?: string;
-  parentId?: string;
-  parent?: Category;
-  children?: Category[];
-  createdAt?: string;
-  updatedAt?: string;
-  deletedAt?: string;
-}
+// Re-export types for backward compatibility
+export type { Category, MainCategoryType };
 
 export interface CreateCategoryDto {
   name: {

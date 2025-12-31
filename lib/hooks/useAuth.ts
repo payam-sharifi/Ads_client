@@ -91,9 +91,19 @@ export const useLogout = () => {
 
   return useMutation({
     mutationFn: async () => {
-      await apiClient.post('/auth/logout');
+      // Try to call logout endpoint, but don't fail if it doesn't work
+      // Logout should always clear local state regardless of API response
+      await apiClient.post('/auth/logout').catch(() => {
+        // Silently ignore logout API errors - we'll still clear local state
+      });
     },
     onSuccess: () => {
+      // Always clear auth state and queries
+      clearAuth();
+      queryClient.clear();
+    },
+    onError: () => {
+      // Clear state even if API call fails (404, network error, etc.)
       clearAuth();
       queryClient.clear();
     },

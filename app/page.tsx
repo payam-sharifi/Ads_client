@@ -98,9 +98,11 @@ function HomePageContent() {
 
   // Main page content when city is selected
   const loading = categoriesLoading || adsLoading;
+  
   // Flatten infinite query pages into a single array
   const recentAds = adsData?.pages.flatMap((page) => page.data) || [];
-  const parentCategories = categories?.filter(cat => !cat.parentId) || [];
+  // Filter only main categories (with categoryType, no parent)
+  const parentCategories = categories?.filter(cat => !cat.parentId && cat.categoryType) || [];
   
   // Get selected city name
   const selectedCity = activeCityId && activeCityId !== 'all' ? cities.find(city => city.id === activeCityId) : null;
