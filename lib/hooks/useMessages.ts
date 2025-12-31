@@ -70,17 +70,11 @@ export const useMyInbox = () => {
     queryKey: ['messages', 'inbox'],
     queryFn: async () => {
       const response = await apiClient.get<any[]>('/messages/inbox/my');
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMessages.ts:66',message:'useMyInbox: received response',data:{count:response.data.length,firstMessage:response.data[0]?{id:response.data[0].id,hasMessageText:'messageText' in response.data[0],hasContent:'content' in response.data[0],messageText:response.data[0].messageText,content:response.data[0].content,allKeys:Object.keys(response.data[0]||{})}:null},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       // Transform messageText to content for frontend compatibility
       const transformed = response.data.map((msg: any) => ({
         ...msg,
         content: msg.messageText || msg.content,
       }));
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMessages.ts:72',message:'useMyInbox: after transformation',data:{count:transformed.length,firstMessage:transformed[0]?{id:transformed[0].id,hasContent:'content' in transformed[0],content:transformed[0].content}:null},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       return transformed as Message[];
     },
   });
@@ -95,17 +89,11 @@ export const useAdMessages = (adId: string) => {
     queryKey: ['messages', 'ad', adId],
     queryFn: async () => {
       const response = await apiClient.get<any[]>(`/messages/ad/${adId}`);
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMessages.ts:80',message:'useAdMessages: received response',data:{adId,count:response.data.length,firstMessage:response.data[0]?{id:response.data[0].id,hasMessageText:'messageText' in response.data[0],hasContent:'content' in response.data[0],messageText:response.data[0].messageText,content:response.data[0].content,allKeys:Object.keys(response.data[0]||{})}:null},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       // Transform messageText to content for frontend compatibility
       const transformed = response.data.map((msg: any) => ({
         ...msg,
         content: msg.messageText || msg.content,
       }));
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useMessages.ts:88',message:'useAdMessages: after transformation',data:{adId,count:transformed.length,firstMessage:transformed[0]?{id:transformed[0].id,hasContent:'content' in transformed[0],content:transformed[0].content}:null},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       return transformed as Message[];
     },
     enabled: !!adId,

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAuthStore } from '@/lib/stores/authStore';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -38,11 +39,17 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
+      // Unauthorized - clear auth state
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        const currentPath = window.location.pathname;
+        // Clear auth state from Zustand store
+        const { clearAuth } = useAuthStore.getState();
+        clearAuth();
+        
+        // Only redirect if not already on login page to prevent infinite redirect loop
+        if (currentPath !== '/login') {
+          window.location.href = '/login';
+        }
       }
     }
     return Promise.reject(error);

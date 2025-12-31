@@ -28,10 +28,6 @@ export function getImageUrl(url: string | undefined | null): string {
   const path = url.startsWith('/') ? url : `/${url}`;
   const fullUrl = `${baseUrl}${path}`;
   
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Image URL:', { original: url, constructed: fullUrl });
-  }
-  
   return fullUrl;
 }
 

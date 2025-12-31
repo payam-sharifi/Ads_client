@@ -134,7 +134,7 @@ export default function AdCard({
             loading="lazy"
             unoptimized={firstImage.startsWith('http://localhost') || firstImage.startsWith('http://127.0.0.1')}
             onError={(e) => {
-              console.error('Image load error:', firstImage);
+              // Silently fallback to placeholder - image file may not exist on server
               if (e.currentTarget.src !== '/placeholder.svg') {
                 e.currentTarget.src = '/placeholder.svg';
               }
@@ -245,7 +245,7 @@ export default function AdCard({
             loading="lazy"
             unoptimized={firstImage.startsWith('http://localhost') || firstImage.startsWith('http://127.0.0.1')}
             onError={(e) => {
-              console.error('Image load error:', firstImage);
+              // Silently fallback to placeholder - image file may not exist on server
               if (e.currentTarget.src !== '/placeholder.svg') {
                 e.currentTarget.src = '/placeholder.svg';
               }
@@ -317,11 +317,11 @@ export default function AdCard({
           loading="lazy"
           unoptimized={firstImage.startsWith('http://localhost') || firstImage.startsWith('http://127.0.0.1')}
           onError={(e) => {
-            console.error('Image load error:', firstImage);
+            // Silently fallback to placeholder - image file may not exist on server
             if (e.currentTarget.src !== '/placeholder.svg') {
               e.currentTarget.src = '/placeholder.svg';
             }
-            }}
+          }}
           />
         {/* Status Badge - Diagonal top left (only in admin/dashboard panels) */}
         {showStatusBadge && getStatusBadge()}
