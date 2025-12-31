@@ -54,7 +54,7 @@ export const useAdminAds = (filters?: {
       return filteredData;
     },
     staleTime: 0, // Always refetch to ensure deleted ads are not shown
-    cacheTime: 0, // Don't cache to prevent showing deleted ads
+    gcTime: 0, // Don't cache to prevent showing deleted ads (gcTime replaces cacheTime in React Query v5)
   });
 };
 

@@ -7,6 +7,7 @@ export interface Message {
   senderId: string;
   receiverId: string;
   content: string;
+  isRead: boolean;
   createdAt: string;
   sender?: {
     id: string;

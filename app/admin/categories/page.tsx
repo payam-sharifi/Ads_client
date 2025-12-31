@@ -77,9 +77,6 @@ export default function AdminCategoriesPage() {
                     <div className="font-medium text-gray-900">
                       {getLocalizedCategoryName(category.name, locale) || 'N/A'}
                     </div>
-                    {category.description && (
-                      <div className="text-sm text-gray-500">{category.description}</div>
-                    )}
                     {category.children && category.children.length > 0 && (
                       <div className="mt-2 text-sm text-gray-600">
                         {category.children.length} subcategories

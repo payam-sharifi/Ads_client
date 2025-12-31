@@ -126,7 +126,7 @@ export default function CreateAdPage() {
     });
   };
 
-  const handleStep2Change = (name: string, value: string) => {
+  const handleStep2Change = (name: string, value: string | boolean) => {
     setStep2Data((prev) => ({ ...prev, [name]: value }));
   };
 

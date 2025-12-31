@@ -97,12 +97,6 @@ export default function AdMessagesPage() {
                   {new Date(message.createdAt).toLocaleString()}
                 </span>
               </div>
-              {/* #region agent log */}
-              {(() => {
-                fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'messages/[adId]/page.tsx:100',message:'displaying message content',data:{messageId:message.id,hasContent:'content' in message,hasMessageText:'messageText' in message,content:message.content,messageText:message.messageText,allKeys:Object.keys(message)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-                return null;
-              })()}
-              {/* #endregion */}
               <p className="text-xs sm:text-sm text-gray-700 break-words">{message.content}</p>
             </div>
           ))}

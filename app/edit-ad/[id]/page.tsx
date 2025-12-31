@@ -165,11 +165,13 @@ export default function EditAdPage() {
     try {
       // API: PATCH /api/ads/:id
       // Convert condition from 'NEW'/'LIKE_NEW'/'USED' to 'new'/'like-new'/'used'
-      const conditionMap: Record<string, string> = {
+      const conditionMap: Record<'NEW' | 'LIKE_NEW' | 'USED', 'new' | 'like-new' | 'used'> = {
         'NEW': 'new',
         'LIKE_NEW': 'like-new',
         'USED': 'used',
       };
+      
+      const mappedCondition = conditionMap[formData.condition] || formData.condition.toLowerCase() as 'new' | 'like-new' | 'used';
       
       await updateAdMutation.mutateAsync({
         id: adId,
@@ -180,7 +182,7 @@ export default function EditAdPage() {
           categoryId: formData.categoryId,
           subcategoryId: formData.subcategoryId || undefined,
           cityId: formData.cityId,
-          condition: conditionMap[formData.condition] || formData.condition.toLowerCase(),
+          condition: mappedCondition as any, // Backend expects 'new'|'like-new'|'used', but frontend Ad interface expects 'NEW'|'LIKE_NEW'|'USED'
           showEmail: formData.showEmail || false,
           showPhone: formData.showPhone || false,
         },
