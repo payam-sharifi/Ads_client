@@ -41,7 +41,9 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
           <select
             value={data.serviceCategory || ''}
             onChange={(e) => updateField('serviceCategory', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+          className={`w-full px-3 py-2 border rounded-lg ${
+            getFieldError('serviceCategory') ? 'border-red-500' : 'border-gray-300'
+          } focus:outline-none focus:ring-2 focus:ring-red-500`}
             dir={isRTL ? 'rtl' : 'ltr'}
           >
           <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
@@ -52,6 +54,9 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
           ))}
         </select>
         </div>
+        {getFieldError('serviceCategory') && (
+          <p className="mt-1 text-sm text-red-600">{getFieldError('serviceCategory')}</p>
+        )}
       </div>
 
       {/* Pricing Type */}
@@ -67,7 +72,9 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
               updateField('price', undefined);
             }
           }}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg relative z-20"
+          className={`w-full px-3 py-2 border rounded-lg relative z-20 ${
+            getFieldError('pricingType') ? 'border-red-500' : 'border-gray-300'
+          } focus:outline-none focus:ring-2 focus:ring-red-500`}
           style={{ zIndex: 1000 }}
           dir={isRTL ? 'rtl' : 'ltr'}
         >
@@ -76,6 +83,9 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
           <option value={PricingType.HOURLY}>{isRTL ? 'ساعتی' : 'Hourly'}</option>
           <option value={PricingType.NEGOTIABLE}>{isRTL ? 'قابل مذاکره' : 'Negotiable'}</option>
         </select>
+        {getFieldError('pricingType') && (
+          <p className="mt-1 text-sm text-red-600">{getFieldError('pricingType')}</p>
+        )}
       </div>
 
       {/* Price (if not negotiable) */}
@@ -90,12 +100,23 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
           <input
             type="number"
             value={data.price || ''}
-            onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Convert to integer to avoid decimal precision issues
+              const intValue = value === '' ? undefined : Math.round(parseFloat(value) || 0);
+              updateField('price', intValue);
+            }}
             placeholder={isRTL ? '25' : '25'}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('price') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
             dir="ltr"
             min="0"
+            step="1"
           />
+          {getFieldError('price') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('price')}</p>
+          )}
         </div>
       )}
 
@@ -146,51 +167,6 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
         />
       </div>
 
-      {/* Contact */}
-      <div className="pt-4 border-t">
-        <h3 className="text-lg font-medium text-gray-900 mb-3">{isRTL ? 'اطلاعات تماس' : 'Contact Information'}</h3>
-        
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نام' : 'Name'} <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={data.contactName || ''}
-            onChange={(e) => updateField('contactName', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            dir={isRTL ? 'rtl' : 'ltr'}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'تلفن' : 'Phone'} <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="tel"
-            value={data.contactPhone || ''}
-            onChange={(e) => updateField('contactPhone', e.target.value)}
-            placeholder={isRTL ? '+49123456789' : '+49123456789'}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            dir="ltr"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'ایمیل' : 'Email'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-          </label>
-          <input
-            type="email"
-            value={data.contactEmail || ''}
-            onChange={(e) => updateField('contactEmail', e.target.value)}
-            placeholder={isRTL ? 'ali@example.com' : 'ali@example.com'}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            dir="ltr"
-          />
-        </div>
-      </div>
     </div>
   );
 }

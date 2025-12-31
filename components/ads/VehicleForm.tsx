@@ -24,7 +24,7 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
   return (
     <div className="space-y-4 overflow-visible relative">
       {/* Vehicle Type */}
-      <div className="relative z-10">
+      <div className="relative z-10 w-full md:w-1/2">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {isRTL ? 'نوع خودرو' : 'Vehicle Type'} <span className="text-red-500">*</span>
         </label>
@@ -61,9 +61,14 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             value={data.brand || ''}
             onChange={(e) => updateField('brand', e.target.value)}
             placeholder={isRTL ? 'BMW' : 'BMW'}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('brand') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
             dir="ltr"
           />
+          {getFieldError('brand') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('brand')}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -74,9 +79,14 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             value={data.model || ''}
             onChange={(e) => updateField('model', e.target.value)}
             placeholder={isRTL ? '320d' : '320d'}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('model') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
             dir="ltr"
           />
+          {getFieldError('model') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('model')}</p>
+          )}
         </div>
       </div>
 
@@ -91,11 +101,16 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             value={data.year || ''}
             onChange={(e) => updateField('year', parseInt(e.target.value) || 0)}
             placeholder={isRTL ? '2020' : '2020'}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('year') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
             dir="ltr"
             min="1900"
             max={new Date().getFullYear() + 1}
           />
+          {getFieldError('year') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('year')}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -106,10 +121,15 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             value={data.mileage || ''}
             onChange={(e) => updateField('mileage', parseFloat(e.target.value) || 0)}
             placeholder={isRTL ? '50000' : '50000'}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('mileage') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
             dir="ltr"
             min="0"
           />
+          {getFieldError('mileage') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('mileage')}</p>
+          )}
         </div>
       </div>
 
@@ -123,7 +143,9 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             <select
               value={data.fuelType || ''}
               onChange={(e) => updateField('fuelType', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              className={`w-full px-3 py-2 border rounded-lg ${
+                getFieldError('fuelType') ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-red-500`}
               dir={isRTL ? 'rtl' : 'ltr'}
             >
             <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
@@ -133,6 +155,9 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             <option value={FuelType.HYBRID}>{isRTL ? 'هیبریدی' : 'Hybrid'}</option>
           </select>
         </div>
+        {getFieldError('fuelType') && (
+          <p className="mt-1 text-sm text-red-600">{getFieldError('fuelType')}</p>
+        )}
         </div>
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -142,7 +167,9 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             <select
               value={data.transmission || ''}
               onChange={(e) => updateField('transmission', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              className={`w-full px-3 py-2 border rounded-lg ${
+                getFieldError('transmission') ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-red-500`}
               dir={isRTL ? 'rtl' : 'ltr'}
             >
             <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
@@ -150,6 +177,9 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             <option value={TransmissionType.AUTOMATIC}>{isRTL ? 'اتوماتیک' : 'Automatic'}</option>
           </select>
         </div>
+        {getFieldError('transmission') && (
+          <p className="mt-1 text-sm text-red-600">{getFieldError('transmission')}</p>
+        )}
         </div>
       </div>
 
@@ -179,7 +209,9 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             <select
               value={data.condition || ''}
               onChange={(e) => updateField('condition', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              className={`w-full px-3 py-2 border rounded-lg ${
+                getFieldError('condition') ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-red-500`}
               dir={isRTL ? 'rtl' : 'ltr'}
             >
               <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
@@ -187,6 +219,9 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
               <option value="used">{isRTL ? 'کارکرده' : 'Used'}</option>
             </select>
           </div>
+        {getFieldError('condition') && (
+          <p className="mt-1 text-sm text-red-600">{getFieldError('condition')}</p>
+        )}
         </div>
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -196,7 +231,9 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             <select
               value={data.damageStatus || ''}
               onChange={(e) => updateField('damageStatus', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              className={`w-full px-3 py-2 border rounded-lg ${
+                getFieldError('damageStatus') ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-red-500`}
               dir={isRTL ? 'rtl' : 'ltr'}
             >
               <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
@@ -204,7 +241,37 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
               <option value={DamageStatus.ACCIDENT}>{isRTL ? 'تصادف داشته' : 'Accident'}</option>
             </select>
           </div>
+        {getFieldError('damageStatus') && (
+          <p className="mt-1 text-sm text-red-600">{getFieldError('damageStatus')}</p>
+        )}
         </div>
+      </div>
+
+      {/* Price */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {isRTL ? 'قیمت (€)' : 'Price (€)'} <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="number"
+          value={data.price || ''}
+          onChange={(e) => {
+            const value = e.target.value;
+            // Convert to integer to avoid decimal precision issues
+            const intValue = value === '' ? undefined : Math.round(parseFloat(value) || 0);
+            updateField('price', intValue);
+          }}
+          placeholder={isRTL ? '25000' : '25000'}
+          className={`w-full px-3 py-2 border rounded-lg ${
+            getFieldError('price') ? 'border-red-500' : 'border-gray-300'
+          } focus:outline-none focus:ring-2 focus:ring-red-500`}
+          dir="ltr"
+          min="0"
+          step="1"
+        />
+        {getFieldError('price') && (
+          <p className="mt-1 text-sm text-red-600">{getFieldError('price')}</p>
+        )}
       </div>
 
       {/* Inspection Valid Until */}
@@ -224,48 +291,21 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
       {/* Postal Code */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'کد پستی' : 'Postal Code'} <span className="text-red-500">*</span>
+          {isRTL ? 'کد پستی' : 'Postal Code'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
         </label>
         <input
           type="text"
           value={data.postalCode || ''}
           onChange={(e) => updateField('postalCode', e.target.value)}
           placeholder={isRTL ? '10115' : '10115'}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+          className={`w-full px-3 py-2 border rounded-lg ${
+            getFieldError('postalCode') ? 'border-red-500' : 'border-gray-300'
+          } focus:outline-none focus:ring-2 focus:ring-red-500`}
           dir="ltr"
         />
-      </div>
-
-      {/* Contact */}
-      <div className="pt-4 border-t">
-        <h3 className="text-lg font-medium text-gray-900 mb-3">{isRTL ? 'اطلاعات تماس' : 'Contact Information'}</h3>
-        
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نام' : 'Name'} <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={data.contactName || ''}
-            onChange={(e) => updateField('contactName', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            dir={isRTL ? 'rtl' : 'ltr'}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'تلفن' : 'Phone'} <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="tel"
-            value={data.contactPhone || ''}
-            onChange={(e) => updateField('contactPhone', e.target.value)}
-            placeholder={isRTL ? '+49123456789' : '+49123456789'}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            dir="ltr"
-          />
-        </div>
+        {getFieldError('postalCode') && (
+          <p className="mt-1 text-sm text-red-600">{getFieldError('postalCode')}</p>
+        )}
       </div>
     </div>
   );

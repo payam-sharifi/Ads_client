@@ -33,7 +33,7 @@ export default function AdCard({
     // Format with Persian/Arabic numerals for Persian
     if (locale === 'fa') {
       const formatted = new Intl.NumberFormat('fa-IR').format(price);
-      return `${formatted} ${isRTL ? 'تومان' : 'EUR'}`;
+      return `${formatted} €`;
     }
     return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(price);
   };

@@ -89,7 +89,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       {/* Postal Code */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'کد پستی' : 'Postal Code'} <span className="text-red-500">*</span>
+          {isRTL ? 'کد پستی' : 'Postal Code'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
         </label>
         <input
           type="text"
@@ -100,7 +100,6 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
             getFieldError('postalCode') ? 'border-red-500' : 'border-gray-300'
           } focus:outline-none focus:ring-2 focus:ring-red-500`}
           dir="ltr"
-          required
           minLength={5}
         />
         {getFieldError('postalCode') && (
@@ -132,14 +131,19 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
           <input
             type="number"
             value={data.price || ''}
-            onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Convert to integer to avoid decimal precision issues
+              const intValue = value === '' ? undefined : Math.round(parseFloat(value) || 0);
+              updateField('price', intValue);
+            }}
             placeholder={isRTL ? '250000' : '250000'}
             className={`w-full px-3 py-2 border rounded-lg ${
               getFieldError('price') ? 'border-red-500' : 'border-gray-300'
             } focus:outline-none focus:ring-2 focus:ring-red-500`}
             dir="ltr"
             min="0"
-            step="0.01"
+            step="1"
             required={data.offerType === RealEstateOfferType.SALE}
           />
           {getFieldError('price') && (
@@ -154,14 +158,19 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
           <input
             type="number"
             value={data.coldRent || ''}
-            onChange={(e) => updateField('coldRent', parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Convert to integer to avoid decimal precision issues
+              const intValue = value === '' ? undefined : Math.round(parseFloat(value) || 0);
+              updateField('coldRent', intValue);
+            }}
             placeholder={isRTL ? '1200' : '1200'}
             className={`w-full px-3 py-2 border rounded-lg ${
               getFieldError('coldRent') ? 'border-red-500' : 'border-gray-300'
             } focus:outline-none focus:ring-2 focus:ring-red-500`}
             dir="ltr"
             min="0"
-            step="0.01"
+            step="1"
             required={data.offerType === RealEstateOfferType.RENT}
           />
           {getFieldError('coldRent') && (
@@ -336,65 +345,6 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
         </div>
       </div>
 
-      {/* Contact */}
-      <div className="pt-4 border-t">
-        <h3 className="text-lg font-medium text-gray-900 mb-3">{isRTL ? 'اطلاعات تماس' : 'Contact Information'}</h3>
-        
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نام' : 'Name'} <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={data.contactName || ''}
-            onChange={(e) => updateField('contactName', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('contactName') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
-            dir={isRTL ? 'rtl' : 'ltr'}
-            required
-            minLength={2}
-          />
-          {getFieldError('contactName') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('contactName')}</p>
-          )}
-        </div>
-
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'تلفن' : 'Phone'} <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="tel"
-            value={data.contactPhone || ''}
-            onChange={(e) => updateField('contactPhone', e.target.value)}
-            placeholder={isRTL ? '+49123456789' : '+49123456789'}
-            className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('contactPhone') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
-            dir="ltr"
-            required
-            minLength={10}
-          />
-          {getFieldError('contactPhone') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('contactPhone')}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'ایمیل' : 'Email'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-          </label>
-          <input
-            type="email"
-            value={data.contactEmail || ''}
-            onChange={(e) => updateField('contactEmail', e.target.value)}
-            placeholder={isRTL ? 'ali@example.com' : 'ali@example.com'}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            dir="ltr"
-          />
-        </div>
-      </div>
     </div>
   );
 }

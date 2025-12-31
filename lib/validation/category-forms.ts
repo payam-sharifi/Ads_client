@@ -12,39 +12,31 @@ export function validateRealEstate(data: any): ValidationError[] {
   const errors: ValidationError[] = [];
 
   if (!data.offerType) {
-    errors.push({ field: 'offerType', message: 'نوع آگهی الزامی است' });
+    errors.push({ field: 'offerType', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.propertyType) {
-    errors.push({ field: 'propertyType', message: 'نوع ملک الزامی است' });
+    errors.push({ field: 'propertyType', message: 'وارد کردن این مقدار اجباری است' });
   }
 
-  if (!data.postalCode || data.postalCode.trim().length < 5) {
+  if (data.postalCode && data.postalCode.trim().length > 0 && data.postalCode.trim().length < 5) {
     errors.push({ field: 'postalCode', message: 'کد پستی باید حداقل 5 کاراکتر باشد' });
   }
 
   if (data.offerType === 'sale' && (!data.price || data.price <= 0)) {
-    errors.push({ field: 'price', message: 'قیمت فروش الزامی است' });
+    errors.push({ field: 'price', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (data.offerType === 'rent' && (!data.coldRent || data.coldRent <= 0)) {
-    errors.push({ field: 'coldRent', message: 'اجاره پایه الزامی است' });
+    errors.push({ field: 'coldRent', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.livingArea || data.livingArea <= 0) {
-    errors.push({ field: 'livingArea', message: 'متراژ الزامی است' });
+    errors.push({ field: 'livingArea', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.rooms || data.rooms <= 0) {
-    errors.push({ field: 'rooms', message: 'تعداد اتاق الزامی است' });
-  }
-
-  if (!data.contactName || data.contactName.trim().length < 2) {
-    errors.push({ field: 'contactName', message: 'نام تماس باید حداقل 2 کاراکتر باشد' });
-  }
-
-  if (!data.contactPhone || data.contactPhone.trim().length < 10) {
-    errors.push({ field: 'contactPhone', message: 'شماره تماس باید حداقل 10 کاراکتر باشد' });
+    errors.push({ field: 'rooms', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   return errors;
@@ -52,59 +44,59 @@ export function validateRealEstate(data: any): ValidationError[] {
 
 // Vehicle Validation
 export function validateVehicle(data: any): ValidationError[] {
+  // #region agent log
+  fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'validation/category-forms.ts:validateVehicle',message:'Vehicle validation started',data:{dataKeys:Object.keys(data),data},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+  // #endregion
+
   const errors: ValidationError[] = [];
 
   if (!data.vehicleType) {
-    errors.push({ field: 'vehicleType', message: 'نوع خودرو الزامی است' });
+    errors.push({ field: 'vehicleType', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.brand || data.brand.trim().length < 2) {
-    errors.push({ field: 'brand', message: 'برند باید حداقل 2 کاراکتر باشد' });
+    errors.push({ field: 'brand', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.model || data.model.trim().length < 1) {
-    errors.push({ field: 'model', message: 'مدل الزامی است' });
+    errors.push({ field: 'model', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.year || data.year < 1900 || data.year > new Date().getFullYear() + 1) {
-    errors.push({ field: 'year', message: 'سال ساخت معتبر نیست' });
+    errors.push({ field: 'year', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.mileage || data.mileage < 0) {
-    errors.push({ field: 'mileage', message: 'کارکرد الزامی است' });
+    errors.push({ field: 'mileage', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.fuelType) {
-    errors.push({ field: 'fuelType', message: 'نوع سوخت الزامی است' });
+    errors.push({ field: 'fuelType', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.transmission) {
-    errors.push({ field: 'transmission', message: 'نوع گیربکس الزامی است' });
+    errors.push({ field: 'transmission', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.condition) {
-    errors.push({ field: 'condition', message: 'وضعیت الزامی است' });
+    errors.push({ field: 'condition', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.damageStatus) {
-    errors.push({ field: 'damageStatus', message: 'وضعیت تصادف الزامی است' });
+    errors.push({ field: 'damageStatus', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.price || data.price <= 0) {
-    errors.push({ field: 'price', message: 'قیمت الزامی است' });
+    errors.push({ field: 'price', message: 'وارد کردن این مقدار اجباری است' });
   }
 
-  if (!data.postalCode || data.postalCode.trim().length < 5) {
+  if (data.postalCode && data.postalCode.trim().length > 0 && data.postalCode.trim().length < 5) {
     errors.push({ field: 'postalCode', message: 'کد پستی باید حداقل 5 کاراکتر باشد' });
   }
 
-  if (!data.contactName || data.contactName.trim().length < 2) {
-    errors.push({ field: 'contactName', message: 'نام تماس باید حداقل 2 کاراکتر باشد' });
-  }
-
-  if (!data.contactPhone || data.contactPhone.trim().length < 10) {
-    errors.push({ field: 'contactPhone', message: 'شماره تماس باید حداقل 10 کاراکتر باشد' });
-  }
+  // #region agent log
+  fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'validation/category-forms.ts:validateVehicle',message:'Vehicle validation completed',data:{errorsCount:errors.length,errors},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+  // #endregion
 
   return errors;
 }
@@ -114,23 +106,15 @@ export function validateService(data: any): ValidationError[] {
   const errors: ValidationError[] = [];
 
   if (!data.serviceCategory) {
-    errors.push({ field: 'serviceCategory', message: 'دسته خدمات الزامی است' });
+    errors.push({ field: 'serviceCategory', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.pricingType) {
-    errors.push({ field: 'pricingType', message: 'نوع قیمت‌گذاری الزامی است' });
+    errors.push({ field: 'pricingType', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (data.pricingType && data.pricingType !== 'negotiable' && (!data.price || data.price <= 0)) {
-    errors.push({ field: 'price', message: 'قیمت الزامی است' });
-  }
-
-  if (!data.contactName || data.contactName.trim().length < 2) {
-    errors.push({ field: 'contactName', message: 'نام تماس باید حداقل 2 کاراکتر باشد' });
-  }
-
-  if (!data.contactPhone || data.contactPhone.trim().length < 10) {
-    errors.push({ field: 'contactPhone', message: 'شماره تماس باید حداقل 10 کاراکتر باشد' });
+    errors.push({ field: 'price', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   return errors;
@@ -141,31 +125,23 @@ export function validateJob(data: any): ValidationError[] {
   const errors: ValidationError[] = [];
 
   if (!data.jobTitle || data.jobTitle.trim().length < 3) {
-    errors.push({ field: 'jobTitle', message: 'عنوان شغل باید حداقل 3 کاراکتر باشد' });
+    errors.push({ field: 'jobTitle', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.jobDescription || data.jobDescription.trim().length < 10) {
-    errors.push({ field: 'jobDescription', message: 'توضیحات شغل باید حداقل 10 کاراکتر باشد' });
+    errors.push({ field: 'jobDescription', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.jobType) {
-    errors.push({ field: 'jobType', message: 'نوع شغل الزامی است' });
+    errors.push({ field: 'jobType', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.industry || data.industry.trim().length < 2) {
-    errors.push({ field: 'industry', message: 'صنعت باید حداقل 2 کاراکتر باشد' });
+    errors.push({ field: 'industry', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   if (!data.companyName || data.companyName.trim().length < 2) {
-    errors.push({ field: 'companyName', message: 'نام شرکت باید حداقل 2 کاراکتر باشد' });
-  }
-
-  if (!data.contactName || data.contactName.trim().length < 2) {
-    errors.push({ field: 'contactName', message: 'نام تماس باید حداقل 2 کاراکتر باشد' });
-  }
-
-  if (!data.contactEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contactEmail)) {
-    errors.push({ field: 'contactEmail', message: 'ایمیل معتبر الزامی است' });
+    errors.push({ field: 'companyName', message: 'وارد کردن این مقدار اجباری است' });
   }
 
   return errors;

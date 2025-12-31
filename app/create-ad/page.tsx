@@ -42,7 +42,6 @@ export default function CreateAdPage() {
   const [step2Data, setStep2Data] = useState({
     title: '',
     description: '',
-    condition: 'USED' as 'NEW' | 'LIKE_NEW' | 'USED',
     showEmail: false,
     showPhone: false,
   });
@@ -174,23 +173,38 @@ export default function CreateAdPage() {
       return true; // No category selected, skip validation
     }
 
+    // #region agent log
+    fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-ad/page.tsx:validateStep3',message:'Validation started',data:{categoryType,step3DataKeys:Object.keys(step3Data),step2Condition:step2Data.condition},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+
     let errors: any[] = [];
     const errorMap: Record<string, string> = {};
 
+    // Use step3Data directly for validation (condition is now only in step3 for vehicles)
+    const validationData = step3Data;
+
+    // #region agent log
+    fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-ad/page.tsx:validateStep3',message:'Validation data prepared',data:{validationDataKeys:Object.keys(validationData),validationData},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+
     switch (categoryType) {
       case MainCategoryType.REAL_ESTATE:
-        errors = validateRealEstate(step3Data);
+        errors = validateRealEstate(validationData);
         break;
       case MainCategoryType.VEHICLES:
-        errors = validateVehicle(step3Data);
+        errors = validateVehicle(validationData);
         break;
       case MainCategoryType.SERVICES:
-        errors = validateService(step3Data);
+        errors = validateService(validationData);
         break;
       case MainCategoryType.JOBS:
-        errors = validateJob(step3Data);
+        errors = validateJob(validationData);
         break;
     }
+
+    // #region agent log
+    fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-ad/page.tsx:validateStep3',message:'Validation errors',data:{errorsCount:errors.length,errors},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
 
     // Convert errors array to error map
     errors.forEach((error) => {
@@ -252,12 +266,6 @@ export default function CreateAdPage() {
     }
     
     try {
-      const conditionMap: Record<string, string> = {
-        'NEW': 'new',
-        'LIKE_NEW': 'like-new',
-        'USED': 'used',
-      };
-      
       // Build request data with category-specific fields
       const requestData: any = {
         title: step2Data.title.trim(),
@@ -266,13 +274,18 @@ export default function CreateAdPage() {
         cityId: step1Data.cityId,
         showEmail: step2Data.showEmail || false,
         showPhone: step2Data.showPhone || false,
-        ...step3Data, // Merge all category-specific fields
+        ...step3Data, // Merge all category-specific fields (condition is now in step3Data for vehicles)
       };
 
-      // For vehicles, add condition from step2
-      if (categoryType === MainCategoryType.VEHICLES && step2Data.condition) {
-        requestData.condition = step2Data.condition;
+      // For vehicles, ensure condition is in lowercase format expected by backend
+      if (categoryType === MainCategoryType.VEHICLES && requestData.condition) {
+        // Convert uppercase to lowercase (USED -> used, NEW -> new)
+        requestData.condition = requestData.condition.toLowerCase();
       }
+
+      // #region agent log
+      fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-ad/page.tsx:handleSubmit',message:'Request data prepared',data:{requestDataKeys:Object.keys(requestData),condition:requestData.condition,categoryType,step3DataCondition:step3Data.condition},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
 
       // For jobs, use jobTitle and jobDescription from step3Data, fallback to title/description
       if (categoryType === MainCategoryType.JOBS) {
@@ -352,7 +365,7 @@ export default function CreateAdPage() {
 
   return (
     <div className="w-full min-h-screen overflow-visible">
-      <div className="container mx-auto px-4 py-8 max-w-4xl pb-40 md:pb-8 overflow-visible">
+      <div className="container mx-auto px-4 py-8 max-w-xl pb-40 md:pb-8 overflow-visible">
         <h1 className="text-3xl font-bold mb-8">{isRTL ? 'ثبت آگهی جدید' : 'Create New Ad'}</h1>
 
         {/* Progress Steps */}
@@ -390,8 +403,8 @@ export default function CreateAdPage() {
           <div className="space-y-6 overflow-visible">
             <h2 className="text-2xl font-bold mb-4">{isRTL ? 'انتخاب دسته‌بندی و شهر' : 'Select Category & City'}</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="relative z-10">
+            <div className="space-y-4">
+              <div className="relative z-10 w-full md:w-1/2">
                 <label className="block text-sm font-medium mb-2">{isRTL ? 'دسته‌بندی' : 'Category'}</label>
                 <select
                   value={step1Data.categoryId}
@@ -409,30 +422,30 @@ export default function CreateAdPage() {
                 </select>
               </div>
 
+              <div className="relative z-10 w-full md:w-1/2">
+                <label className="block text-sm font-medium mb-2">{isRTL ? 'شهر' : 'City'}</label>
+                <select
+                  value={step1Data.cityId}
+                  onChange={(e) => handleStep1Change('cityId', e.target.value)}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20"
+                  style={{ zIndex: 1000 }}
+                >
+                  <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                  {filteredCities.map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {getLocalizedName(city.name, locale)}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            <div className="relative z-10">
-              <label className="block text-sm font-medium mb-2">{isRTL ? 'شهر' : 'City'}</label>
-              <select
-                value={step1Data.cityId}
-                onChange={(e) => handleStep1Change('cityId', e.target.value)}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20"
-                style={{ zIndex: 1000 }}
-              >
-                <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
-                {filteredCities.map((city) => (
-                  <option key={city.id} value={city.id}>
-                    {getLocalizedName(city.name, locale)}
-                  </option>
-                ))}
-              </select>
-              {selectedCityId && (
-                <p className="text-sm text-gray-500 mt-1">
-                  {isRTL ? 'شهر انتخاب شده از صفحه اصلی' : 'City selected from homepage'}
-                </p>
-              )}
-            </div>
+            {selectedCityId && (
+              <p className="text-sm text-gray-500 mt-1">
+                {isRTL ? 'شهر انتخاب شده از صفحه اصلی' : 'City selected from homepage'}
+              </p>
+            )}
           </div>
         )}
 
@@ -448,7 +461,17 @@ export default function CreateAdPage() {
                 value={step2Data.title}
                 onChange={(e) => handleStep2Change('title', e.target.value)}
                 required
-                placeholder={isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center'}
+                placeholder={
+                  categoryType === MainCategoryType.REAL_ESTATE
+                    ? (isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center')
+                    : categoryType === MainCategoryType.VEHICLES
+                    ? (isRTL ? 'مثال: BMW 320d سال 2020' : 'Example: BMW 320d 2020')
+                    : categoryType === MainCategoryType.SERVICES
+                    ? (isRTL ? 'مثال: خدمات تعمیرات ساختمان' : 'Example: Building repair services')
+                    : categoryType === MainCategoryType.JOBS
+                    ? (isRTL ? 'مثال: توسعه‌دهنده Full Stack' : 'Example: Full Stack Developer')
+                    : (isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title')
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
               />
             </div>
@@ -460,27 +483,20 @@ export default function CreateAdPage() {
                 onChange={(e) => handleStep2Change('description', e.target.value)}
                 required
                 rows={8}
-                placeholder={isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...'}
+                placeholder={
+                  categoryType === MainCategoryType.REAL_ESTATE
+                    ? (isRTL ? 'توضیحات کامل ملک: متراژ، موقعیت، امکانات و...' : 'Full property description: area, location, features...')
+                    : categoryType === MainCategoryType.VEHICLES
+                    ? (isRTL ? 'توضیحات خودرو: وضعیت، کارکرد، ویژگی‌ها و...' : 'Vehicle description: condition, mileage, features...')
+                    : categoryType === MainCategoryType.SERVICES
+                    ? (isRTL ? 'توضیحات خدمات: تجربه، تخصص، گواهینامه‌ها و...' : 'Service description: experience, expertise, certificates...')
+                    : categoryType === MainCategoryType.JOBS
+                    ? (isRTL ? 'توضیحات شغل: مسئولیت‌ها، الزامات، مزایا و...' : 'Job description: responsibilities, requirements, benefits...')
+                    : (isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...')
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
               />
             </div>
-
-            {/* Condition field - only show for Vehicles */}
-            {categoryType === MainCategoryType.VEHICLES && (
-              <div className="relative z-10">
-                <label className="block text-sm font-medium mb-2">{isRTL ? 'وضعیت' : 'Condition'}</label>
-                <select
-                  value={step2Data.condition}
-                  onChange={(e) => handleStep2Change('condition', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20"
-                  style={{ zIndex: 1000 }}
-                >
-                  <option value="NEW">{isRTL ? 'نو' : 'New'}</option>
-                  <option value="LIKE_NEW">{isRTL ? 'در حد نو' : 'Like New'}</option>
-                  <option value="USED">{isRTL ? 'کارکرده' : 'Used'}</option>
-                </select>
-              </div>
-            )}
 
             {/* Privacy Settings */}
             <div className="border-t border-gray-200 pt-6 mt-6">
