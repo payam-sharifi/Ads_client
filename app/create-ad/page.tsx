@@ -157,6 +157,11 @@ export default function CreateAdPage() {
   };
 
   const validateStep2 = () => {
+    // For Jobs, title and description are in Step 3, so skip validation here
+    if (categoryType === MainCategoryType.JOBS) {
+      return true;
+    }
+    
     if (!step2Data.title.trim() || step2Data.title.trim().length < 3) {
       toast.error(isRTL ? 'عنوان باید حداقل 3 کاراکتر باشد' : 'Title must be at least 3 characters');
       return false;
@@ -454,49 +459,50 @@ export default function CreateAdPage() {
           <div className="space-y-6">
             <h2 className="text-2xl font-bold mb-4">{isRTL ? 'اطلاعات پایه آگهی' : 'Basic Ad Information'}</h2>
             
-            <div>
-              <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
-              <input
-                type="text"
-                value={step2Data.title}
-                onChange={(e) => handleStep2Change('title', e.target.value)}
-                required
-                placeholder={
-                  categoryType === MainCategoryType.REAL_ESTATE
-                    ? (isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center')
-                    : categoryType === MainCategoryType.VEHICLES
-                    ? (isRTL ? 'مثال: BMW 320d سال 2020' : 'Example: BMW 320d 2020')
-                    : categoryType === MainCategoryType.SERVICES
-                    ? (isRTL ? 'مثال: خدمات تعمیرات ساختمان' : 'Example: Building repair services')
-                    : categoryType === MainCategoryType.JOBS
-                    ? (isRTL ? 'مثال: توسعه‌دهنده Full Stack' : 'Example: Full Stack Developer')
-                    : (isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title')
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-            </div>
+            {/* Title and Description - Hidden for Jobs (will be in Step 3) */}
+            {categoryType !== MainCategoryType.JOBS && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
+                  <input
+                    type="text"
+                    value={step2Data.title}
+                    onChange={(e) => handleStep2Change('title', e.target.value)}
+                    required
+                    placeholder={
+                      categoryType === MainCategoryType.REAL_ESTATE
+                        ? (isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center')
+                        : categoryType === MainCategoryType.VEHICLES
+                        ? (isRTL ? 'مثال: BMW 320d سال 2020' : 'Example: BMW 320d 2020')
+                        : categoryType === MainCategoryType.SERVICES
+                        ? (isRTL ? 'مثال: خدمات تعمیرات ساختمان' : 'Example: Building repair services')
+                        : (isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title')
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">{isRTL ? 'توضیحات' : 'Description'}</label>
-              <textarea
-                value={step2Data.description}
-                onChange={(e) => handleStep2Change('description', e.target.value)}
-                required
-                rows={8}
-                placeholder={
-                  categoryType === MainCategoryType.REAL_ESTATE
-                    ? (isRTL ? 'توضیحات کامل ملک: متراژ، موقعیت، امکانات و...' : 'Full property description: area, location, features...')
-                    : categoryType === MainCategoryType.VEHICLES
-                    ? (isRTL ? 'توضیحات خودرو: وضعیت، کارکرد، ویژگی‌ها و...' : 'Vehicle description: condition, mileage, features...')
-                    : categoryType === MainCategoryType.SERVICES
-                    ? (isRTL ? 'توضیحات خدمات: تجربه، تخصص، گواهینامه‌ها و...' : 'Service description: experience, expertise, certificates...')
-                    : categoryType === MainCategoryType.JOBS
-                    ? (isRTL ? 'توضیحات شغل: مسئولیت‌ها، الزامات، مزایا و...' : 'Job description: responsibilities, requirements, benefits...')
-                    : (isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...')
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-            </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'توضیحات' : 'Description'}</label>
+                  <textarea
+                    value={step2Data.description}
+                    onChange={(e) => handleStep2Change('description', e.target.value)}
+                    required
+                    rows={8}
+                    placeholder={
+                      categoryType === MainCategoryType.REAL_ESTATE
+                        ? (isRTL ? 'توضیحات کامل ملک: متراژ، موقعیت، امکانات و...' : 'Full property description: area, location, features...')
+                        : categoryType === MainCategoryType.VEHICLES
+                        ? (isRTL ? 'توضیحات خودرو: وضعیت، کارکرد، ویژگی‌ها و...' : 'Vehicle description: condition, mileage, features...')
+                        : categoryType === MainCategoryType.SERVICES
+                        ? (isRTL ? 'توضیحات خدمات: تجربه، تخصص، گواهینامه‌ها و...' : 'Service description: experience, expertise, certificates...')
+                        : (isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...')
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
+              </>
+            )}
 
             {/* Privacy Settings */}
             <div className="border-t border-gray-200 pt-6 mt-6">

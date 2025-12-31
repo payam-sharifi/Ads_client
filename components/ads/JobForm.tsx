@@ -110,23 +110,25 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
         </div>
       </div>
 
-      {/* Experience Level */}
-      <div className="relative z-10">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'سطح تجربه' : 'Experience Level'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <div className="relative" style={{ zIndex: 1000 }}>
-          <select
-            value={data.experienceLevel || ''}
-            onChange={(e) => updateField('experienceLevel', e.target.value || undefined)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            dir={isRTL ? 'rtl' : 'ltr'}
-          >
-          <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
-          <option value={ExperienceLevel.JUNIOR}>{isRTL ? 'جونیور' : 'Junior'}</option>
-          <option value={ExperienceLevel.MID}>{isRTL ? 'میانه' : 'Mid-level'}</option>
-          <option value={ExperienceLevel.SENIOR}>{isRTL ? 'سنیور' : 'Senior'}</option>
-          </select>
+      {/* Experience Level - Desktop: 2 columns, Mobile: 1 column */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="relative z-10">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'سطح تجربه' : 'Experience Level'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <div className="relative" style={{ zIndex: 1000 }}>
+            <select
+              value={data.experienceLevel || ''}
+              onChange={(e) => updateField('experienceLevel', e.target.value || undefined)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              dir={isRTL ? 'rtl' : 'ltr'}
+            >
+            <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
+            <option value={ExperienceLevel.JUNIOR}>{isRTL ? 'جونیور' : 'Junior'}</option>
+            <option value={ExperienceLevel.MID}>{isRTL ? 'میانه' : 'Mid-level'}</option>
+            <option value={ExperienceLevel.SENIOR}>{isRTL ? 'سنیور' : 'Senior'}</option>
+            </select>
+          </div>
         </div>
       </div>
 

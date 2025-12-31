@@ -42,13 +42,24 @@ apiClient.interceptors.response.use(
       // Unauthorized - clear auth state
       if (typeof window !== 'undefined') {
         const currentPath = window.location.pathname;
-        // Clear auth state from Zustand store
-        const { clearAuth } = useAuthStore.getState();
-        clearAuth();
         
-        // Only redirect if not already on login page to prevent infinite redirect loop
-        if (currentPath !== '/login') {
-          window.location.href = '/login';
+        // Don't redirect for public routes (ad detail pages, home, category pages, etc.)
+        const isPublicRoute = currentPath.startsWith('/ad/') || 
+                             currentPath === '/' || 
+                             currentPath.startsWith('/category/') || 
+                             currentPath.startsWith('/city/') ||
+                             currentPath === '/login' ||
+                             currentPath === '/signup';
+        
+        if (!isPublicRoute) {
+          // Clear auth state from Zustand store
+          const { clearAuth } = useAuthStore.getState();
+          clearAuth();
+          
+          // Only redirect if not already on login page to prevent infinite redirect loop
+          if (currentPath !== '/login') {
+            window.location.href = '/login';
+          }
         }
       }
     }

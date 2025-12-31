@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api/client';
+import { useAuthStore } from '@/lib/stores/authStore';
 
 /**
  * Ad Types and Interfaces
@@ -354,6 +355,7 @@ export const useUnbookmarkAd = () => {
  * Get user's bookmarked ads (requires auth)
  */
 export const useBookmarkedAds = (page: number = 1, limit: number = 20) => {
+  const { isAuthenticated } = useAuthStore();
   return useQuery({
     queryKey: ['ads', 'bookmarked', page, limit],
     queryFn: async () => {
@@ -362,5 +364,6 @@ export const useBookmarkedAds = (page: number = 1, limit: number = 20) => {
       });
       return response.data;
     },
+    enabled: isAuthenticated, // Only fetch when authenticated
   });
 };

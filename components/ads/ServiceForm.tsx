@@ -32,60 +32,63 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
 
   return (
     <div className="space-y-4 overflow-visible relative">
-      {/* Service Category */}
-      <div className="relative z-10">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'دسته خدمات' : 'Service Category'} <span className="text-red-500">*</span>
-        </label>
-        <div className="relative" style={{ zIndex: 1000 }}>
+      {/* Dropdowns Row - Desktop: 2 columns, Mobile: 1 column */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Service Category */}
+        <div className="relative z-10">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'دسته خدمات' : 'Service Category'} <span className="text-red-500">*</span>
+          </label>
+          <div className="relative" style={{ zIndex: 1000 }}>
+            <select
+              value={data.serviceCategory || ''}
+              onChange={(e) => updateField('serviceCategory', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('serviceCategory') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              dir={isRTL ? 'rtl' : 'ltr'}
+            >
+            <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
+            {Object.entries(serviceCategoryLabels).map(([value, labels]) => (
+              <option key={value} value={value}>
+                {isRTL ? labels.fa : labels.de}
+              </option>
+            ))}
+          </select>
+          </div>
+          {getFieldError('serviceCategory') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('serviceCategory')}</p>
+          )}
+        </div>
+
+        {/* Pricing Type */}
+        <div className="relative z-10">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'نوع قیمت‌گذاری' : 'Pricing Type'} <span className="text-red-500">*</span>
+          </label>
           <select
-            value={data.serviceCategory || ''}
-            onChange={(e) => updateField('serviceCategory', e.target.value)}
-          className={`w-full px-3 py-2 border rounded-lg ${
-            getFieldError('serviceCategory') ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-red-500`}
+            value={data.pricingType || ''}
+            onChange={(e) => {
+              updateField('pricingType', e.target.value);
+              if (e.target.value === PricingType.NEGOTIABLE) {
+                updateField('price', undefined);
+              }
+            }}
+            className={`w-full px-3 py-2 border rounded-lg relative z-20 ${
+              getFieldError('pricingType') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+            style={{ zIndex: 1000 }}
             dir={isRTL ? 'rtl' : 'ltr'}
           >
-          <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
-          {Object.entries(serviceCategoryLabels).map(([value, labels]) => (
-            <option key={value} value={value}>
-              {isRTL ? labels.fa : labels.de}
-            </option>
-          ))}
-        </select>
+            <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
+            <option value={PricingType.FIXED}>{isRTL ? 'قیمت ثابت' : 'Fixed Price'}</option>
+            <option value={PricingType.HOURLY}>{isRTL ? 'ساعتی' : 'Hourly'}</option>
+            <option value={PricingType.NEGOTIABLE}>{isRTL ? 'قابل مذاکره' : 'Negotiable'}</option>
+          </select>
+          {getFieldError('pricingType') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('pricingType')}</p>
+          )}
         </div>
-        {getFieldError('serviceCategory') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('serviceCategory')}</p>
-        )}
-      </div>
-
-      {/* Pricing Type */}
-      <div className="relative z-10">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'نوع قیمت‌گذاری' : 'Pricing Type'} <span className="text-red-500">*</span>
-        </label>
-        <select
-          value={data.pricingType || ''}
-          onChange={(e) => {
-            updateField('pricingType', e.target.value);
-            if (e.target.value === PricingType.NEGOTIABLE) {
-              updateField('price', undefined);
-            }
-          }}
-          className={`w-full px-3 py-2 border rounded-lg relative z-20 ${
-            getFieldError('pricingType') ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-red-500`}
-          style={{ zIndex: 1000 }}
-          dir={isRTL ? 'rtl' : 'ltr'}
-        >
-          <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
-          <option value={PricingType.FIXED}>{isRTL ? 'قیمت ثابت' : 'Fixed Price'}</option>
-          <option value={PricingType.HOURLY}>{isRTL ? 'ساعتی' : 'Hourly'}</option>
-          <option value={PricingType.NEGOTIABLE}>{isRTL ? 'قابل مذاکره' : 'Negotiable'}</option>
-        </select>
-        {getFieldError('pricingType') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('pricingType')}</p>
-        )}
       </div>
 
       {/* Price (if not negotiable) */}
