@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAdminAds, useApproveAd, useRejectAd, AdminAdsResponse } from '@/lib/hooks/admin/useAdminAds';
@@ -79,6 +79,8 @@ export default function AdminAdsPage() {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [openActionsMenu, setOpenActionsMenu] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{ top: number; right?: number; left?: number } | null>(null);
+  const buttonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
   const handleApprove = async (adId: string) => {
     if (!hasPermission('ads.approve')) {
@@ -274,6 +276,58 @@ export default function AdminAdsPage() {
 
   const ads = (adsData as AdminAdsResponse | undefined)?.data || [];
   const hasActiveFilters = status || categoryId || cityId || search;
+
+  // Calculate menu position when it opens
+  useEffect(() => {
+    if (openActionsMenu) {
+      const button = buttonRefs.current[openActionsMenu];
+      if (button) {
+        const rect = button.getBoundingClientRect();
+        if (isRTL) {
+          setMenuPosition({
+            top: rect.bottom + 4,
+            left: rect.left,
+          });
+        } else {
+          setMenuPosition({
+            top: rect.bottom + 4,
+            right: window.innerWidth - rect.right,
+          });
+        }
+      }
+    } else {
+      setMenuPosition(null);
+    }
+  }, [openActionsMenu, isRTL]);
+
+  // Close menu on scroll or click outside
+  useEffect(() => {
+    const handleScroll = () => {
+      if (openActionsMenu) {
+        setOpenActionsMenu(null);
+      }
+    };
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openActionsMenu) {
+        const target = event.target as HTMLElement;
+        const button = buttonRefs.current[openActionsMenu];
+        const menu = document.querySelector('[data-action-menu]');
+        
+        if (button && !button.contains(target) && menu && !menu.contains(target)) {
+          setOpenActionsMenu(null);
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll, true);
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openActionsMenu]);
 
   const handleClearFilters = () => {
     const params = new URLSearchParams();
@@ -541,6 +595,9 @@ export default function AdminAdsPage() {
                       <div className="flex items-center justify-end">
                         <div className="relative">
                           <button
+                            ref={(el) => {
+                              buttonRefs.current[ad.id] = el;
+                            }}
                             onClick={() => setOpenActionsMenu(openActionsMenu === ad.id ? null : ad.id)}
                             className="p-2 sm:p-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                             title={locale === 'fa' ? 'عملیات' : 'Actions'}
@@ -690,11 +747,18 @@ export default function AdminAdsPage() {
                                 </div>
                               </div>
                               {/* Desktop: Dropdown Menu */}
-                              <div 
-                                className={`hidden md:block absolute ${isRTL ? 'left-0' : 'right-0'} top-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 z-[100] py-1`}
-                                style={{ width: '224px', minWidth: '224px' }} 
-                                dir={isRTL ? 'rtl' : 'ltr'}
-                              >
+                              {menuPosition && openActionsMenu === ad.id && (
+                                <div 
+                                  data-action-menu
+                                  className="hidden md:block fixed bg-white rounded-lg shadow-xl border border-gray-200 z-[9999] py-1"
+                                  style={{ 
+                                    width: '224px', 
+                                    minWidth: '224px',
+                                    top: `${menuPosition.top}px`,
+                                    ...(isRTL ? { left: `${menuPosition.left}px` } : { right: `${menuPosition.right}px` })
+                                  }}
+                                  dir={isRTL ? 'rtl' : 'ltr'}
+                                >
                                 <Link
                                   href={`/ad/${ad.id}`}
                                   className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -812,7 +876,8 @@ export default function AdminAdsPage() {
                                       <span>{locale === 'fa' ? 'حذف' : 'Delete'}</span>
                                     </button>
                                   </>
-                              </div>
+                                </div>
+                              )}
                             </>
                           )}
                         </div>
