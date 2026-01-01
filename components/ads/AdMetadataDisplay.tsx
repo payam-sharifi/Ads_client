@@ -336,9 +336,9 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {service.serviceRadius && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'شعاع خدمات' : 'Service Radius'}
+              {isRTL ? 'محدوده یا منطقه' : 'Area or District'}
             </span>
-            <span className="font-medium text-gray-900">{service.serviceRadius} km</span>
+            <span className="font-medium text-gray-900">{service.serviceRadius}</span>
           </div>
         )}
         {service.experienceYears && (

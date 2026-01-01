@@ -123,19 +123,18 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
         </div>
       )}
 
-      {/* Service Radius */}
+      {/* Service Area */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'شعاع خدمات (km)' : 'Service Radius (km)'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          {isRTL ? 'محدوده یا منطقه' : 'Area or District'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
         </label>
         <input
-          type="number"
-          value={data.serviceRadius || ''}
-          onChange={(e) => updateField('serviceRadius', parseFloat(e.target.value) || undefined)}
-          placeholder={isRTL ? '50' : '50'}
+          type="text"
+          value={data.serviceRadius ? String(data.serviceRadius) : ''}
+          onChange={(e) => updateField('serviceRadius', e.target.value || undefined)}
+          placeholder={isRTL ? 'محدوده خدمات' : 'Service area'}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          dir="ltr"
-          min="1"
+          dir={isRTL ? 'rtl' : 'ltr'}
         />
       </div>
 
