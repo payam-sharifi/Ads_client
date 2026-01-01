@@ -5,20 +5,24 @@ import Link from 'next/link';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { useLogout } from '@/lib/hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useCities } from '@/lib/hooks/useCities';
 import { useUnreadMessagesCount } from '@/lib/hooks/useMessages';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
 import BackButton from '@/components/common/BackButton';
 import { usePathname } from 'next/navigation';
+import { useCityStore } from '@/lib/stores/cityStore';
 
 export default function Navbar() {
   const { locale, setLocale, t, isRTL } = useI18n();
   const { isAuthenticated, user } = useAuthStore();
   const logoutMutation = useLogout();
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchParams = useSearchParams();
+  const { selectedCityId } = useCityStore();
+  const urlSearchQuery = searchParams?.get('search') || '';
+  const [searchInput, setSearchInput] = useState(urlSearchQuery);
   const [showCategories, setShowCategories] = useState(false);
   const [showCities, setShowCities] = useState(false);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
@@ -40,6 +44,37 @@ export default function Navbar() {
       console.log('Navbar - Unread count:', unreadCount, 'Loading:', unreadCountLoading, 'Error:', unreadCountError);
     }
   }, [unreadCount, unreadCountLoading, unreadCountError, isAuthenticated]);
+
+  // Sync search input with URL query
+  useEffect(() => {
+    setSearchInput(urlSearchQuery);
+  }, [urlSearchQuery]);
+
+  // Auto-search when user types 3+ characters (with debounce) - only on home page
+  useEffect(() => {
+    if (pathname !== '/') return; // Only auto-search on home page
+    
+    const trimmedInput = searchInput.trim();
+    
+    // Only search if input has 3+ characters or is empty (to clear search)
+    if (trimmedInput.length >= 3 || trimmedInput.length === 0) {
+      const timeoutId = setTimeout(() => {
+        // Only update URL if different from current search query
+        if (trimmedInput !== urlSearchQuery) {
+          const params = new URLSearchParams();
+          if (selectedCityId) {
+            params.set('cityId', selectedCityId);
+          }
+          if (trimmedInput) {
+            params.set('search', trimmedInput);
+          }
+          router.push(`/?${params.toString()}`);
+        }
+      }, 500); // 500ms debounce
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchInput, urlSearchQuery, selectedCityId, router, pathname]);
   
   // Filter out Tehran and get only parent categories
   const filteredCities = cities.filter(city => {
@@ -84,8 +119,14 @@ export default function Navbar() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      window.location.href = `/?search=${encodeURIComponent(searchQuery)}`;
+    const trimmedInput = searchInput.trim();
+    if (trimmedInput) {
+      const params = new URLSearchParams();
+      if (selectedCityId) {
+        params.set('cityId', selectedCityId);
+      }
+      params.set('search', trimmedInput);
+      router.push(`/?${params.toString()}`);
     }
   };
 
@@ -223,8 +264,8 @@ export default function Navbar() {
               </span>
               <input
                 type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder=""
                 className={`w-full py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm bg-gray-50 ${
                   isRTL ? 'pl-4 pr-16' : 'pr-4 pl-16'

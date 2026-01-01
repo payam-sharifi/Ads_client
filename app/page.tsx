@@ -26,6 +26,12 @@ function HomePageContent() {
   // 'all' means show all cities, empty means show landing page
   const activeCityId = cityIdFromUrl || selectedCityId;
 
+  // Fetch categories and cities - always call hooks, even if we'll show landing page
+  const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories();
+  const { data: cities = [] } = useCities();
+  const [showCitySelector, setShowCitySelector] = React.useState(false);
+  const [searchInput, setSearchInput] = React.useState(searchQuery);
+
   // If cityId is in URL, save it to store
   useEffect(() => {
     if (cityIdFromUrl && cityIdFromUrl !== selectedCityId) {
@@ -33,10 +39,34 @@ function HomePageContent() {
     }
   }, [cityIdFromUrl, selectedCityId, setSelectedCity]);
 
-  // Fetch categories and cities - always call hooks, even if we'll show landing page
-  const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories();
-  const { data: cities = [] } = useCities();
-  const [showCitySelector, setShowCitySelector] = React.useState(false);
+  // Sync search input with URL query
+  useEffect(() => {
+    setSearchInput(searchQuery);
+  }, [searchQuery]);
+
+  // Auto-search when user types 3+ characters (with debounce)
+  useEffect(() => {
+    const trimmedInput = searchInput.trim();
+    
+    // Only search if input has 3+ characters or is empty (to clear search)
+    if (trimmedInput.length >= 3 || trimmedInput.length === 0) {
+      const timeoutId = setTimeout(() => {
+        // Only update URL if different from current search query
+        if (trimmedInput !== searchQuery) {
+          const params = new URLSearchParams();
+          if (activeCityId) {
+            params.set('cityId', activeCityId);
+          }
+          if (trimmedInput) {
+            params.set('search', trimmedInput);
+          }
+          router.push(`/?${params.toString()}`);
+        }
+      }, 500); // 500ms debounce
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchInput, searchQuery, activeCityId, router]);
 
   // Fetch ads with infinite scroll support
   // API: GET /api/ads (public - only shows APPROVED ads)
@@ -91,6 +121,35 @@ function HomePageContent() {
     };
   }, [activeCityId, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  // Sync search input with URL query
+  useEffect(() => {
+    setSearchInput(searchQuery);
+  }, [searchQuery]);
+
+  // Auto-search when user types 3+ characters (with debounce)
+  useEffect(() => {
+    const trimmedInput = searchInput.trim();
+    
+    // Only search if input has 3+ characters or is empty (to clear search)
+    if (trimmedInput.length >= 3 || trimmedInput.length === 0) {
+      const timeoutId = setTimeout(() => {
+        // Only update URL if different from current search query
+        if (trimmedInput !== searchQuery) {
+          const params = new URLSearchParams();
+          if (activeCityId) {
+            params.set('cityId', activeCityId);
+          }
+          if (trimmedInput) {
+            params.set('search', trimmedInput);
+          }
+          router.push(`/?${params.toString()}`);
+        }
+      }, 500); // 500ms debounce
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchInput, searchQuery, activeCityId, router]);
+
   // Show landing page only if no city is selected (not 'all')
   if (!activeCityId || activeCityId === '') {
     return <CitySelectionLanding />;
@@ -136,10 +195,9 @@ function HomePageContent() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              const query = formData.get('search') as string;
-              if (query.trim()) {
-                router.push(`/?cityId=${activeCityId}&search=${encodeURIComponent(query)}`);
+              const trimmedInput = searchInput.trim();
+              if (trimmedInput) {
+                router.push(`/?cityId=${activeCityId}&search=${encodeURIComponent(trimmedInput)}`);
               }
             }}
             className="flex items-center gap-2 bg-gray-50 rounded-lg border border-gray-300 px-3 py-2"
@@ -149,6 +207,8 @@ function HomePageContent() {
             <input
               type="text"
               name="search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               placeholder={isRTL ? 'جستجو در همه آگهی‌ها' : 'Suche in allen Anzeigen'}
               className="flex-1 bg-transparent text-gray-700 text-sm outline-none placeholder-gray-500"
               dir={isRTL ? 'rtl' : 'ltr'}
@@ -256,7 +316,7 @@ function HomePageContent() {
         </>
       )}
 
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-3 py-3">
         {/* Categories Grid */}
         <div className="mb-6">
           <div className="grid grid-cols-4 gap-3 md:gap-4">
@@ -264,9 +324,9 @@ function HomePageContent() {
               <Link
                 key={category.id}
                 href={`/category/${category.id}`}
-                className="flex flex-col items-center justify-center bg-white rounded-lg border border-gray-200 p-3 hover:border-red-300 hover:shadow-md transition-all group"
+                className="flex flex-col items-center justify-center bg-white rounded-lg border border-gray-200 p-1 hover:border-red-300 hover:shadow-md transition-all group"
               >
-                <div className="text-3xl md:text-4xl mb-2 group-hover:scale-110 transition-transform">
+                <div className="text-2xl md:text-4xl mb-2 group-hover:scale-110 transition-transform">
                   {category.icon || '📦'}
                 </div>
                 <span className="text-xs md:text-sm font-medium text-gray-700 text-center line-clamp-2 group-hover:text-red-600 transition-colors">
