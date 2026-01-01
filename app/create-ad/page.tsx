@@ -382,12 +382,12 @@ export default function CreateAdPage() {
 
         {/* Progress Steps */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center w-full">
             {[1, 2, 3].map((step) => (
               <React.Fragment key={step}>
-                <div className="flex items-center">
+                <div className="flex items-center flex-shrink-0">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                    className={`w-6 h-6 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-xs md:text-base ${
                       currentStep >= step
                         ? 'bg-red-600 text-white'
                         : 'bg-gray-200 text-gray-600'
@@ -395,14 +395,14 @@ export default function CreateAdPage() {
                   >
                     {step}
                   </div>
-                  <span className={`ml-2 text-sm font-medium ${currentStep >= step ? 'text-red-600' : 'text-gray-600'}`}>
+                  <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap ${currentStep >= step ? 'text-red-600' : 'text-gray-600'}`}>
                     {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
                     {step === 2 && (isRTL ? 'اطلاعات پایه' : 'Basic Info')}
                     {step === 3 && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
                   </span>
                 </div>
                 {step < 3 && (
-                  <div className={`flex-1 h-1 mx-4 ${currentStep > step ? 'bg-red-600' : 'bg-gray-200'}`} />
+                  <div className={`flex-1 h-[2px] md:h-1.5 mx-1 md:mx-4 ${currentStep > step ? 'bg-red-600' : 'bg-gray-500'}`} style={{ minWidth: '16px' }} />
                 )}
               </React.Fragment>
             ))}
@@ -549,17 +549,7 @@ export default function CreateAdPage() {
             
             {/* Category-specific Forms */}
             {categoryType && (
-              <div 
-                className="space-y-4 p-4 bg-gray-50 rounded-lg overflow-y-auto overflow-x-visible"
-                style={{ 
-                  WebkitOverflowScrolling: 'touch', 
-                  overflowY: 'auto',
-                  overflowX: 'visible',
-                  touchAction: 'pan-y',
-                  maxHeight: isMobile ? '400px' : '600px',
-                  height: 'auto'
-                }}
-              >
+              <div className="space-y-4">
                 {categoryType === MainCategoryType.REAL_ESTATE && (
                   <RealEstateForm 
                     data={step3Data} 
@@ -592,7 +582,7 @@ export default function CreateAdPage() {
             )}
 
             {/* Image Upload */}
-            <div>
+            <div className="border-t border-gray-300 pt-6">
               <label className="block text-sm font-medium mb-2">
                 {isRTL ? 'تصاویر' : 'Images'} 
                 <span className="text-gray-500 text-xs ml-2">
@@ -609,14 +599,14 @@ export default function CreateAdPage() {
                     }
                   }
                 })}
-                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors touch-manipulation relative ${
+                className={`border-2 border-dashed rounded-lg p-4 md:p-6 text-center cursor-pointer transition-colors touch-manipulation relative ${
                   imageFiles.length >= 3 
                     ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50' 
                     : isDragActive 
                     ? 'border-red-500 bg-red-50' 
                     : 'border-gray-300 hover:border-gray-400 active:bg-gray-50'
                 }`}
-                style={{ WebkitTapHighlightColor: 'transparent', minHeight: '120px' }}
+                style={{ WebkitTapHighlightColor: 'transparent', minHeight: '60px' }}
               >
                 <input 
                   {...getInputProps({
@@ -627,7 +617,7 @@ export default function CreateAdPage() {
                     style: { display: 'block', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, opacity: 0, cursor: 'pointer', zIndex: 10, pointerEvents: 'auto' }
                   })} 
                 />
-                <p className="text-gray-600 pointer-events-none">
+                <p className="text-gray-600 pointer-events-none text-sm">
                   {imageFiles.length >= 3
                     ? (isRTL ? 'حداکثر 3 عکس آپلود شده است' : 'Maximum 3 images uploaded')
                     : isDragActive
