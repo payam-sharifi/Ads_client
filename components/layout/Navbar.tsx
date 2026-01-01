@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { useAuthStore } from '@/lib/stores/authStore';
@@ -14,7 +14,7 @@ import BackButton from '@/components/common/BackButton';
 import { usePathname } from 'next/navigation';
 import { useCityStore } from '@/lib/stores/cityStore';
 
-export default function Navbar() {
+function NavbarContent() {
   const { locale, setLocale, t, isRTL } = useI18n();
   const { isAuthenticated, user } = useAuthStore();
   const logoutMutation = useLogout();
@@ -378,5 +378,25 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
+  );
+}
+
+export default function Navbar() {
+  return (
+    <Suspense fallback={
+      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-2 sm:px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/" className="text-xl sm:text-2xl font-bold text-red-600">
+                آگهی‌ها
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+    }>
+      <NavbarContent />
+    </Suspense>
   );
 }

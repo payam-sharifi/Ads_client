@@ -8,6 +8,9 @@ import { useConversations } from '@/lib/hooks/useMessages';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { useI18n } from '@/lib/contexts/I18nContext';
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 type SortOption = 'newest' | 'oldest' | 'unread';
 
 /**

@@ -18,6 +18,9 @@ type AdStatus = Ad['status'];
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 /**
  * Ads Management Page
  * 

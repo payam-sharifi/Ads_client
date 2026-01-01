@@ -7,6 +7,9 @@ import { useAdminStore } from '@/lib/stores/adminStore';
 import { toast } from 'react-toastify';
 import { Report } from '@/lib/hooks/admin/useAdminReports';
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 /**
  * Reports & Flags Page
  * 

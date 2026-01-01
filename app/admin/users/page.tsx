@@ -10,6 +10,9 @@ import { AdminUser } from '@/lib/hooks/admin/useAdminUsers';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import ConfirmModal from '@/components/admin/ConfirmModal';
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 /**
  * Users Management Page
  * 

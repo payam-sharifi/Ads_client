@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAdMessages, useSendMessage, useMarkAllAsReadForAd } from '@/lib/hooks/useMessages';
@@ -10,13 +10,9 @@ import { useI18n } from '@/lib/contexts/I18nContext';
 import { toast } from 'react-toastify';
 
 /**
- * Ad Messages Page
- * 
- * API: GET /api/messages/ad/:adId
- * API: POST /api/messages
- * Displays conversation about a specific ad and allows sending messages
+ * Ad Messages Page Content
  */
-export default function AdMessagesPage() {
+function AdMessagesPageContent() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -190,4 +186,28 @@ export default function AdMessagesPage() {
     </div>
   );
 }
+
+/**
+ * Ad Messages Page
+ * 
+ * API: GET /api/messages/ad/:adId
+ * API: POST /api/messages
+ * Displays conversation about a specific ad and allows sending messages
+ */
+export default function AdMessagesPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 flex items-center justify-center h-[calc(100vh-2rem)]" dir="rtl">
+        <div className="text-center">
+          <p className="text-sm text-gray-500">در حال بارگذاری...</p>
+        </div>
+      </div>
+    }>
+      <AdMessagesPageContent />
+    </Suspense>
+  );
+}
+
+// Disable static generation for this page to avoid useSearchParams issues
+export const dynamic = 'force-dynamic';
 

@@ -191,9 +191,6 @@ export default function CreateAdPage() {
       return true;
     }
 
-    // #region agent log
-    fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-ad/page.tsx:validateStep3',message:'Validation started',data:{categoryType,step3DataKeys:Object.keys(step3Data),step2Condition:step2Data.condition},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
 
     let errors: any[] = [];
     const errorMap: Record<string, string> = {};
@@ -201,9 +198,6 @@ export default function CreateAdPage() {
     // Use step3Data directly for validation (condition is now only in step3 for vehicles)
     const validationData = step3Data;
 
-    // #region agent log
-    fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-ad/page.tsx:validateStep3',message:'Validation data prepared',data:{validationDataKeys:Object.keys(validationData),validationData},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
 
     switch (categoryType) {
       case MainCategoryType.REAL_ESTATE:
@@ -220,9 +214,6 @@ export default function CreateAdPage() {
         break;
     }
 
-    // #region agent log
-    fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-ad/page.tsx:validateStep3',message:'Validation errors',data:{errorsCount:errors.length,errors},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
 
     // Convert errors array to error map
     errors.forEach((error) => {
@@ -317,9 +308,6 @@ export default function CreateAdPage() {
         requestData.condition = requestData.condition.toLowerCase();
       }
 
-      // #region agent log
-      fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-ad/page.tsx:handleSubmit',message:'Request data prepared',data:{requestDataKeys:Object.keys(requestData),condition:requestData.condition,categoryType,step3DataCondition:step3Data.condition},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
 
       // For jobs, use jobTitle and jobDescription from step3Data, fallback to title/description
       if (categoryType === MainCategoryType.JOBS) {

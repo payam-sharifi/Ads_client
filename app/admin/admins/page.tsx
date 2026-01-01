@@ -14,6 +14,9 @@ import { Permission } from '@/lib/hooks/admin/useAdminPermissions';
 import RequireSuperAdmin from '@/components/admin/RequireSuperAdmin';
 import { useI18n } from '@/lib/contexts/I18nContext';
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 /**
  * Admins & Permissions Page
  * 
