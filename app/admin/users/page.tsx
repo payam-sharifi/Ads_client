@@ -41,7 +41,7 @@ export default function AdminUsersPage() {
     isBlocked: isBlocked !== undefined ? isBlocked : undefined,
     isSuspended: isSuspended !== undefined ? isSuspended : undefined,
     page,
-    limit: 20,
+    limit: 10,
   });
 
   const blockMutation = useBlockUser();

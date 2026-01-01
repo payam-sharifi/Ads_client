@@ -65,7 +65,7 @@ export default function AdminAdsPage() {
     userId,
     search,
     page,
-    limit: 20,
+    limit: 10,
   });
 
   const { data: categories } = useCategories();

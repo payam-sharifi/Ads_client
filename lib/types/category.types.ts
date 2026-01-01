@@ -9,6 +9,7 @@ export enum MainCategoryType {
   VEHICLES = 'vehicles',
   SERVICES = 'services',
   JOBS = 'jobs',
+  MISC = 'misc',
 }
 
 export interface Category {

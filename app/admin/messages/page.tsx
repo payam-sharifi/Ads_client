@@ -30,7 +30,7 @@ export default function AdminMessagesPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const limit = 20;
+  const limit = 10;
 
   const filters = {
     page,

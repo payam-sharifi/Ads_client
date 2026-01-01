@@ -30,8 +30,8 @@ export default function UserDetailsPage() {
   const [reportsPage, setReportsPage] = useState(1);
 
   const { data: user, isLoading: userLoading } = useAdminUser(userId);
-  const { data: messagesData, isLoading: messagesLoading } = useUserMessages(userId, { page: messagesPage, limit: 20 });
-  const { data: reportsData, isLoading: reportsLoading } = useUserReports(userId, { page: reportsPage, limit: 20 });
+  const { data: messagesData, isLoading: messagesLoading } = useUserMessages(userId, { page: messagesPage, limit: 10 });
+  const { data: reportsData, isLoading: reportsLoading } = useUserReports(userId, { page: reportsPage, limit: 10 });
   const { data: ads, isLoading: adsLoading } = useUserAds(userId);
   const { data: allPermissions } = useAdminPermissions();
   const { data: userPermissions = [] } = useAdminUserPermissions(user?.role?.name === 'ADMIN' ? userId : '');
@@ -333,7 +333,7 @@ export default function UserDetailsPage() {
                   </Link>
                 );
               })}
-              {messagesData && messagesData.total > 20 && (
+              {messagesData && messagesData.total > 10 && (
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0 mt-6">
                   <button
                     onClick={(e) => {
@@ -347,7 +347,7 @@ export default function UserDetailsPage() {
                     Previous
                   </button>
                   <span className="text-sm sm:text-base">
-                    Page {messagesPage} of {Math.ceil(messagesData.total / 20)}
+                    Page {messagesPage} of {Math.ceil(messagesData.total / 10)}
                   </span>
                   <button
                     onClick={(e) => {
@@ -355,7 +355,7 @@ export default function UserDetailsPage() {
                       e.stopPropagation();
                       setMessagesPage((prev) => prev + 1);
                     }}
-                    disabled={messagesPage >= Math.ceil(messagesData.total / 20)}
+                    disabled={messagesPage >= Math.ceil(messagesData.total / 10)}
                     className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-sm sm:text-base"
                   >
                     Next
@@ -441,7 +441,7 @@ export default function UserDetailsPage() {
                   </div>
                 </div>
               ))}
-              {reportsData && reportsData.total > 20 && (
+              {reportsData && reportsData.total > 10 && (
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0 mt-6">
                   <button
                     onClick={() => setReportsPage((prev) => Math.max(1, prev - 1))}
@@ -451,11 +451,11 @@ export default function UserDetailsPage() {
                     Previous
                   </button>
                   <span className="text-sm sm:text-base">
-                    Page {reportsPage} of {Math.ceil(reportsData.total / 20)}
+                    Page {reportsPage} of {Math.ceil(reportsData.total / 10)}
                   </span>
                   <button
                     onClick={() => setReportsPage((prev) => prev + 1)}
-                    disabled={reportsPage >= Math.ceil(reportsData.total / 20)}
+                    disabled={reportsPage >= Math.ceil(reportsData.total / 10)}
                     className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-sm sm:text-base"
                   >
                     Next

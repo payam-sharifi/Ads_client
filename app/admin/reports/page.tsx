@@ -32,7 +32,7 @@ export default function AdminReportsPage() {
     type: type as 'ad' | 'message' | undefined,
     status,
     page,
-    limit: 20,
+    limit: 10,
   });
 
   const updateStatusMutation = useUpdateReportStatus();

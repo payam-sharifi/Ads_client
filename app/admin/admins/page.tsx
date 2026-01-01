@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminUsers, useAdminUser } from '@/lib/hooks/admin/useAdminUsers';
 import { useAdminPermissions, useAssignPermission, useRevokePermission } from '@/lib/hooks/admin/useAdminPermissions';
 import { useAdminUserPermissions } from '@/lib/hooks/admin/useAdminUserPermissions';
@@ -24,6 +24,7 @@ import { useI18n } from '@/lib/contexts/I18nContext';
  */
 export default function AdminAdminsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isSuperAdmin, hasPermission } = useAdminStore();
   const { t, isRTL, locale } = useI18n();
   const logoutMutation = useLogout();
@@ -31,7 +32,10 @@ export default function AdminAdminsPage() {
   const [selectedAdmin, setSelectedAdmin] = useState<AdminUser | null>(null);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
 
-  const { data: usersData } = useAdminUsers({ page: 1, limit: 100 });
+  const page = parseInt(searchParams?.get('page') || '1', 10);
+  const limit = 10;
+
+  const { data: usersData } = useAdminUsers({ page, limit });
   const { data: allPermissions } = useAdminPermissions();
   const createAdminMutation = useCreateAdmin();
   const assignPermissionMutation = useAssignPermission();
@@ -46,6 +50,9 @@ export default function AdminAdminsPage() {
 
   // Filter to show only ADMIN users
   const adminUsers = usersData?.data.filter((u) => u.role.name === 'ADMIN' || u.role.name === 'SUPER_ADMIN') || [];
+  // Calculate total pages based on filtered admin users count
+  // Note: This is approximate since we filter client-side. For accurate pagination, backend should filter.
+  const totalAdminUsers = adminUsers.length > 0 ? Math.ceil(adminUsers.length / limit) : 0;
 
   const handleCreateAdmin = async () => {
     if (!newAdmin.name || !newAdmin.email || !newAdmin.password) {
@@ -171,6 +178,42 @@ export default function AdminAdminsPage() {
               </div>
             ))}
           </div>
+          
+          {/* Pagination */}
+          {adminUsers.length > 0 && (
+            <div className="mt-6 flex items-center justify-between border-t border-gray-200 pt-4" dir={isRTL ? 'rtl' : 'ltr'}>
+              <div className="text-sm text-gray-700">
+                {locale === 'fa' 
+                  ? `نمایش ${(page - 1) * limit + 1} تا ${Math.min(page * limit, adminUsers.length)} از ${adminUsers.length} مدیر`
+                  : `Showing ${(page - 1) * limit + 1} to ${Math.min(page * limit, adminUsers.length)} of ${adminUsers.length} admins`}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    const newPage = Math.max(1, page - 1);
+                    router.push(`/admin/admins?page=${newPage}`);
+                  }}
+                  disabled={page === 1}
+                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  {locale === 'fa' ? 'قبلی' : 'Previous'}
+                </button>
+                <span className="px-4 py-2 text-sm text-gray-700">
+                  {locale === 'fa' ? `صفحه ${page} از ${totalAdminUsers}` : `Page ${page} of ${totalAdminUsers}`}
+                </span>
+                <button
+                  onClick={() => {
+                    const newPage = Math.min(totalAdminUsers, page + 1);
+                    router.push(`/admin/admins?page=${newPage}`);
+                  }}
+                  disabled={page >= totalAdminUsers}
+                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  {locale === 'fa' ? 'بعدی' : 'Next'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

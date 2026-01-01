@@ -165,7 +165,8 @@ export default function CreateAdPage() {
 
   const validateStep2 = () => {
     // For Jobs, title and description are in Step 3, so skip validation here
-    if (categoryType === MainCategoryType.JOBS) {
+    // For Misc, only title and description are needed, no step 3
+    if (categoryType === MainCategoryType.JOBS || categoryType === MainCategoryType.MISC) {
       return true;
     }
     
@@ -183,6 +184,11 @@ export default function CreateAdPage() {
   const validateStep3 = () => {
     if (!categoryType) {
       return true; // No category selected, skip validation
+    }
+
+    // For Misc category, no step 3 validation needed
+    if (categoryType === MainCategoryType.MISC) {
+      return true;
     }
 
     // #region agent log
@@ -240,7 +246,16 @@ export default function CreateAdPage() {
       }
     } else if (currentStep === 2) {
       if (validateStep2()) {
-        setCurrentStep(3);
+        // For Misc category, skip step 3 and go directly to submit
+        if (categoryType === MainCategoryType.MISC) {
+          // Trigger form submit
+          const form = document.querySelector('form');
+          if (form) {
+            form.requestSubmit();
+          }
+        } else {
+          setCurrentStep(3);
+        }
       }
     }
   };
@@ -273,7 +288,7 @@ export default function CreateAdPage() {
     }
 
     // Validate images based on category
-    const requiresImages = categoryType !== MainCategoryType.JOBS;
+    const requiresImages = categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC;
     if (requiresImages && imageFiles.length === 0) {
       toast.error(isRTL ? 'حداقل یک تصویر الزامی است' : 'At least one image is required');
       return;
@@ -485,8 +500,8 @@ export default function CreateAdPage() {
           <div className="space-y-6">
             <h2 className="text-2xl font-bold mb-4">{isRTL ? 'اطلاعات پایه آگهی' : 'Basic Ad Information'}</h2>
             
-            {/* Title and Description - Hidden for Jobs (will be in Step 3) */}
-            {categoryType !== MainCategoryType.JOBS && (
+            {/* Title and Description - Hidden for Jobs and Misc (will be in Step 3 for Jobs, not needed for Misc) */}
+            {categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC && (
               <>
                 <div>
                   <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
@@ -682,15 +697,15 @@ export default function CreateAdPage() {
             )}
           </div>
           <div className="flex gap-4">
-            {currentStep < 3 ? (
+            {currentStep < 3 && categoryType !== MainCategoryType.MISC ? (
               <Button type="button" onClick={handleNext} className="flex-1">
                 {isRTL ? 'بعدی' : 'Next'}
               </Button>
-            ) : (
+            ) : (currentStep === 2 && categoryType === MainCategoryType.MISC) || currentStep === 3 ? (
               <Button type="submit" className="flex-1" disabled={createAdMutation.isPending}>
                 {createAdMutation.isPending ? (isRTL ? 'در حال ایجاد...' : 'Creating...') : (isRTL ? 'ثبت آگهی' : 'Create Ad')}
               </Button>
-            )}
+            ) : null}
             <Button type="button" variant="outline" onClick={() => router.back()}>
               {isRTL ? 'لغو' : 'Cancel'}
             </Button>
