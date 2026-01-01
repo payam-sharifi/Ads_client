@@ -44,11 +44,8 @@ export function validateRealEstate(data: any): ValidationError[] {
 
 // Vehicle Validation
 export function validateVehicle(data: any): ValidationError[] {
-  // #region agent log
-  fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'validation/category-forms.ts:validateVehicle',message:'Vehicle validation started',data:{dataKeys:Object.keys(data),data},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  // #endregion
-
   const errors: ValidationError[] = [];
+  const isBike = data.vehicleType === 'bike';
 
   if (!data.vehicleType) {
     errors.push({ field: 'vehicleType', message: 'وارد کردن این مقدار اجباری است' });
@@ -66,15 +63,22 @@ export function validateVehicle(data: any): ValidationError[] {
     errors.push({ field: 'year', message: 'وارد کردن این مقدار اجباری است' });
   }
 
-  if (!data.mileage || data.mileage < 0) {
+  // Bike type is required for bikes
+  if (isBike && !data.bikeType) {
+    errors.push({ field: 'bikeType', message: 'وارد کردن این مقدار اجباری است' });
+  }
+
+  // Mileage is required for cars, motorcycles, vans, but not for bikes
+  if (!isBike && (!data.mileage || data.mileage < 0)) {
     errors.push({ field: 'mileage', message: 'وارد کردن این مقدار اجباری است' });
   }
 
-  if (!data.fuelType) {
+  // Fuel type and transmission are only required for motorized vehicles
+  if (!isBike && !data.fuelType) {
     errors.push({ field: 'fuelType', message: 'وارد کردن این مقدار اجباری است' });
   }
 
-  if (!data.transmission) {
+  if (!isBike && !data.transmission) {
     errors.push({ field: 'transmission', message: 'وارد کردن این مقدار اجباری است' });
   }
 
@@ -82,7 +86,8 @@ export function validateVehicle(data: any): ValidationError[] {
     errors.push({ field: 'condition', message: 'وارد کردن این مقدار اجباری است' });
   }
 
-  if (!data.damageStatus) {
+  // Damage status is only required for motorized vehicles
+  if (!isBike && !data.damageStatus) {
     errors.push({ field: 'damageStatus', message: 'وارد کردن این مقدار اجباری است' });
   }
 
@@ -93,10 +98,6 @@ export function validateVehicle(data: any): ValidationError[] {
   if (data.postalCode && data.postalCode.trim().length > 0 && data.postalCode.trim().length < 5) {
     errors.push({ field: 'postalCode', message: 'کد پستی باید حداقل 5 کاراکتر باشد' });
   }
-
-  // #region agent log
-  fetch('http://127.0.0.1:7245/ingest/8e3d4fb4-043c-450e-b118-fed88d4cad9f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'validation/category-forms.ts:validateVehicle',message:'Vehicle validation completed',data:{errorsCount:errors.length,errors},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  // #endregion
 
   return errors;
 }

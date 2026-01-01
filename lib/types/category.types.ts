@@ -92,6 +92,11 @@ export enum DamageStatus {
   ACCIDENT = 'accident',
 }
 
+export enum BikeType {
+  NORMAL = 'normal',
+  ELECTRIC = 'electric',
+}
+
 export interface VehicleMetadata {
   vehicleType: VehicleType;
   brand: string;
@@ -107,6 +112,17 @@ export interface VehicleMetadata {
   postalCode: string;
   contactName?: string;
   contactPhone?: string;
+  // Additional fields for different vehicle types
+  engineSize?: number; // CC for motorcycles/cars
+  frameSize?: string; // For bikes
+  gears?: number; // Number of gears for bikes
+  brakeType?: string; // Brake type for bikes
+  wheelSize?: string; // Wheel size for bikes
+  bikeType?: BikeType; // Electric or normal bike
+  doors?: number; // Number of doors for cars
+  seats?: number; // Number of seats
+  loadCapacity?: number; // Load capacity for vans (kg)
+  price?: number; // Price
 }
 
 // Service Types

@@ -499,7 +499,7 @@ export default function CreateAdPage() {
                       categoryType === MainCategoryType.REAL_ESTATE
                         ? (isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center')
                         : categoryType === MainCategoryType.VEHICLES
-                        ? (isRTL ? 'مثال: BMW 320d سال 2020' : 'Example: BMW 320d 2020')
+                        ? (isRTL ? 'مثال: BMW 320d، دوچرخه برقی، موتورسیکلت و...' : 'Example: BMW 320d, Electric bike, Motorcycle, etc.')
                         : categoryType === MainCategoryType.SERVICES
                         ? (isRTL ? 'مثال: خدمات تعمیرات ساختمان' : 'Example: Building repair services')
                         : (isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title')
@@ -519,7 +519,7 @@ export default function CreateAdPage() {
                       categoryType === MainCategoryType.REAL_ESTATE
                         ? (isRTL ? 'توضیحات کامل ملک: متراژ، موقعیت، امکانات و...' : 'Full property description: area, location, features...')
                         : categoryType === MainCategoryType.VEHICLES
-                        ? (isRTL ? 'توضیحات خودرو: وضعیت، کارکرد، ویژگی‌ها و...' : 'Vehicle description: condition, mileage, features...')
+                        ? (isRTL ? 'توضیحات وسیله نقلیه: وضعیت، کارکرد، ویژگی‌ها، امکانات و...' : 'Vehicle description: condition, mileage, features, equipment...')
                         : categoryType === MainCategoryType.SERVICES
                         ? (isRTL ? 'توضیحات خدمات: تجربه، تخصص، گواهینامه‌ها و...' : 'Service description: experience, expertise, certificates...')
                         : (isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...')
