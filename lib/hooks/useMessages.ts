@@ -162,6 +162,27 @@ export const useDeleteMessage = () => {
 };
 
 /**
+ * API Hook: PATCH /api/messages/ad/:adId/read-all
+ * Mark all messages as read for an ad (requires auth)
+ */
+export const useMarkAllAsReadForAd = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (adId: string) => {
+      const response = await apiClient.patch<{ count: number }>(`/messages/ad/${adId}/read-all`);
+      return response.data;
+    },
+    onSuccess: (_, adId) => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['messages', 'ad', adId] });
+      queryClient.invalidateQueries({ queryKey: ['messages', 'inbox'] });
+      queryClient.invalidateQueries({ queryKey: ['messages', 'unread-count'] });
+      queryClient.invalidateQueries({ queryKey: ['messages', 'unread-count', 'ad', adId] });
+    },
+  });
+};
+
+/**
  * API Hook: GET /api/messages/unread/count
  * Get unread messages count (requires auth)
  */
@@ -174,6 +195,23 @@ export const useUnreadMessagesCount = () => {
       return response.data.count;
     },
     enabled: isAuthenticated, // Only fetch when authenticated
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+};
+
+/**
+ * API Hook: GET /api/messages/unread-count/ad/:adId
+ * Get unread messages count for a specific ad (requires auth)
+ */
+export const useUnreadMessagesCountForAd = (adId: string) => {
+  const { isAuthenticated } = useAuthStore();
+  return useQuery({
+    queryKey: ['messages', 'unread-count', 'ad', adId],
+    queryFn: async () => {
+      const response = await apiClient.get<{ count: number }>(`/messages/unread-count/ad/${adId}`);
+      return response.data.count;
+    },
+    enabled: isAuthenticated && !!adId, // Only fetch when authenticated and adId is provided
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 };

@@ -12,6 +12,7 @@ import { useCurrentAdminPermissions } from '@/lib/hooks/admin/useCurrentAdminPer
 import { useLogout } from '@/lib/hooks/useAuth';
 import AdCard from '@/components/common/AdCard';
 import Button from '@/components/common/Button';
+import AdMessagesButton from '@/components/dashboard/AdMessagesButton';
 import { toast } from 'react-toastify';
 
 export default function DashboardPage() {
@@ -306,6 +307,7 @@ export default function DashboardPage() {
                   router.push(`/edit-ad/${adId}`);
                 }}
                 onDelete={handleDelete}
+                messagesButton={<AdMessagesButton adId={ad.id} />}
               />
             </div>
           ))}

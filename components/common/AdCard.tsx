@@ -16,6 +16,7 @@ interface AdCardProps {
   onDelete?: (adId: string) => void;
   showActions?: boolean;
   showStatusBadge?: boolean; // Show status badge only in admin/dashboard panels
+  messagesButton?: React.ReactNode; // Messages button component to display inside the card
 }
 
 export default function AdCard({ 
@@ -24,7 +25,8 @@ export default function AdCard({
   onEdit,
   onDelete,
   showActions = false,
-  showStatusBadge = false // Default: don't show status badge in public pages
+  showStatusBadge = false, // Default: don't show status badge in public pages
+  messagesButton
 }: AdCardProps) {
   const { t, locale, isRTL } = useI18n();
 
@@ -187,36 +189,47 @@ export default function AdCard({
           </div>
 
           {/* Action Buttons */}
-          {showActions && (onEdit || onDelete) && (
-            <div className={`flex gap-2 mt-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              {onEdit && (
-                <Button 
-                  size="sm" 
-                  variant="secondary" 
-                  className="text-xs px-2 py-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(ad.id);
-                  }}
-                >
-                  {t('common.edit')}
-                </Button>
+          {(showActions && (onEdit || onDelete)) || messagesButton ? (
+            <div className={`flex gap-2 mt-3 items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+              {/* Messages Button - Left side */}
+              {messagesButton && (
+                <div className="flex-1">
+                  {messagesButton}
+                </div>
               )}
-              {onDelete && (
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(ad.id);
-                  }}
-                  className="text-xs px-2 py-1"
-                >
-                  {t('common.delete')}
-                </Button>
+              {/* Edit/Delete Buttons - Right side */}
+              {showActions && (onEdit || onDelete) && (
+                <div className={`flex gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  {onEdit && (
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className="text-xs px-2 py-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(ad.id);
+                      }}
+                    >
+                      {t('common.edit')}
+                    </Button>
+                  )}
+                  {onDelete && (
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(ad.id);
+                      }}
+                      className="text-xs px-2 py-1"
+                    >
+                      {t('common.delete')}
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     );
