@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAdMessages, useSendMessage, useMarkAllAsReadForAd } from '@/lib/hooks/useMessages';
 import { useAd } from '@/lib/hooks/useAds';
@@ -19,7 +19,9 @@ import { toast } from 'react-toastify';
 export default function AdMessagesPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const adId = params?.adId as string;
+  const filterUserId = searchParams?.get('userId');
   const { isAuthenticated, user } = useAuthStore();
   const { locale, isRTL } = useI18n();
   const { data: ad } = useAd(adId);
@@ -133,7 +135,15 @@ export default function AdMessagesPage() {
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-          {messages.map((message) => (
+          {messages
+            .filter((message) => {
+              // If filterUserId is provided, only show messages from/to that user
+              if (filterUserId) {
+                return message.senderId === filterUserId || message.receiverId === filterUserId;
+              }
+              return true;
+            })
+            .map((message) => (
             <div
               key={message.id}
               className={`bg-white rounded-lg border p-3 sm:p-4 ${

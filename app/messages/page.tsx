@@ -3,26 +3,26 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useMyInbox, useMarkMessageAsRead } from '@/lib/hooks/useMessages';
+import Image from 'next/image';
+import { useConversations } from '@/lib/hooks/useMessages';
 import { useAuthStore } from '@/lib/stores/authStore';
-import { toast } from 'react-toastify';
-import { Message } from '@/lib/hooks/useMessages';
+import { useI18n } from '@/lib/contexts/I18nContext';
+
+type SortOption = 'newest' | 'oldest' | 'unread';
 
 /**
  * Messages Inbox Page
  * 
- * API: GET /api/messages/inbox/my
- * Displays all messages received by the current user
+ * API: GET /api/messages/conversations
+ * Displays all conversations grouped by ad and user
  */
 export default function MessagesPage() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuthStore();
-  const { data: messages, isLoading } = useMyInbox();
-  const markAsReadMutation = useMarkMessageAsRead();
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
-  const [senderNameFilter, setSenderNameFilter] = useState('');
-  const [startDateFilter, setStartDateFilter] = useState('');
-  const [endDateFilter, setEndDateFilter] = useState('');
+  const { locale, isRTL } = useI18n();
+  const { data: conversations, isLoading } = useConversations();
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [showSortMenu, setShowSortMenu] = useState(false);
 
   React.useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -30,221 +30,202 @@ export default function MessagesPage() {
     }
   }, [isAuthenticated, user, router]);
 
-  const handleMarkAsRead = async (messageId: string) => {
-    try {
-      await markAsReadMutation.mutateAsync(messageId);
-      toast.success('Message marked as read');
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to mark message as read');
-    }
-  };
-
   if (!isAuthenticated || !user) {
     return null;
   }
 
-  // Filter messages client-side
-  const filteredMessages = messages?.filter((message) => {
-    if (senderNameFilter && !message.sender?.name?.toLowerCase().includes(senderNameFilter.toLowerCase())) {
-      return false;
+  // Sort conversations
+  const sortedConversations = React.useMemo(() => {
+    if (!conversations) return [];
+    
+    const sorted = [...conversations];
+    
+    switch (sortBy) {
+      case 'newest':
+        return sorted.sort((a, b) => 
+          new Date(b.lastMessage.createdAt).getTime() - new Date(a.lastMessage.createdAt).getTime()
+        );
+      case 'oldest':
+        return sorted.sort((a, b) => 
+          new Date(a.lastMessage.createdAt).getTime() - new Date(b.lastMessage.createdAt).getTime()
+        );
+      case 'unread':
+        return sorted.sort((a, b) => {
+          if (b.unreadCount > 0 && a.unreadCount === 0) return 1;
+          if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
+          return new Date(b.lastMessage.createdAt).getTime() - new Date(a.lastMessage.createdAt).getTime();
+        });
+      default:
+        return sorted;
     }
-    if (startDateFilter) {
-      const messageDate = new Date(message.createdAt);
-      const startDate = new Date(startDateFilter);
-      if (messageDate < startDate) return false;
-    }
-    if (endDateFilter) {
-      const messageDate = new Date(message.createdAt);
-      const endDate = new Date(endDateFilter);
-      endDate.setHours(23, 59, 59, 999); // End of day
-      if (messageDate > endDate) return false;
-    }
-    return true;
-  }) || [];
+  }, [conversations, sortBy]);
 
-  const handleClearFilters = () => {
-    setSenderNameFilter('');
-    setStartDateFilter('');
-    setEndDateFilter('');
+  const getSortLabel = () => {
+    if (isRTL) {
+      switch (sortBy) {
+        case 'newest': return 'جدیدترین';
+        case 'oldest': return 'قدیمی‌ترین';
+        case 'unread': return 'خوانده نشده';
+        default: return 'مرتب‌سازی';
+      }
+    } else {
+      switch (sortBy) {
+        case 'newest': return 'Newest';
+        case 'oldest': return 'Oldest';
+        case 'unread': return 'Unread';
+        default: return 'Sort';
+      }
+    }
+  };
+
+  const handleConversationClick = (adId: string, otherUserId: string) => {
+    router.push(`/messages/${adId}?userId=${otherUserId}`);
   };
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 w-full">
-      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">My Messages</h1>
-
-      {/* Filters */}
-      <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mb-4 sm:mb-6 w-full">
-        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Filters</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 w-full">
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-              Sender Name
-            </label>
-            <input
-              type="text"
-              value={senderNameFilter}
-              onChange={(e) => setSenderNameFilter(e.target.value)}
-              placeholder="Search by sender name..."
-              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-          </div>
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-              Start Date
-            </label>
-            <input
-              type="date"
-              value={startDateFilter}
-              onChange={(e) => setStartDateFilter(e.target.value)}
-              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-          </div>
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-              End Date
-            </label>
-            <input
-              type="date"
-              value={endDateFilter}
-              onChange={(e) => setEndDateFilter(e.target.value)}
-              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-          </div>
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8" dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
+          {isRTL ? 'چت و تماس' : 'Chat & Contact'}
+        </h1>
+        
+        {/* Sort Filter Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setShowSortMenu(!showSortMenu)}
+            className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+            </svg>
+            <span>{getSortLabel()}</span>
+            <svg className={`w-4 h-4 transition-transform ${showSortMenu ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          
+          {showSortMenu && (
+            <>
+              <div 
+                className="fixed inset-0 z-10" 
+                onClick={() => setShowSortMenu(false)}
+              />
+              <div className={`absolute ${isRTL ? 'left-0' : 'right-0'} top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20`}>
+                <button
+                  onClick={() => {
+                    setSortBy('newest');
+                    setShowSortMenu(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-red-50 text-red-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
+                >
+                  {isRTL ? 'جدیدترین' : 'Newest'}
+                </button>
+                <button
+                  onClick={() => {
+                    setSortBy('oldest');
+                    setShowSortMenu(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'oldest' ? 'bg-red-50 text-red-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
+                >
+                  {isRTL ? 'قدیمی‌ترین' : 'Oldest'}
+                </button>
+                <button
+                  onClick={() => {
+                    setSortBy('unread');
+                    setShowSortMenu(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'unread' ? 'bg-red-50 text-red-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
+                >
+                  {isRTL ? 'خوانده نشده' : 'Unread'}
+                </button>
+              </div>
+            </>
+          )}
         </div>
-        {(senderNameFilter || startDateFilter || endDateFilter) && (
-          <div className="mt-3 sm:mt-4">
-            <button
-              onClick={handleClearFilters}
-              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-xs sm:text-sm"
-            >
-              Clear Filters
-            </button>
-          </div>
-        )}
       </div>
 
       {isLoading ? (
-        <div className="text-center py-6 sm:py-8 text-sm">Loading messages...</div>
-      ) : !messages || messages.length === 0 ? (
-        <div className="text-center py-8 sm:py-12 bg-white rounded-lg shadow-md">
-          <p className="text-sm text-gray-500">No messages yet</p>
+        <div className="text-center py-6 sm:py-8 text-sm">
+          {isRTL ? 'در حال بارگذاری...' : 'Loading...'}
         </div>
-      ) : filteredMessages.length === 0 ? (
+      ) : !conversations || conversations.length === 0 ? (
         <div className="text-center py-8 sm:py-12 bg-white rounded-lg shadow-md">
-          <p className="text-sm text-gray-500">No messages match your filters</p>
-          <button
-            onClick={handleClearFilters}
-            className="mt-3 sm:mt-4 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-xs sm:text-sm"
-          >
-            Clear Filters
-          </button>
+          <p className="text-sm text-gray-500">
+            {isRTL ? 'هنوز پیامی وجود ندارد.' : 'No messages yet.'}
+          </p>
         </div>
       ) : (
-        <div className="space-y-3 sm:space-y-4 w-full">
-          {filteredMessages.map((message) => (
+        <div className="space-y-3 sm:space-y-4">
+          {sortedConversations.map((conversation) => (
             <div
-              key={message.id}
-              className={`bg-white rounded-lg border p-3 sm:p-4 cursor-pointer hover:shadow-md transition-shadow w-full ${
-                !message.isRead ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+              key={`${conversation.adId}_${conversation.otherUser.id}`}
+              onClick={() => handleConversationClick(conversation.adId, conversation.otherUser.id)}
+              className={`bg-white rounded-lg border p-3 sm:p-4 cursor-pointer hover:shadow-md transition-all ${
+                conversation.unreadCount > 0 
+                  ? 'border-red-300 bg-red-50' 
+                  : 'border-gray-200'
               }`}
-              onClick={() => {
-                setSelectedMessage(message);
-                if (!message.isRead) {
-                  handleMarkAsRead(message.id);
-                }
-              }}
             >
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-4 w-full">
+              <div className="flex gap-3 sm:gap-4">
+                {/* Ad Image */}
+                <div className="flex-shrink-0">
+                  {conversation.ad.images && conversation.ad.images.length > 0 ? (
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden">
+                      <Image
+                        src={conversation.ad.images[0].url}
+                        alt={conversation.ad.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-gray-200 flex items-center justify-center">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+
+                {/* Conversation Info */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 sm:mb-2 flex-wrap">
-                    <span className="text-sm sm:text-base font-semibold text-gray-900 break-words">
-                      From: {message.sender?.name || 'Unknown'}
-                    </span>
-                    {!message.isRead && (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 flex-shrink-0">
-                        New
+                  <div className="flex justify-between items-start mb-1 sm:mb-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">
+                        {conversation.ad.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-600 truncate">
+                        {conversation.otherUser.name}
+                      </p>
+                    </div>
+                    {conversation.unreadCount > 0 && (
+                      <span className="flex-shrink-0 ml-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center min-w-[20px] sm:min-w-[24px]">
+                        {conversation.unreadCount > 9 ? '9+' : conversation.unreadCount}
                       </span>
                     )}
                   </div>
-                  {message.ad && (
-                    <Link
-                      href={`/ad/${message.adId}`}
-                      className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 mb-1 sm:mb-2 block break-words"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Re: {message.ad.title}
-                    </Link>
-                  )}
-                  {/* #region agent log */}
-                  {(() => {
-                    fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'messages/page.tsx:89',message:'displaying message content',data:{messageId:message.id,hasContent:'content' in message,content:message.content,allKeys:Object.keys(message)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-                    return null;
-                  })()}
-                  {/* #endregion */}
-                  <p className="text-xs sm:text-sm text-gray-700 break-words">{message.content}</p>
-                  <p className="text-xs text-gray-500 mt-1 sm:mt-2">
-                    {new Date(message.createdAt).toLocaleString()}
+                  
+                  <p className={`text-xs sm:text-sm truncate mb-1 ${
+                    conversation.unreadCount > 0 ? 'font-semibold text-gray-900' : 'text-gray-600'
+                  }`}>
+                    {conversation.lastMessage.content}
+                  </p>
+                  
+                  <p className="text-xs text-gray-500">
+                    {new Date(conversation.lastMessage.createdAt).toLocaleString(locale === 'fa' ? 'fa-IR' : 'de-DE', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </p>
                 </div>
-                {message.ad && (
-                  <Link
-                    href={`/ad/${message.adId}`}
-                    className="w-full sm:w-auto px-3 sm:px-4 py-1.5 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs sm:text-sm text-center sm:text-left flex-shrink-0"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    View Ad
-                  </Link>
-                )}
               </div>
             </div>
           ))}
         </div>
       )}
-
-      {/* Message Detail Modal */}
-      {selectedMessage && (
-        <div
-          className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50 p-2 sm:p-4"
-          onClick={() => setSelectedMessage(null)}
-        >
-          <div
-            className="bg-white rounded-lg p-4 sm:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4">Message Details</h2>
-            <div className="space-y-3 sm:space-y-4 text-sm sm:text-base">
-              <div>
-                <span className="font-semibold">From:</span> {selectedMessage.sender?.name} (
-                {selectedMessage.sender?.email})
-              </div>
-              {selectedMessage.ad && (
-                <div>
-                  <span className="font-semibold">About Ad:</span>{' '}
-                  <Link href={`/ad/${selectedMessage.adId}`} className="text-blue-600 hover:text-blue-800 break-words">
-                    {selectedMessage.ad.title}
-                  </Link>
-                </div>
-              )}
-              <div>
-                <span className="font-semibold">Message:</span>
-                <p className="mt-2 p-3 sm:p-4 bg-gray-50 rounded-lg text-sm break-words">{selectedMessage.content}</p>
-              </div>
-              <div className="text-xs sm:text-sm text-gray-500">
-                Sent: {new Date(selectedMessage.createdAt).toLocaleString()}
-              </div>
-            </div>
-            <div className="flex justify-end mt-4 sm:mt-6">
-              <button
-                onClick={() => setSelectedMessage(null)}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-sm"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
-

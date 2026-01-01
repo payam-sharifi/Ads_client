@@ -81,6 +81,48 @@ export const useMyInbox = () => {
 };
 
 /**
+ * Conversation interface
+ */
+export interface Conversation {
+  adId: string;
+  ad: {
+    id: string;
+    title: string;
+    images?: Array<{ url: string }>;
+  };
+  otherUser: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  lastMessage: {
+    id: string;
+    content: string;
+    createdAt: string;
+    isRead: boolean;
+    senderId: string;
+  };
+  unreadCount: number;
+}
+
+/**
+ * API Hook: GET /api/messages/conversations
+ * Get conversations grouped by ad and user (requires auth)
+ */
+export const useConversations = () => {
+  const { isAuthenticated } = useAuthStore();
+  return useQuery({
+    queryKey: ['messages', 'conversations'],
+    queryFn: async () => {
+      const response = await apiClient.get<Conversation[]>('/messages/conversations');
+      return response.data;
+    },
+    enabled: isAuthenticated,
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+};
+
+/**
  * API Hook: GET /api/messages/ad/:adId
  * Get all messages for an ad (requires auth)
  */
