@@ -217,16 +217,29 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
           {isRTL ? 'متراژ (m²)' : 'Living Area (m²)'} <span className="text-red-500">*</span>
         </label>
         <input
-          type="number"
-          value={data.livingArea || ''}
-          onChange={(e) => updateField('livingArea', parseFloat(e.target.value) || 0)}
+          type="text"
+          inputMode="decimal"
+          value={data.livingArea !== undefined && data.livingArea !== null ? String(data.livingArea) : ''}
+          onChange={(e) => {
+            const value = e.target.value.trim();
+            // Allow empty, numbers, and one decimal point
+            if (value === '') {
+              updateField('livingArea', undefined);
+            } else if (/^\d+\.?\d*$/.test(value)) {
+              // Use Number() instead of parseFloat to preserve precision better
+              // But we need to store the exact string value to avoid floating point issues
+              // Store as number but the backend should handle it correctly
+              const numValue = Number(value);
+              if (!isNaN(numValue) && numValue > 0) {
+                updateField('livingArea', numValue);
+              }
+            }
+          }}
           placeholder={isRTL ? '80' : '80'}
           className={`w-full px-3 py-2 border rounded-lg ${
             getFieldError('livingArea') ? 'border-red-500' : 'border-gray-300'
           } focus:outline-none focus:ring-2 focus:ring-red-500`}
           dir="ltr"
-          min="1"
-          step="0.01"
           required
         />
         {getFieldError('livingArea') && (

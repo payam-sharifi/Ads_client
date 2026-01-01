@@ -1,4 +1,5 @@
 import { Locale } from '@/lib/i18n';
+import { PropertyType } from '@/lib/types/category.types';
 
 /**
  * Multilingual name structure from backend
@@ -50,5 +51,30 @@ export function getLocalizedCategoryName(
     // German or English - use German
     return name.de || name.fa || '';
   }
+}
+
+/**
+ * Get localized name for property types
+ */
+export function getLocalizedPropertyType(
+  propertyType: PropertyType | string | undefined | null,
+  locale: Locale
+): string {
+  if (!propertyType) return '';
+  
+  const propertyTypeMap: Record<PropertyType, { fa: string; de: string }> = {
+    [PropertyType.APARTMENT]: { fa: 'آپارتمان', de: 'Wohnung' },
+    [PropertyType.HOUSE]: { fa: 'خانه', de: 'Haus' },
+    [PropertyType.COMMERCIAL]: { fa: 'تجاری', de: 'Gewerbe' },
+    [PropertyType.LAND]: { fa: 'زمین', de: 'Grundstück' },
+    [PropertyType.PARKING]: { fa: 'پارکینگ', de: 'Parkplatz' },
+  };
+  
+  const type = propertyType as PropertyType;
+  const localized = propertyTypeMap[type];
+  
+  if (!localized) return String(propertyType);
+  
+  return locale === 'fa' ? localized.fa : localized.de;
 }
 

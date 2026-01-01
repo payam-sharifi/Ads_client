@@ -4,6 +4,7 @@ import React from 'react';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { MainCategoryType, RealEstateMetadata, VehicleMetadata, ServiceMetadata, JobMetadata } from '@/lib/types/category.types';
 import { Ad } from '@/lib/hooks/useAds';
+import { getLocalizedPropertyType } from '@/lib/utils/localizedNames';
 
 interface AdMetadataDisplayProps {
   ad: Ad;
@@ -38,8 +39,8 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
             <span className="text-sm text-gray-500 block mb-1">
               {isRTL ? 'نوع ملک' : 'Property Type'}
             </span>
-            <span className="font-medium text-gray-900 capitalize">
-              {realEstate.propertyType}
+            <span className="font-medium text-gray-900">
+              {getLocalizedPropertyType(realEstate.propertyType, locale)}
             </span>
           </div>
         )}
