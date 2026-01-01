@@ -258,6 +258,13 @@ export default function CreateAdPage() {
     }
   };
 
+  const handleStepClick = (step: number) => {
+    // Allow clicking on completed steps (steps that are before current step)
+    if (step < currentStep) {
+      setCurrentStep(step as FormStep);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -383,29 +390,41 @@ export default function CreateAdPage() {
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center w-full">
-            {[1, 2, 3].map((step) => (
-              <React.Fragment key={step}>
-                <div className="flex items-center flex-shrink-0">
-                  <div
-                    className={`w-6 h-6 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-xs md:text-base ${
-                      currentStep >= step
-                        ? 'bg-red-600 text-white'
-                        : 'bg-gray-200 text-gray-600'
-                    }`}
+            {[1, 2, 3].map((step) => {
+              const isCompleted = step < currentStep;
+              const isClickable = isCompleted;
+              
+              return (
+                <React.Fragment key={step}>
+                  <div 
+                    className={`flex items-center flex-shrink-0 ${isClickable ? 'cursor-pointer' : 'cursor-default'}`}
+                    onClick={() => isClickable && handleStepClick(step)}
                   >
-                    {step}
+                    <div
+                      className={`w-6 h-6 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-xs md:text-base transition-colors ${
+                        currentStep >= step
+                          ? 'bg-red-600 text-white'
+                          : 'bg-gray-200 text-gray-600'
+                      } ${isClickable ? 'hover:bg-red-700' : ''}`}
+                    >
+                      {step}
+                    </div>
+                    <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${currentStep >= step ? 'text-red-600' : 'text-gray-600'} ${isClickable ? 'hover:text-red-700' : ''}`}>
+                      {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
+                      {step === 2 && (isRTL ? 'اطلاعات پایه' : 'Basic Info')}
+                      {step === 3 && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
+                    </span>
                   </div>
-                  <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap ${currentStep >= step ? 'text-red-600' : 'text-gray-600'}`}>
-                    {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
-                    {step === 2 && (isRTL ? 'اطلاعات پایه' : 'Basic Info')}
-                    {step === 3 && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
-                  </span>
-                </div>
-                {step < 3 && (
-                  <div className={`flex-1 h-[2px] md:h-1.5 mx-1 md:mx-4 ${currentStep > step ? 'bg-red-600' : 'bg-gray-500'}`} style={{ minWidth: '16px' }} />
-                )}
-              </React.Fragment>
-            ))}
+                  {step < 3 && (
+                    <div 
+                      className={`flex-1 h-[2px] md:h-1.5 mx-1 md:mx-4 transition-colors ${currentStep > step ? 'bg-red-600' : 'bg-gray-500'} ${isClickable ? 'cursor-pointer hover:bg-red-700' : ''}`} 
+                      style={{ minWidth: '16px' }}
+                      onClick={() => isClickable && handleStepClick(step)}
+                    />
+                  )}
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
 
