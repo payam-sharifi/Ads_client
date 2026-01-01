@@ -36,7 +36,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
               value={RealEstateOfferType.RENT}
               checked={data.offerType === RealEstateOfferType.RENT}
               onChange={(e) => updateField('offerType', e.target.value)}
-              className="mr-2"
+              className={isRTL ? 'ml-3' : 'mr-3'}
               required
             />
             <span>{isRTL ? 'اجاره' : 'Rent'}</span>
@@ -48,7 +48,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
               value={RealEstateOfferType.SALE}
               checked={data.offerType === RealEstateOfferType.SALE}
               onChange={(e) => updateField('offerType', e.target.value)}
-              className="mr-2"
+              className={isRTL ? 'ml-3' : 'mr-3'}
               required
             />
             <span>{isRTL ? 'فروش' : 'Sale'}</span>
