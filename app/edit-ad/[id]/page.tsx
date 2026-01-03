@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
@@ -11,8 +11,16 @@ import { useCategories } from '@/lib/hooks/useCategories';
 import { useCities } from '@/lib/hooks/useCities';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
 import { useUploadImage, useDeleteImage, useAdImages } from '@/lib/hooks/useImages';
+import { MainCategoryType } from '@/lib/types/category.types';
+import RealEstateForm from '@/components/ads/RealEstateForm';
+import VehicleForm from '@/components/ads/VehicleForm';
+import ServiceForm from '@/components/ads/ServiceForm';
+import JobForm from '@/components/ads/JobForm';
+import { validateRealEstate, validateVehicle, validateService, validateJob } from '@/lib/validation/category-forms';
 import Button from '@/components/common/Button';
 import { toast } from 'react-toastify';
+
+type FormStep = 1 | 2 | 3;
 
 export default function EditAdPage() {
   const params = useParams();
@@ -20,15 +28,24 @@ export default function EditAdPage() {
   const adId = params.id as string;
   const { t, locale, isRTL } = useI18n();
   const { isAuthenticated, user } = useAuthStore();
-  const [newImageFiles, setNewImageFiles] = React.useState<File[]>([]);
-  const [formData, setFormData] = React.useState({
-    title: '',
-    description: '',
-    price: '',
+  const [currentStep, setCurrentStep] = useState<FormStep>(1);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  
+  // Step 1: Category & City
+  const [step1Data, setStep1Data] = useState({
     categoryId: '',
     subcategoryId: '',
     cityId: '',
-    condition: 'USED' as 'NEW' | 'LIKE_NEW' | 'USED',
+  });
+
+  // Step 2: Category-specific details (metadata)
+  const [step2Data, setStep2Data] = useState<Record<string, any>>({});
+  const [step2Errors, setStep2Errors] = useState<Record<string, string>>({});
+
+  // Step 3: Basic Info
+  const [step3Data, setStep3Data] = useState({
+    title: '',
+    description: '',
     showEmail: false,
     showPhone: false,
   });
@@ -70,32 +87,32 @@ export default function EditAdPage() {
     if (ad) {
       // Check if user owns this ad
       if (ad.userId !== user?.id) {
-        toast.error('You can only edit your own ads');
+        toast.error(isRTL ? 'شما فقط می‌توانید آگهی‌های خود را ویرایش کنید' : 'You can only edit your own ads');
         router.push('/dashboard');
         return;
       }
-      // Convert condition from backend format ('new', 'like-new', 'used') to frontend format ('NEW', 'LIKE_NEW', 'USED')
-      const conditionFromBackend = ad.condition?.toUpperCase().replace('-', '_') || 'USED';
-      const conditionMap: Record<string, 'NEW' | 'LIKE_NEW' | 'USED'> = {
-        'NEW': 'NEW',
-        'LIKE_NEW': 'LIKE_NEW',
-        'LIKE-NEW': 'LIKE_NEW',
-        'USED': 'USED',
-      };
       
-      setFormData({
-        title: ad.title,
-        description: ad.description,
-        price: String(ad.price),
+      // Step 1: Category & City
+      setStep1Data({
         categoryId: ad.categoryId,
         subcategoryId: ad.subcategoryId || '',
         cityId: ad.cityId,
-        condition: conditionMap[conditionFromBackend] || 'USED',
+      });
+
+      // Step 2: Category-specific metadata
+      if (ad.metadata) {
+        setStep2Data(ad.metadata);
+      }
+
+      // Step 3: Basic Info
+      setStep3Data({
+        title: ad.title,
+        description: ad.description,
         showEmail: ad.showEmail || false,
         showPhone: ad.showPhone || false,
       });
     }
-  }, [ad, user, router]);
+  }, [ad, user, router, isRTL]);
 
   // Show error toast
   useEffect(() => {
@@ -140,21 +157,139 @@ export default function EditAdPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData((prev) => {
-      const newData = { ...prev, [name]: type === 'checkbox' ? checked : value };
+  const selectedCategory = categories?.find((c) => c.id === step1Data.categoryId);
+  const categoryType = selectedCategory?.categoryType as MainCategoryType | undefined;
+
+  const handleStep1Change = (name: string, value: string) => {
+    setStep1Data((prev) => {
+      const newData = { ...prev, [name]: value };
       if (name === 'categoryId') {
         newData.subcategoryId = '';
+        setStep2Data({}); // Reset category-specific data when category changes
       }
       return newData;
     });
   };
 
+  const handleStep2Change = (data: Record<string, any>) => {
+    setStep2Data((prev) => ({ ...prev, ...data }));
+    // Clear errors for updated fields
+    const clearedErrors = { ...step2Errors };
+    Object.keys(data).forEach((key) => {
+      delete clearedErrors[key];
+    });
+    setStep2Errors(clearedErrors);
+  };
+
+  const handleStep3Change = (name: string, value: string | boolean) => {
+    setStep3Data((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateStep1 = () => {
+    if (!step1Data.categoryId) {
+      toast.error(isRTL ? 'لطفا دسته‌بندی را انتخاب کنید' : 'Please select a category');
+      return false;
+    }
+    if (!step1Data.cityId) {
+      toast.error(isRTL ? 'لطفا شهر را انتخاب کنید' : 'Please select a city');
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = () => {
+    if (!categoryType) {
+      return true; // No category selected, skip validation
+    }
+
+    // For Misc category, no step 2 validation needed
+    if (categoryType === MainCategoryType.MISC) {
+      return true;
+    }
+
+    let errors: any[] = [];
+    const errorMap: Record<string, string> = {};
+
+    switch (categoryType) {
+      case MainCategoryType.REAL_ESTATE:
+        errors = validateRealEstate(step2Data);
+        break;
+      case MainCategoryType.VEHICLES:
+        errors = validateVehicle(step2Data);
+        break;
+      case MainCategoryType.SERVICES:
+        errors = validateService(step2Data);
+        break;
+      case MainCategoryType.JOBS:
+        errors = validateJob(step2Data);
+        break;
+    }
+
+    // Convert errors array to error map
+    errors.forEach((error) => {
+      errorMap[error.field] = error.message;
+    });
+
+    setStep2Errors(errorMap);
+
+    if (errors.length > 0) {
+      toast.error(isRTL ? 'لطفا فیلدهای الزامی را تکمیل کنید' : 'Please fill in all required fields');
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateStep3 = () => {
+    // For Jobs, title and description are in Step 2, so skip validation here
+    // For Misc, only title and description are needed
+    if (categoryType === MainCategoryType.JOBS || categoryType === MainCategoryType.MISC) {
+      return true;
+    }
+    
+    if (!step3Data.title.trim() || step3Data.title.trim().length < 3) {
+      toast.error(isRTL ? 'عنوان باید حداقل 3 کاراکتر باشد' : 'Title must be at least 3 characters');
+      return false;
+    }
+    if (!step3Data.description.trim() || step3Data.description.trim().length < 10) {
+      toast.error(isRTL ? 'توضیحات باید حداقل 10 کاراکتر باشد' : 'Description must be at least 10 characters');
+      return false;
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (currentStep === 1) {
+      if (validateStep1()) {
+        setCurrentStep(2);
+      }
+    } else if (currentStep === 2) {
+      if (validateStep2()) {
+        setCurrentStep(3);
+      }
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep((prev) => (prev - 1) as FormStep);
+    }
+  };
+
+  // Reset errors when step changes
+  useEffect(() => {
+    if (currentStep !== 2) {
+      setStep2Errors({});
+    }
+  }, [currentStep]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!validateStep1() || !validateStep2() || !validateStep3()) {
+      return;
+    }
+
     // Validate total images count (existing + new) doesn't exceed 3
     const totalImages = (existingImages?.length || 0) + newImageFiles.length;
     if (totalImages > 3) {
@@ -163,33 +298,50 @@ export default function EditAdPage() {
     }
     
     try {
-      // API: PATCH /api/ads/:id
-      // Convert condition from 'NEW'/'LIKE_NEW'/'USED' to 'new'/'like-new'/'used'
-      const conditionMap: Record<'NEW' | 'LIKE_NEW' | 'USED', 'new' | 'like-new' | 'used'> = {
-        'NEW': 'new',
-        'LIKE_NEW': 'like-new',
-        'USED': 'used',
+      // Build request data with category-specific fields
+      const requestData: any = {
+        title: step3Data.title.trim(),
+        description: step3Data.description.trim(),
+        categoryId: step1Data.categoryId,
+        cityId: step1Data.cityId,
+        subcategoryId: step1Data.subcategoryId || undefined,
+        showEmail: step3Data.showEmail || false,
+        showPhone: step3Data.showPhone || false,
+        ...step2Data, // Merge all category-specific fields
       };
-      
-      const mappedCondition = conditionMap[formData.condition] || formData.condition.toLowerCase() as 'new' | 'like-new' | 'used';
+
+      // For vehicles, ensure condition is in lowercase format expected by backend
+      if (categoryType === MainCategoryType.VEHICLES && requestData.condition) {
+        requestData.condition = requestData.condition.toLowerCase();
+      }
+
+      // For jobs, use jobTitle and jobDescription from step2Data, fallback to title/description
+      if (categoryType === MainCategoryType.JOBS) {
+        if (step2Data.jobTitle) {
+          requestData.title = step2Data.jobTitle;
+        }
+        if (step2Data.jobDescription) {
+          requestData.description = step2Data.jobDescription;
+        }
+      }
+
+      // Price handling
+      if (categoryType === MainCategoryType.REAL_ESTATE) {
+        requestData.price = step2Data.price || step2Data.coldRent || 0;
+      } else if (categoryType === MainCategoryType.VEHICLES) {
+        requestData.price = step2Data.price || 0;
+      } else if (categoryType === MainCategoryType.SERVICES) {
+        requestData.price = step2Data.price || 0;
+      } else {
+        requestData.price = 0; // Jobs don't have price
+      }
       
       await updateAdMutation.mutateAsync({
         id: adId,
-        data: {
-          title: formData.title.trim(),
-          description: formData.description.trim(),
-          price: Number(formData.price) || 0,
-          categoryId: formData.categoryId,
-          subcategoryId: formData.subcategoryId || undefined,
-          cityId: formData.cityId,
-          condition: mappedCondition as any, // Backend expects 'new'|'like-new'|'used', but frontend Ad interface expects 'NEW'|'LIKE_NEW'|'USED'
-          showEmail: formData.showEmail || false,
-          showPhone: formData.showPhone || false,
-        },
+        data: requestData,
       });
 
       // Upload new images
-      // API: POST /api/images/:adId
       if (newImageFiles.length > 0) {
         const uploadPromises = newImageFiles.map((file, index) =>
           uploadImageMutation.mutateAsync({
@@ -201,12 +353,30 @@ export default function EditAdPage() {
         await Promise.all(uploadPromises);
       }
 
-      toast.success('Ad updated successfully');
+      toast.success(isRTL ? 'آگهی با موفقیت به‌روزرسانی شد!' : 'Ad updated successfully!');
       setTimeout(() => {
         router.push('/dashboard');
       }, 1500);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to update ad');
+      console.error('Update ad error:', error);
+      let errorMessage = isRTL ? 'خطا در به‌روزرسانی آگهی' : 'Failed to update ad';
+      
+      if (error?.response?.data) {
+        const errorData = error.response.data;
+        if (errorData.message && Array.isArray(errorData.message)) {
+          const validationErrors = errorData.message.map((err: any) => {
+            if (typeof err === 'string') return err;
+            return Object.values(err.constraints || {}).join(', ');
+          }).join('\n');
+          errorMessage = validationErrors;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     }
   };
 
@@ -222,259 +392,347 @@ export default function EditAdPage() {
     return <div className="container mx-auto px-4 py-8 text-center">{t('common.error')}</div>;
   }
 
-  const selectedCategory = categories?.find((c) => c.id === formData.categoryId);
   const subcategories = selectedCategory?.children || [];
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-8">{t('createAd.editTitle')}</h1>
+    <div className="w-full min-h-screen overflow-visible">
+      <div className="container mx-auto px-4 py-8 max-w-xl pb-40 md:pb-8 overflow-visible">
+        <h1 className="text-3xl font-bold mb-8">{isRTL ? 'ویرایش آگهی' : 'Edit Ad'}</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md space-y-6">
-        {/* Title */}
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('createAd.form.title')}</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            placeholder={t('createAd.form.titlePlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-          />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('createAd.form.description')}</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-            rows={8}
-            placeholder={t('createAd.form.descriptionPlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-          />
-        </div>
-
-        {/* Price */}
-        <div>
-          <label className="block text-sm font-medium mb-2">{t('createAd.form.price')}</label>
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            min="0"
-            step="0.01"
-            placeholder={t('createAd.form.pricePlaceholder')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            dir="ltr"
-          />
-        </div>
-
-        {/* Category and Subcategory */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('createAd.form.category')}</label>
-            <select
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="">{isRTL ? 'انتخاب کنید' : 'Bitte wählen'}</option>
-              {categories?.filter(cat => !cat.parentId).map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {getLocalizedCategoryName(cat.name, locale)}
-                </option>
-              ))}
-            </select>
+        {/* Progress Steps */}
+        <div className="mb-8">
+          <div className="flex items-center w-full">
+            {[1, 2, 3].map((step) => {
+              const isCompleted = step < currentStep;
+              const isClickable = isCompleted;
+              
+              return (
+                <React.Fragment key={step}>
+                  <div 
+                    className={`flex items-center flex-shrink-0 ${isClickable ? 'cursor-pointer' : 'cursor-default'}`}
+                    onClick={() => isClickable && setCurrentStep(step as FormStep)}
+                  >
+                    <div
+                      className={`w-6 h-6 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-xs md:text-base transition-colors ${
+                        currentStep >= step
+                          ? 'bg-red-600 text-white'
+                          : 'bg-gray-200 text-gray-600'
+                      } ${isClickable ? 'hover:bg-red-700' : ''}`}
+                    >
+                      {step}
+                    </div>
+                    <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${currentStep >= step ? 'text-red-600' : 'text-gray-600'} ${isClickable ? 'hover:text-red-700' : ''}`}>
+                      {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
+                      {step === 2 && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
+                      {step === 3 && (isRTL ? 'عنوان' : 'Title')}
+                    </span>
+                  </div>
+                  {step < 3 && (
+                    <div 
+                      className={`flex-1 h-[2px] md:h-1.5 mx-1 md:mx-4 transition-colors ${currentStep > step ? 'bg-red-600' : 'bg-gray-500'} ${isClickable ? 'cursor-pointer hover:bg-red-700' : ''}`} 
+                      style={{ minWidth: '16px' }}
+                      onClick={() => isClickable && setCurrentStep(step as FormStep)}
+                    />
+                  )}
+                </React.Fragment>
+              );
+            })}
           </div>
+        </div>
 
-          {subcategories.length > 0 && (
+        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md space-y-6 mb-8 overflow-visible relative">
+          {/* Step 1: Category & City */}
+          {currentStep === 1 && (
+            <div className="space-y-6 overflow-visible">
+              <h2 className="text-2xl font-bold mb-4">{isRTL ? 'انتخاب دسته‌بندی و شهر' : 'Select Category & City'}</h2>
+              
+              <div className="space-y-4">
+                <div className="relative z-10 w-full md:w-1/2">
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'دسته‌بندی' : 'Category'}</label>
+                  <select
+                    value={step1Data.categoryId}
+                    onChange={(e) => handleStep1Change('categoryId', e.target.value)}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20"
+                    style={{ zIndex: 1000 }}
+                  >
+                    <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                    {categories?.filter(cat => !cat.parentId && cat.categoryType).map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {getLocalizedCategoryName(cat.name, locale)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="relative z-10 w-full md:w-1/2">
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'شهر' : 'City'}</label>
+                  <select
+                    value={step1Data.cityId}
+                    onChange={(e) => handleStep1Change('cityId', e.target.value)}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20"
+                    style={{ zIndex: 1000 }}
+                  >
+                    <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                    {filteredCities.map((city) => (
+                      <option key={city.id} value={city.id}>
+                        {getLocalizedName(city.name, locale)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Category-specific Details & Images */}
+          {currentStep === 2 && (
+            <div className="space-y-6 w-full">
+              <h2 className="text-2xl font-bold mb-4">{isRTL ? 'جزئیات و تصاویر' : 'Details & Images'}</h2>
+              
+              {/* Category-specific Forms */}
+              {categoryType && (
+                <div className="space-y-4">
+                  {categoryType === MainCategoryType.REAL_ESTATE && (
+                    <RealEstateForm 
+                      data={step2Data} 
+                      onChange={handleStep2Change}
+                      errors={step2Errors}
+                    />
+                  )}
+                  {categoryType === MainCategoryType.VEHICLES && (
+                    <VehicleForm 
+                      data={step2Data} 
+                      onChange={handleStep2Change}
+                      errors={step2Errors}
+                    />
+                  )}
+                  {categoryType === MainCategoryType.SERVICES && (
+                    <ServiceForm 
+                      data={step2Data} 
+                      onChange={handleStep2Change}
+                      errors={step2Errors}
+                    />
+                  )}
+                  {categoryType === MainCategoryType.JOBS && (
+                    <JobForm 
+                      data={step2Data} 
+                      onChange={handleStep2Change}
+                      errors={step2Errors}
+                    />
+                  )}
+                </div>
+              )}
+
+              {/* Existing Images */}
+              {existingImages && existingImages.length > 0 && (
+                <div className="border-t border-gray-300 pt-6">
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'عکس‌های موجود' : 'Current Images'}</label>
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                    {existingImages.map((img) => (
+                      <div key={img.id} className="relative group">
+                        <div className="relative h-20 md:h-24 w-full rounded-lg overflow-hidden bg-gray-100">
+                          <Image
+                            src={img.url.startsWith('http') ? img.url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5001'}${img.url}`}
+                            alt="Ad image"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteImage(img.id)}
+                          disabled={deleteImageMutation.isPending}
+                          className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50 text-sm"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Image Upload */}
+              <div className="border-t border-gray-300 pt-6">
+                <label className="block text-sm font-medium mb-2">
+                  {isRTL ? 'تصاویر' : 'Images'} 
+                  <span className="text-gray-500 text-xs ml-2">
+                    ({isRTL ? 'حداکثر 3 عکس' : 'Max 3 images'}: {(existingImages?.length || 0) + newImageFiles.length}/3)
+                  </span>
+                </label>
+                <div
+                  {...getRootProps({
+                    onClick: (e) => {
+                      if ((existingImages?.length || 0) + newImageFiles.length >= 3) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                      }
+                    }
+                  })}
+                  className={`border-2 border-dashed rounded-lg p-4 md:p-6 text-center cursor-pointer transition-colors touch-manipulation relative ${
+                    (existingImages?.length || 0) + newImageFiles.length >= 3 
+                      ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50' 
+                      : isDragActive 
+                      ? 'border-red-500 bg-red-50' 
+                      : 'border-gray-300 hover:border-gray-400 active:bg-gray-50'
+                  }`}
+                  style={{ WebkitTapHighlightColor: 'transparent', minHeight: '60px' }}
+                >
+                  <input 
+                    {...getInputProps({
+                      disabled: (existingImages?.length || 0) + newImageFiles.length >= 3,
+                      onClick: (e) => {
+                        e.stopPropagation();
+                      },
+                      style: { display: 'block', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, opacity: 0, cursor: 'pointer', zIndex: 10, pointerEvents: 'auto' }
+                    })} 
+                  />
+                  <p className="text-gray-600 pointer-events-none text-sm">
+                    {(existingImages?.length || 0) + newImageFiles.length >= 3
+                      ? (isRTL ? 'حداکثر 3 عکس آپلود شده است' : 'Maximum 3 images uploaded')
+                      : isDragActive
+                      ? (isRTL ? 'تصاویر را اینجا رها کنید' : 'Drop images here')
+                      : (isRTL ? 'تصاویر را بکشید و رها کنید یا کلیک کنید' : 'Drag and drop images or click to select')}
+                  </p>
+                </div>
+
+                {newImageFiles.length > 0 && (
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3 mt-4">
+                    {newImageFiles.map((file, index) => (
+                      <div key={index} className="relative group">
+                        <div className="relative h-20 md:h-24 w-full rounded-lg overflow-hidden bg-gray-100">
+                          <Image
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeNewImage(index)}
+                          className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Basic Info */}
+          {currentStep === 3 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold mb-4">{isRTL ? 'عنوان' : 'Title'}</h2>
+              
+              {/* Title and Description - Hidden for Jobs and Misc */}
+              {categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
+                    <input
+                      type="text"
+                      value={step3Data.title}
+                      onChange={(e) => handleStep3Change('title', e.target.value)}
+                      required
+                      placeholder={
+                        categoryType === MainCategoryType.REAL_ESTATE
+                          ? (isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center')
+                          : categoryType === MainCategoryType.VEHICLES
+                          ? (isRTL ? 'مثال: BMW 320d، دوچرخه برقی، موتورسیکلت و...' : 'Example: BMW 320d, Electric bike, Motorcycle, etc.')
+                          : categoryType === MainCategoryType.SERVICES
+                          ? (isRTL ? 'مثال: خدمات تعمیرات ساختمان' : 'Example: Building repair services')
+                          : (isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title')
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">{isRTL ? 'توضیحات' : 'Description'}</label>
+                    <textarea
+                      value={step3Data.description}
+                      onChange={(e) => handleStep3Change('description', e.target.value)}
+                      required
+                      rows={8}
+                      placeholder={
+                        categoryType === MainCategoryType.REAL_ESTATE
+                          ? (isRTL ? 'توضیحات کامل ملک: متراژ، موقعیت، امکانات و...' : 'Full property description: area, location, features...')
+                          : categoryType === MainCategoryType.VEHICLES
+                          ? (isRTL ? 'توضیحات وسیله نقلیه: وضعیت، کارکرد، ویژگی‌ها، امکانات و...' : 'Vehicle description: condition, mileage, features, equipment...')
+                          : categoryType === MainCategoryType.SERVICES
+                          ? (isRTL ? 'توضیحات خدمات: تجربه، تخصص، گواهینامه‌ها و...' : 'Service description: experience, expertise, certificates...')
+                          : (isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...')
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Privacy Settings */}
+              <div className="border-t border-gray-200 pt-6 mt-6">
+                <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تنظیمات حریم خصوصی' : 'Privacy Settings'}</h3>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={step3Data.showEmail}
+                      onChange={(e) => handleStep3Change('showEmail', e.target.checked)}
+                      className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                    />
+                    <span className="text-sm text-gray-700">
+                      {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={step3Data.showPhone}
+                      onChange={(e) => handleStep3Change('showPhone', e.target.checked)}
+                      className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                    />
+                    <span className="text-sm text-gray-700">
+                      {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="flex gap-4 justify-between">
             <div>
-              <label className="block text-sm font-medium mb-2">{t('createAd.form.subcategory')}</label>
-              <select
-                name="subcategoryId"
-                value={formData.subcategoryId}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-              >
-                <option value="">{isRTL ? 'انتخاب کنید' : 'Bitte wählen'}</option>
-                {subcategories.map((sub) => (
-                  <option key={sub.id} value={sub.id}>
-                    {getLocalizedCategoryName(sub.name, locale)}
-                  </option>
-                ))}
-              </select>
+              {currentStep > 1 && (
+                <Button type="button" variant="outline" onClick={handleBack}>
+                  {isRTL ? 'قبلی' : 'Back'}
+                </Button>
+              )}
             </div>
-          )}
-        </div>
-
-        {/* City and Status */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('createAd.form.city')}</label>
-            <select
-              name="cityId"
-              value={formData.cityId}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="">{isRTL ? 'انتخاب کنید' : 'Bitte wählen'}</option>
-              {filteredCities.map((city) => (
-                <option key={city.id} value={city.id}>
-                  {getLocalizedName(city.name, locale)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Condition</label>
-            <select
-              name="condition"
-              value={formData.condition}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="NEW">New</option>
-              <option value="LIKE_NEW">Like New</option>
-              <option value="USED">Used</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Privacy Settings */}
-        <div className="border-t border-gray-200 pt-6 mt-6">
-          <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تنظیمات حریم خصوصی' : 'Privacy Settings'}</h3>
-          <div className="space-y-3">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                name="showEmail"
-                checked={formData.showEmail}
-                onChange={handleChange}
-                className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
-              />
-              <span className="text-sm text-gray-700">
-                {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
-              </span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                name="showPhone"
-                checked={formData.showPhone}
-                onChange={handleChange}
-                className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
-              />
-              <span className="text-sm text-gray-700">
-                {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
-              </span>
-            </label>
-          </div>
-        </div>
-
-        {/* Existing Images */}
-        {existingImages && existingImages.length > 0 && (
-          <div>
-            <label className="block text-sm font-medium mb-2">Current Images</label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {existingImages.map((img) => (
-                <div key={img.id} className="relative group">
-                  <div className="relative h-32 w-full rounded-lg overflow-hidden bg-gray-100">
-                    <Image
-                      src={img.url.startsWith('http') ? img.url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001'}${img.url}`}
-                      alt="Ad image"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteImage(img.id)}
-                    disabled={deleteImageMutation.isPending}
-                    className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
+            <div className="flex gap-4">
+              {currentStep < 3 ? (
+                <Button type="button" onClick={handleNext} className="flex-1">
+                  {isRTL ? 'بعدی' : 'Next'}
+                </Button>
+              ) : currentStep === 3 ? (
+                <Button type="submit" className="flex-1" disabled={updateAdMutation.isPending}>
+                  {updateAdMutation.isPending ? (isRTL ? 'در حال به‌روزرسانی...' : 'Updating...') : (isRTL ? 'به‌روزرسانی آگهی' : 'Update Ad')}
+                </Button>
+              ) : null}
+              <Button type="button" variant="outline" onClick={() => router.back()}>
+                {isRTL ? 'لغو' : 'Cancel'}
+              </Button>
             </div>
           </div>
-        )}
-
-        {/* Image Upload */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Add New Images
-            <span className="text-gray-500 text-xs ml-2">
-              ({isRTL ? 'حداکثر 3 عکس' : 'Max 3 images'}: {(existingImages?.length || 0) + newImageFiles.length}/3)
-            </span>
-          </label>
-          {((existingImages?.length || 0) + newImageFiles.length) >= 3 ? (
-            <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center bg-gray-50 opacity-50">
-              <p className="text-gray-600">
-                {isRTL ? 'حداکثر 3 عکس آپلود شده است' : 'Maximum 3 images uploaded'}
-              </p>
-            </div>
-          ) : (
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                isDragActive ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
-              }`}
-            >
-              <input {...getInputProps()} />
-              <p className="text-gray-600">
-                {isDragActive
-                  ? (isRTL ? 'تصاویر را اینجا رها کنید' : 'Bilder hier ablegen')
-                  : (isRTL ? 'تصاویر را بکشید و رها کنید یا کلیک کنید' : 'Ziehen Sie Bilder hierher oder klicken Sie zum Auswählen')}
-              </p>
-            </div>
-          )}
-
-          {/* New Image Preview */}
-          {newImageFiles.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-              {newImageFiles.map((file, index) => (
-                <div key={index} className="relative group">
-                  <div className="relative h-32 w-full rounded-lg overflow-hidden bg-gray-100">
-                    <Image
-                      src={URL.createObjectURL(file)}
-                      alt={`Preview ${index + 1}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeNewImage(index)}
-                    className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Submit Button */}
-        <div className="flex gap-4">
-          <Button type="submit" className="flex-1" disabled={updateAdMutation.isPending}>
-            {updateAdMutation.isPending ? t('common.loading') : t('createAd.form.update')}
-          </Button>
-          <Button type="button" variant="outline" onClick={() => router.back()}>
-            {t('common.cancel')}
-          </Button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

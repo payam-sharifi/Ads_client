@@ -26,6 +26,7 @@ function NavbarContent() {
   const [showCategories, setShowCategories] = useState(false);
   const [showCities, setShowCities] = useState(false);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const categoriesRef = useRef<HTMLDivElement>(null);
   const citiesRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -37,6 +38,11 @@ function NavbarContent() {
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   const { data: cities = [], isLoading: citiesLoading } = useCities();
   const { data: unreadCount = 0, isLoading: unreadCountLoading, error: unreadCountError } = useUnreadMessagesCount();
+  
+  // Track mount state to prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   // Debug: Log unread count
   React.useEffect(() => {
@@ -86,9 +92,18 @@ function NavbarContent() {
   
   const parentCategories = categories.filter(cat => !cat.parentId);
   
+  // Sync selectedCity with selectedCityId from store
+  useEffect(() => {
+    if (selectedCityId && selectedCityId !== selectedCity) {
+      setSelectedCity(selectedCityId);
+    } else if (!selectedCityId && selectedCity) {
+      setSelectedCity(null);
+    }
+  }, [selectedCityId, selectedCity]);
+  
   // Get selected city display name
-  const selectedCityName = selectedCity 
-    ? getLocalizedName(filteredCities.find(c => c.id === selectedCity)?.name, locale)
+  const selectedCityName = (selectedCity || selectedCityId)
+    ? getLocalizedName(filteredCities.find(c => c.id === (selectedCity || selectedCityId))?.name, locale)
     : (locale === 'fa' ? 'همه شهرها' : 'Alle Städte');
   
   // Close dropdowns when clicking outside
@@ -167,7 +182,7 @@ function NavbarContent() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <span className="text-sm font-medium text-gray-700" dir={isRTL ? 'rtl' : 'ltr'}>
-                  {citiesLoading ? t('common.loading') : selectedCityName}
+                  {!isMounted || citiesLoading ? (locale === 'fa' ? 'همه شهرها' : 'Alle Städte') : selectedCityName}
                 </span>
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

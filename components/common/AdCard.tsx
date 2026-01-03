@@ -144,6 +144,14 @@ export default function AdCard({
     }
   }, [images.length]);
   
+  const handleImageContainerClick = useCallback((e: React.MouseEvent) => {
+    // Prevent navigation when clicking on navigation buttons or image container
+    if ((e.target as HTMLElement).closest('button')) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, []);
+  
   const handleImageTouchStart = useCallback((e: React.TouchEvent) => {
     const touch = e.touches[0];
     (e.currentTarget as HTMLElement).setAttribute('data-touch-x', touch.clientX.toString());
@@ -352,24 +360,23 @@ export default function AdCard({
           `}
           onTouchStart={handleImageTouchStart}
           onTouchEnd={handleImageTouchEnd}
+          onClick={handleImageContainerClick}
         >
-          <Link href={`/ad/${ad.id}`} className="absolute inset-0">
-            <Image
-              src={currentImage}
-              alt={ad.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
-              sizes={variant === 'compact' ? "(max-width: 768px) 128px, 25vw" : "(max-width: 768px) 50vw, 25vw"}
-              loading="lazy"
-              unoptimized={currentImage.startsWith('http://localhost') || currentImage.startsWith('http://127.0.0.1')}
-              onError={(e) => {
-                // Silently fallback to placeholder - image file may not exist on server
-                if (e.currentTarget.src !== '/placeholder.svg') {
-                  e.currentTarget.src = '/placeholder.svg';
-                }
-              }}
-            />
-          </Link>
+          <Image
+            src={currentImage}
+            alt={ad.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            sizes={variant === 'compact' ? "(max-width: 768px) 128px, 25vw" : "(max-width: 768px) 50vw, 25vw"}
+            loading="lazy"
+            unoptimized={currentImage.startsWith('http://localhost') || currentImage.startsWith('http://127.0.0.1')}
+            onError={(e) => {
+              // Silently fallback to placeholder - image file may not exist on server
+              if (e.currentTarget.src !== '/placeholder.svg') {
+                e.currentTarget.src = '/placeholder.svg';
+              }
+            }}
+          />
           {/* Navigation buttons - only show on hover and if multiple images */}
           {images.length > 1 && (
             <>
@@ -473,24 +480,23 @@ export default function AdCard({
         className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 group"
         onTouchStart={handleImageTouchStart}
         onTouchEnd={handleImageTouchEnd}
+        onClick={handleImageContainerClick}
       >
-        <Link href={`/ad/${ad.id}`} className="absolute inset-0">
-          <Image
-            src={currentImage}
-            alt={ad.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            sizes="(max-width: 768px) 50vw, 25vw"
-            loading="lazy"
-            unoptimized={currentImage.startsWith('http://localhost') || currentImage.startsWith('http://127.0.0.1')}
-            onError={(e) => {
-              // Silently fallback to placeholder - image file may not exist on server
-              if (e.currentTarget.src !== '/placeholder.svg') {
-                e.currentTarget.src = '/placeholder.svg';
-              }
-            }}
-          />
-        </Link>
+        <Image
+          src={currentImage}
+          alt={ad.title}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          sizes="(max-width: 768px) 50vw, 25vw"
+          loading="lazy"
+          unoptimized={currentImage.startsWith('http://localhost') || currentImage.startsWith('http://127.0.0.1')}
+          onError={(e) => {
+            // Silently fallback to placeholder - image file may not exist on server
+            if (e.currentTarget.src !== '/placeholder.svg') {
+              e.currentTarget.src = '/placeholder.svg';
+            }
+          }}
+        />
         {/* Navigation buttons - only show on hover and if multiple images */}
         {images.length > 1 && (
           <>
