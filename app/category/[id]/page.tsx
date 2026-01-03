@@ -11,6 +11,7 @@ import AdCard from '@/components/common/AdCard';
 import FilterBar, { FilterOption } from '@/components/common/FilterBar';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
+import { MainCategoryType } from '@/lib/types/category.types';
 
 /**
  * Category Detail Page
@@ -28,11 +29,35 @@ export default function CategoryPage() {
   const cityIdFromUrl = searchParams?.get('cityId') || '';
   const { locale, isRTL, t } = useI18n();
   const { selectedCityId, setSelectedCity } = useCityStore();
+  // Initialize cityId from URL or store
+  const initialCityId = cityIdFromUrl && cityIdFromUrl !== 'all' ? cityIdFromUrl : (selectedCityId && selectedCityId !== 'all' ? selectedCityId : '');
   const [filters, setFilters] = useState({
-    cityId: '',
+    cityId: initialCityId,
     minPrice: '',
     maxPrice: '',
     search: '',
+    // Real Estate filters
+    offerType: '',
+    propertyType: '',
+    minArea: '',
+    maxArea: '',
+    rooms: '',
+    // Vehicle filters
+    brand: '',
+    model: '',
+    minYear: '',
+    maxYear: '',
+    maxMileage: '',
+    fuelType: '',
+    transmission: '',
+    // Service filters
+    serviceCategory: '',
+    pricingType: '',
+    // Job filters
+    jobType: '',
+    experienceLevel: '',
+    minSalary: '',
+    maxSalary: '',
   });
   const [showCitySelector, setShowCitySelector] = useState(false);
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
@@ -40,17 +65,19 @@ export default function CategoryPage() {
   const { data: category, isLoading: categoryLoading } = useCategory(categoryId);
   const { data: cities = [] } = useCities();
   
-  // Sync cityId from URL to filters
+  // Sync cityId from URL or store to filters
   React.useEffect(() => {
-    if (cityIdFromUrl && cityIdFromUrl !== filters.cityId) {
-      if (cityIdFromUrl === 'all') {
-        setFilters(prev => ({ ...prev, cityId: '' }));
-      } else {
-        setFilters(prev => ({ ...prev, cityId: cityIdFromUrl }));
-        setSelectedCity(cityIdFromUrl);
+    const newCityId = cityIdFromUrl && cityIdFromUrl !== 'all' 
+      ? cityIdFromUrl 
+      : (selectedCityId && selectedCityId !== 'all' ? selectedCityId : '');
+    
+    if (newCityId !== filters.cityId) {
+      setFilters(prev => ({ ...prev, cityId: newCityId }));
+      if (newCityId && newCityId !== selectedCityId) {
+        setSelectedCity(newCityId);
       }
     }
-  }, [cityIdFromUrl, filters.cityId, setSelectedCity, categoryId]);
+  }, [cityIdFromUrl, selectedCityId, filters.cityId, setSelectedCity]);
   
   // Get selected city name
   const activeCityId = filters.cityId || selectedCityId;
@@ -102,45 +129,319 @@ export default function CategoryPage() {
     limit: 20,
   });
 
-  const filterOptions: FilterOption[] = [
-    {
-      key: 'cityId',
-      label: locale === 'fa' ? 'شهر' : 'Stadt',
-      type: 'select',
-      options: [
-        { value: '', label: locale === 'fa' ? 'همه شهرها' : 'Alle Städte' },
-        ...filteredCities.map((city) => ({
-          value: city.id,
-          label: getLocalizedName(city.name, locale),
-        })),
-      ],
-    },
-    {
-      key: 'minPrice',
-      label: 'Min Price',
-      type: 'number',
-      placeholder: '0',
-    },
-    {
-      key: 'maxPrice',
-      label: 'Max Price',
-      type: 'number',
-      placeholder: '100000',
-    },
-    {
-      key: 'search',
-      label: 'Search',
-      type: 'text',
-      placeholder: 'Search in ads...',
-    },
-  ];
+  // Get category type
+  const categoryType = category?.categoryType as MainCategoryType | undefined;
+
+  // Build filter options based on category type
+  const getFilterOptions = (): FilterOption[] => {
+    const baseFilters: FilterOption[] = [
+      {
+        key: 'cityId',
+        label: locale === 'fa' ? 'شهر' : 'Stadt',
+        type: 'select',
+        options: [
+          { value: '', label: locale === 'fa' ? 'همه شهرها' : 'Alle Städte' },
+          ...filteredCities.map((city) => ({
+            value: city.id,
+            label: getLocalizedName(city.name, locale),
+          })),
+        ],
+      },
+    ];
+
+    if (!categoryType) {
+      // Default filters for unknown category types
+      return [
+        ...baseFilters,
+        {
+          key: 'minPrice',
+          label: locale === 'fa' ? 'حداقل قیمت (€)' : 'Min Price (€)',
+          type: 'number',
+          placeholder: '0',
+        },
+        {
+          key: 'maxPrice',
+          label: locale === 'fa' ? 'حداکثر قیمت (€)' : 'Max Price (€)',
+          type: 'number',
+          placeholder: '100000',
+        },
+      ];
+    }
+
+    switch (categoryType) {
+      case MainCategoryType.REAL_ESTATE:
+        return [
+          ...baseFilters,
+          {
+            key: 'offerType',
+            label: locale === 'fa' ? 'نوع معامله' : 'Transaction Type',
+            type: 'select',
+            options: [
+              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: 'sale', label: locale === 'fa' ? 'فروش' : 'Sale' },
+              { value: 'rent', label: locale === 'fa' ? 'اجاره' : 'Rent' },
+            ],
+          },
+          {
+            key: 'propertyType',
+            label: locale === 'fa' ? 'نوع ملک' : 'Property Type',
+            type: 'select',
+            options: [
+              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: 'apartment', label: locale === 'fa' ? 'آپارتمان' : 'Apartment' },
+              { value: 'house', label: locale === 'fa' ? 'خانه' : 'House' },
+              { value: 'commercial', label: locale === 'fa' ? 'تجاری' : 'Commercial' },
+              { value: 'land', label: locale === 'fa' ? 'زمین' : 'Land' },
+              { value: 'parking', label: locale === 'fa' ? 'پارکینگ' : 'Parking' },
+            ],
+          },
+          {
+            key: 'minPrice',
+            label: locale === 'fa' ? 'حداقل قیمت (€)' : 'Min Price (€)',
+            type: 'number',
+            placeholder: '0',
+          },
+          {
+            key: 'maxPrice',
+            label: locale === 'fa' ? 'حداکثر قیمت (€)' : 'Max Price (€)',
+            type: 'number',
+            placeholder: '1000000',
+          },
+          {
+            key: 'minArea',
+            label: locale === 'fa' ? 'حداقل متراژ (m²)' : 'Min Area (m²)',
+            type: 'number',
+            placeholder: '0',
+          },
+          {
+            key: 'maxArea',
+            label: locale === 'fa' ? 'حداکثر متراژ (m²)' : 'Max Area (m²)',
+            type: 'number',
+            placeholder: '500',
+          },
+          {
+            key: 'rooms',
+            label: locale === 'fa' ? 'تعداد اتاق' : 'Rooms',
+            type: 'select',
+            options: [
+              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: '1', label: '1' },
+              { value: '2', label: '2' },
+              { value: '3', label: '3' },
+              { value: '4', label: '4' },
+              { value: '5+', label: '5+' },
+            ],
+          },
+        ];
+
+      case MainCategoryType.VEHICLES:
+        return [
+          ...baseFilters,
+          {
+            key: 'brand',
+            label: locale === 'fa' ? 'برند' : 'Brand',
+            type: 'text',
+            placeholder: locale === 'fa' ? 'مثال: BMW' : 'e.g., BMW',
+          },
+          {
+            key: 'model',
+            label: locale === 'fa' ? 'مدل' : 'Model',
+            type: 'text',
+            placeholder: locale === 'fa' ? 'مثال: X5' : 'e.g., X5',
+          },
+          {
+            key: 'minYear',
+            label: locale === 'fa' ? 'حداقل سال' : 'Min Year',
+            type: 'number',
+            placeholder: '2000',
+          },
+          {
+            key: 'maxYear',
+            label: locale === 'fa' ? 'حداکثر سال' : 'Max Year',
+            type: 'number',
+            placeholder: '2024',
+          },
+          {
+            key: 'maxMileage',
+            label: locale === 'fa' ? 'حداکثر کارکرد (km)' : 'Max Mileage (km)',
+            type: 'number',
+            placeholder: '100000',
+          },
+          {
+            key: 'fuelType',
+            label: locale === 'fa' ? 'نوع سوخت' : 'Fuel Type',
+            type: 'select',
+            options: [
+              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: 'petrol', label: locale === 'fa' ? 'بنزین' : 'Petrol' },
+              { value: 'diesel', label: locale === 'fa' ? 'دیزل' : 'Diesel' },
+              { value: 'electric', label: locale === 'fa' ? 'الکتریکی' : 'Electric' },
+              { value: 'hybrid', label: locale === 'fa' ? 'هیبرید' : 'Hybrid' },
+            ],
+          },
+          {
+            key: 'transmission',
+            label: locale === 'fa' ? 'گیربکس' : 'Transmission',
+            type: 'select',
+            options: [
+              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: 'manual', label: locale === 'fa' ? 'دستی' : 'Manual' },
+              { value: 'automatic', label: locale === 'fa' ? 'اتوماتیک' : 'Automatic' },
+            ],
+          },
+          {
+            key: 'minPrice',
+            label: locale === 'fa' ? 'حداقل قیمت (€)' : 'Min Price (€)',
+            type: 'number',
+            placeholder: '0',
+          },
+          {
+            key: 'maxPrice',
+            label: locale === 'fa' ? 'حداکثر قیمت (€)' : 'Max Price (€)',
+            type: 'number',
+            placeholder: '50000',
+          },
+        ];
+
+      case MainCategoryType.SERVICES:
+        return [
+          ...baseFilters,
+          {
+            key: 'serviceCategory',
+            label: locale === 'fa' ? 'دسته خدمات' : 'Service Category',
+            type: 'select',
+            options: [
+              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: 'home_services', label: locale === 'fa' ? 'خدمات منزل' : 'Home Services' },
+              { value: 'transport', label: locale === 'fa' ? 'حمل و نقل' : 'Transport' },
+              { value: 'repairs', label: locale === 'fa' ? 'تعمیرات' : 'Repairs' },
+              { value: 'it_design', label: locale === 'fa' ? 'IT و طراحی' : 'IT & Design' },
+              { value: 'education', label: locale === 'fa' ? 'آموزش' : 'Education' },
+              { value: 'personal_services', label: locale === 'fa' ? 'خدمات شخصی' : 'Personal Services' },
+            ],
+          },
+          {
+            key: 'pricingType',
+            label: locale === 'fa' ? 'نوع قیمت‌گذاری' : 'Pricing Type',
+            type: 'select',
+            options: [
+              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: 'fixed', label: locale === 'fa' ? 'قیمت ثابت' : 'Fixed' },
+              { value: 'hourly', label: locale === 'fa' ? 'ساعتی' : 'Hourly' },
+              { value: 'negotiable', label: locale === 'fa' ? 'توافقی' : 'Negotiable' },
+            ],
+          },
+          {
+            key: 'minPrice',
+            label: locale === 'fa' ? 'حداقل قیمت (€)' : 'Min Price (€)',
+            type: 'number',
+            placeholder: '0',
+          },
+          {
+            key: 'maxPrice',
+            label: locale === 'fa' ? 'حداکثر قیمت (€)' : 'Max Price (€)',
+            type: 'number',
+            placeholder: '1000',
+          },
+        ];
+
+      case MainCategoryType.JOBS:
+        return [
+          ...baseFilters,
+          {
+            key: 'jobType',
+            label: locale === 'fa' ? 'نوع شغل' : 'Job Type',
+            type: 'select',
+            options: [
+              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: 'full-time', label: locale === 'fa' ? 'تمام وقت' : 'Full-time' },
+              { value: 'part-time', label: locale === 'fa' ? 'پاره وقت' : 'Part-time' },
+              { value: 'mini-job', label: locale === 'fa' ? 'مینی جاب' : 'Mini-job' },
+              { value: 'freelance', label: locale === 'fa' ? 'فریلنس' : 'Freelance' },
+              { value: 'internship', label: locale === 'fa' ? 'کارآموزی' : 'Internship' },
+            ],
+          },
+          {
+            key: 'experienceLevel',
+            label: locale === 'fa' ? 'سطح تجربه' : 'Experience Level',
+            type: 'select',
+            options: [
+              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: 'junior', label: locale === 'fa' ? 'جونیور' : 'Junior' },
+              { value: 'mid', label: locale === 'fa' ? 'میانی' : 'Mid' },
+              { value: 'senior', label: locale === 'fa' ? 'سنیور' : 'Senior' },
+            ],
+          },
+          {
+            key: 'minSalary',
+            label: locale === 'fa' ? 'حداقل حقوق (€)' : 'Min Salary (€)',
+            type: 'number',
+            placeholder: '0',
+          },
+          {
+            key: 'maxSalary',
+            label: locale === 'fa' ? 'حداکثر حقوق (€)' : 'Max Salary (€)',
+            type: 'number',
+            placeholder: '100000',
+          },
+        ];
+
+      case MainCategoryType.MISC:
+      default:
+        return [
+          ...baseFilters,
+          {
+            key: 'minPrice',
+            label: locale === 'fa' ? 'حداقل قیمت (€)' : 'Min Price (€)',
+            type: 'number',
+            placeholder: '0',
+          },
+          {
+            key: 'maxPrice',
+            label: locale === 'fa' ? 'حداکثر قیمت (€)' : 'Max Price (€)',
+            type: 'number',
+            placeholder: '100000',
+          },
+        ];
+    }
+  };
+
+  const filterOptions = getFilterOptions();
 
   const handleFilterChange = (key: string, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleReset = () => {
-    setFilters({ cityId: '', minPrice: '', maxPrice: '', search: '' });
+    // Reset to default cityId (from URL or store)
+    const defaultCityId = cityIdFromUrl && cityIdFromUrl !== 'all' 
+      ? cityIdFromUrl 
+      : (selectedCityId && selectedCityId !== 'all' ? selectedCityId : '');
+    
+    setFilters({
+      cityId: defaultCityId,
+      minPrice: '',
+      maxPrice: '',
+      search: '',
+      offerType: '',
+      propertyType: '',
+      minArea: '',
+      maxArea: '',
+      rooms: '',
+      brand: '',
+      model: '',
+      minYear: '',
+      maxYear: '',
+      maxMileage: '',
+      fuelType: '',
+      transmission: '',
+      serviceCategory: '',
+      pricingType: '',
+      jobType: '',
+      experienceLevel: '',
+      minSalary: '',
+      maxSalary: '',
+    });
   };
 
   if (categoryLoading) {
@@ -355,28 +656,30 @@ export default function CategoryPage() {
                 </button>
               </div>
               <div className="p-4">
-                <FilterBar
-                  filters={filters}
-                  filterOptions={filterOptions}
-                  onFilterChange={handleFilterChange}
-                  onReset={handleReset}
-                />
-                <div className="mt-4 flex gap-2">
-                  <button
-                    onClick={() => {
-                      handleReset();
-                      setShowFilterDrawer(false);
-                    }}
-                    className="flex-1 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                  >
-                    {locale === 'fa' ? 'پاک کردن' : 'Zurücksetzen'}
-                  </button>
-                  <button
-                    onClick={() => setShowFilterDrawer(false)}
-                    className="flex-1 px-4 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700"
-                  >
-                    {locale === 'fa' ? 'اعمال فیلتر' : 'Anwenden'}
-                  </button>
+                <div className="bg-white rounded-lg border border-gray-200 p-2 md:p-3">
+                  <FilterBar
+                    filters={filters}
+                    filterOptions={filterOptions}
+                    onFilterChange={handleFilterChange}
+                    onReset={handleReset}
+                  />
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      onClick={() => {
+                        handleReset();
+                        setShowFilterDrawer(false);
+                      }}
+                      className="flex-1 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                    >
+                      {locale === 'fa' ? 'پاک کردن' : 'Zurücksetzen'}
+                    </button>
+                    <button
+                      onClick={() => setShowFilterDrawer(false)}
+                      className="flex-1 px-4 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700"
+                    >
+                      {locale === 'fa' ? 'اعمال فیلتر' : 'Anwenden'}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

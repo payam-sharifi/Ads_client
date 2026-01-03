@@ -42,7 +42,7 @@ export default function FilterBar({
   const { locale, isRTL, t } = useI18n();
   
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 p-2 md:p-3 ${className}`}>
+    <div className={`${className}`}>
       <div className="flex flex-col gap-3">
         {filterOptions.map((option) => (
           <div key={option.key}>
