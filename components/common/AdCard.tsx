@@ -180,7 +180,9 @@ export default function AdCard({
   if (variant === 'dashboard') {
     return (
       <div className={`
-        flex flex-col bg-white rounded-lg border border-red-200 hover:border-red-300 hover:shadow-md transition-all overflow-hidden
+        flex flex-col transition-all overflow-hidden
+        bg-gray-50 border-b border-gray-200 rounded-none
+        md:bg-white md:rounded-lg md:border md:border-red-200 md:hover:border-red-300 md:hover:shadow-md
         ${isRTL ? 'flex-row-reverse' : 'flex-row'}
       `}>
         {/* Image - Left (Right in RTL) */}
@@ -342,10 +344,14 @@ export default function AdCard({
       <Link
         href={`/ad/${ad.id}`}
         className={`
-          flex bg-white rounded-lg border border-gray-200 hover:border-red-300 hover:shadow-md transition-all overflow-hidden group
+          flex transition-all overflow-hidden group
           ${variant === 'compact' 
-            ? `flex-row ${isRTL ? 'flex-row-reverse' : ''} border-b border-gray-200 md:border-b-0 rounded-none md:rounded-lg` 
-            : 'flex-col md:flex-col'
+            ? `flex-row ${isRTL ? 'flex-row-reverse' : ''} 
+               bg-gray-50 border-b border-gray-200 rounded-none
+               md:bg-white md:border md:border-gray-200 md:border-b-0 md:rounded-lg md:hover:border-red-300 md:hover:shadow-md` 
+            : `flex-col md:flex-col
+               bg-gray-50 border-b border-gray-200 rounded-none
+               md:bg-white md:rounded-lg md:border md:border-gray-200 md:hover:border-red-300 md:hover:shadow-md`
           }
         `}
       >
@@ -354,7 +360,7 @@ export default function AdCard({
           className={`
             relative overflow-hidden bg-gray-100 flex-shrink-0 group
             ${variant === 'compact' 
-              ? 'w-20 h-20 md:w-32 md:h-32 min-w-[80px] min-h-[80px]' 
+              ? 'w-28 h-28 md:w-40 md:h-40 min-w-[112px] min-h-[112px] md:min-w-[160px] md:min-h-[160px]' 
               : 'w-full aspect-[4/3] min-h-[120px]'
             }
           `}
@@ -474,7 +480,7 @@ export default function AdCard({
   return (
     <Link
       href={`/ad/${ad.id}`}
-      className="flex flex-col bg-white rounded-lg border border-gray-200 hover:border-red-300 hover:shadow-md transition-all overflow-hidden group"
+      className="flex flex-col bg-gray-50 border-b border-gray-200 rounded-none md:bg-white md:rounded-lg md:border md:border-gray-200 md:hover:border-red-300 md:hover:shadow-md transition-all overflow-hidden group"
     >
       <div 
         className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 group"
