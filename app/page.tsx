@@ -32,9 +32,9 @@ function HomePageContent() {
   const [showCitySelector, setShowCitySelector] = React.useState(false);
   const [searchInput, setSearchInput] = React.useState(searchQuery);
 
-  // If cityId is in URL, save it to store
+  // If cityId is in URL, save it to store (but not if it's 'all')
   useEffect(() => {
-    if (cityIdFromUrl && cityIdFromUrl !== selectedCityId) {
+    if (cityIdFromUrl && cityIdFromUrl !== 'all' && cityIdFromUrl !== selectedCityId) {
       setSelectedCity(cityIdFromUrl);
     }
   }, [cityIdFromUrl, selectedCityId, setSelectedCity]);
@@ -151,6 +151,7 @@ function HomePageContent() {
   }, [searchInput, searchQuery, activeCityId, router]);
 
   // Show landing page only if no city is selected (not 'all')
+  // 'all' means show all cities, so don't show landing page
   if (!activeCityId || activeCityId === '') {
     return <CitySelectionLanding />;
   }

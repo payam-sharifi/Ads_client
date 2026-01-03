@@ -201,7 +201,19 @@ function NavbarContent() {
                         setSelectedCity(null);
                         clearSelectedCity();
                         setShowCities(false);
-                        router.push('/');
+                        // Redirect to show all cities - preserve category if on category page
+                        const params = new URLSearchParams();
+                        params.set('cityId', 'all');
+                        if (urlSearchQuery) {
+                          params.set('search', urlSearchQuery);
+                        }
+                        // If on category page, preserve categoryId in URL
+                        if (pathname?.startsWith('/category/')) {
+                          const categoryId = pathname.split('/category/')[1];
+                          router.push(`/category/${categoryId}?cityId=all${urlSearchQuery ? `&search=${encodeURIComponent(urlSearchQuery)}` : ''}`);
+                        } else {
+                          router.push(`/?${params.toString()}`);
+                        }
                       }}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       dir={isRTL ? 'rtl' : 'ltr'}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCategory } from '@/lib/hooks/useCategories';
 import { useAds } from '@/lib/hooks/useAds';
@@ -23,7 +23,9 @@ import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localize
 export default function CategoryPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const categoryId = params?.id as string;
+  const cityIdFromUrl = searchParams?.get('cityId') || '';
   const { locale, isRTL, t } = useI18n();
   const { selectedCityId, setSelectedCity } = useCityStore();
   const [filters, setFilters] = useState({
@@ -38,6 +40,18 @@ export default function CategoryPage() {
   const { data: category, isLoading: categoryLoading } = useCategory(categoryId);
   const { data: cities = [] } = useCities();
   
+  // Sync cityId from URL to filters
+  React.useEffect(() => {
+    if (cityIdFromUrl && cityIdFromUrl !== filters.cityId) {
+      if (cityIdFromUrl === 'all') {
+        setFilters(prev => ({ ...prev, cityId: '' }));
+      } else {
+        setFilters(prev => ({ ...prev, cityId: cityIdFromUrl }));
+        setSelectedCity(cityIdFromUrl);
+      }
+    }
+  }, [cityIdFromUrl, filters.cityId, setSelectedCity, categoryId]);
+  
   // Get selected city name
   const activeCityId = filters.cityId || selectedCityId;
   const selectedCity = cities.find(city => city.id === activeCityId);
@@ -51,9 +65,21 @@ export default function CategoryPage() {
     return !cityNameFa.includes('تهران') && !cityNameDe.includes('tehran') && !cityNameEn.includes('tehran');
   });
   
-  const handleCityChange = (cityId: string) => {
-    setSelectedCity(cityId);
-    setFilters(prev => ({ ...prev, cityId }));
+  const handleCityChange = (cityId: string | null) => {
+    if (cityId) {
+      setSelectedCity(cityId);
+      setFilters(prev => ({ ...prev, cityId }));
+      // Update URL with cityId
+      const params = new URLSearchParams();
+      params.set('cityId', cityId);
+      router.push(`/category/${categoryId}?${params.toString()}`);
+    } else {
+      // Show all cities
+      setFilters(prev => ({ ...prev, cityId: '' }));
+      const params = new URLSearchParams();
+      params.set('cityId', 'all');
+      router.push(`/category/${categoryId}?${params.toString()}`);
+    }
     setShowCitySelector(false);
   };
   
@@ -67,7 +93,8 @@ export default function CategoryPage() {
   
   const { data: adsData, isLoading: adsLoading } = useAds({
     categoryId,
-    cityId: filters.cityId || undefined,
+    // Don't send cityId if it's empty or 'all' - this shows all cities
+    cityId: filters.cityId && filters.cityId !== 'all' ? filters.cityId : undefined,
     minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
     maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
     search: filters.search || undefined,
