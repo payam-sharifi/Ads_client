@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { Ad } from '@/lib/hooks/useAds';
 import { getLocalizedName, getLocalizedCategoryName } from '@/lib/utils/localizedNames';
-import { getFirstImageUrl } from '@/lib/utils/imageUtils';
+import { getFirstImageUrl, getImageUrl } from '@/lib/utils/imageUtils';
 import Button from './Button';
 
 interface AdCardProps {
@@ -118,6 +118,55 @@ export default function AdCard({
   const cityName = getLocalizedName(ad.city?.name, locale);
   const categoryName = getLocalizedCategoryName(ad.category?.name, locale);
   const firstImage = getFirstImageUrl(ad.images);
+  
+  // Image carousel state
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = ad.images && ad.images.length > 0 
+    ? [...ad.images].sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+    : [];
+  const currentImage = images[currentImageIndex] 
+    ? getImageUrl(images[currentImageIndex].url) 
+    : firstImage;
+  
+  const handlePrevImage = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (images.length > 1) {
+      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  }, [images.length]);
+  
+  const handleNextImage = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (images.length > 1) {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }
+  }, [images.length]);
+  
+  const handleImageTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    (e.currentTarget as HTMLElement).setAttribute('data-touch-x', touch.clientX.toString());
+  }, []);
+  
+  const handleImageTouchEnd = useCallback((e: React.TouchEvent) => {
+    const element = e.currentTarget as HTMLElement;
+    const startX = parseFloat(element.getAttribute('data-touch-x') || '0');
+    const touch = e.changedTouches[0];
+    const endX = touch.clientX;
+    const diff = startX - endX;
+    
+    if (Math.abs(diff) > 50 && images.length > 1) {
+      if (diff > 0) {
+        // Swipe left - next image
+        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+      } else {
+        // Swipe right - previous image
+        setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+      }
+    }
+    element.removeAttribute('data-touch-x');
+  }, [images.length]);
 
   // Dashboard variant: horizontal layout with edit/delete buttons
   if (variant === 'dashboard') {
@@ -127,22 +176,65 @@ export default function AdCard({
         ${isRTL ? 'flex-row-reverse' : 'flex-row'}
       `}>
         {/* Image - Left (Right in RTL) */}
-        <Link href={`/ad/${ad.id}`} className="relative w-24 md:w-32 h-24 md:h-32 flex-shrink-0 overflow-hidden bg-gray-100 cursor-pointer">
-          <Image
-            src={firstImage}
-            alt={ad.title}
-            fill
-            className="object-cover transition-transform duration-300 hover:scale-105"
-            sizes="(max-width: 768px) 128px, 160px"
-            loading="lazy"
-            unoptimized={firstImage.startsWith('http://localhost') || firstImage.startsWith('http://127.0.0.1')}
-            onError={(e) => {
-              // Silently fallback to placeholder - image file may not exist on server
-              if (e.currentTarget.src !== '/placeholder.svg') {
-                e.currentTarget.src = '/placeholder.svg';
-              }
-            }}
-          />
+        <div className="relative w-24 md:w-24 h-24 md:h-32 flex-shrink-0 overflow-hidden bg-gray-100 group">
+          <Link 
+            href={`/ad/${ad.id}`} 
+            className="absolute inset-0"
+            onTouchStart={handleImageTouchStart}
+            onTouchEnd={handleImageTouchEnd}
+          >
+            <Image
+              src={currentImage}
+              alt={ad.title}
+              fill
+              className="object-cover transition-transform duration-300 hover:scale-105"
+              sizes="(max-width: 768px) 96px, 96px"
+              loading="lazy"
+              unoptimized={currentImage.startsWith('http://localhost') || currentImage.startsWith('http://127.0.0.1')}
+              onError={(e) => {
+                // Silently fallback to placeholder - image file may not exist on server
+                if (e.currentTarget.src !== '/placeholder.svg') {
+                  e.currentTarget.src = '/placeholder.svg';
+                }
+              }}
+            />
+          </Link>
+          {/* Navigation buttons - only show on hover and if multiple images */}
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={handlePrevImage}
+                className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                aria-label="Previous image"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={handleNextImage}
+                className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                aria-label="Next image"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
+          {/* Image counter dots */}
+          {images.length > 1 && (
+            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex gap-1 z-10">
+              {images.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-1 h-1 rounded-full transition-all ${
+                    index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
           {/* Status Badge - Diagonal top left (only in admin/dashboard panels) */}
           {showStatusBadge && getStatusBadge()}
           {ad.isPremium && (
@@ -150,7 +242,7 @@ export default function AdCard({
               {t('dashboard.premium')}
             </span>
           )}
-        </Link>
+        </div>
 
         {/* Content - Right (Left in RTL) */}
         <div className="flex flex-col flex-1 p-2 justify-between min-w-0">
@@ -250,28 +342,70 @@ export default function AdCard({
         `}
       >
         {/* Image - Left (Right in RTL) */}
-        <div className={`
-          relative overflow-hidden bg-gray-100 flex-shrink-0
-          ${variant === 'compact' 
-            ? 'w-20 h-20 md:w-32 md:h-32 min-w-[80px] min-h-[80px]' 
-            : 'w-full aspect-[4/3] min-h-[120px]'
-          }
-        `}>
-          <Image
-            src={firstImage}
-            alt={ad.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            sizes={variant === 'compact' ? "(max-width: 768px) 128px, 25vw" : "(max-width: 768px) 50vw, 25vw"}
-            loading="lazy"
-            unoptimized={firstImage.startsWith('http://localhost') || firstImage.startsWith('http://127.0.0.1')}
-            onError={(e) => {
-              // Silently fallback to placeholder - image file may not exist on server
-              if (e.currentTarget.src !== '/placeholder.svg') {
-                e.currentTarget.src = '/placeholder.svg';
-              }
-            }}
-          />
+        <div 
+          className={`
+            relative overflow-hidden bg-gray-100 flex-shrink-0 group
+            ${variant === 'compact' 
+              ? 'w-20 h-20 md:w-32 md:h-32 min-w-[80px] min-h-[80px]' 
+              : 'w-full aspect-[4/3] min-h-[120px]'
+            }
+          `}
+          onTouchStart={handleImageTouchStart}
+          onTouchEnd={handleImageTouchEnd}
+        >
+          <Link href={`/ad/${ad.id}`} className="absolute inset-0">
+            <Image
+              src={currentImage}
+              alt={ad.title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              sizes={variant === 'compact' ? "(max-width: 768px) 128px, 25vw" : "(max-width: 768px) 50vw, 25vw"}
+              loading="lazy"
+              unoptimized={currentImage.startsWith('http://localhost') || currentImage.startsWith('http://127.0.0.1')}
+              onError={(e) => {
+                // Silently fallback to placeholder - image file may not exist on server
+                if (e.currentTarget.src !== '/placeholder.svg') {
+                  e.currentTarget.src = '/placeholder.svg';
+                }
+              }}
+            />
+          </Link>
+          {/* Navigation buttons - only show on hover and if multiple images */}
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={handlePrevImage}
+                className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                aria-label="Previous image"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={handleNextImage}
+                className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                aria-label="Next image"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
+          {/* Image counter dots */}
+          {images.length > 1 && (
+            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex gap-1 z-10">
+              {images.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-1 h-1 rounded-full transition-all ${
+                    index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
           {/* Status Badge - Diagonal top left (only in admin/dashboard panels) */}
           {showStatusBadge && getStatusBadge()}
           {ad.isPremium && (
@@ -335,22 +469,64 @@ export default function AdCard({
       href={`/ad/${ad.id}`}
       className="flex flex-col bg-white rounded-lg border border-gray-200 hover:border-red-300 hover:shadow-md transition-all overflow-hidden group"
     >
-      <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
-        <Image
-          src={firstImage}
-          alt={ad.title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-          sizes="(max-width: 768px) 50vw, 25vw"
-          loading="lazy"
-          unoptimized={firstImage.startsWith('http://localhost') || firstImage.startsWith('http://127.0.0.1')}
-          onError={(e) => {
-            // Silently fallback to placeholder - image file may not exist on server
-            if (e.currentTarget.src !== '/placeholder.svg') {
-              e.currentTarget.src = '/placeholder.svg';
-            }
-          }}
+      <div 
+        className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 group"
+        onTouchStart={handleImageTouchStart}
+        onTouchEnd={handleImageTouchEnd}
+      >
+        <Link href={`/ad/${ad.id}`} className="absolute inset-0">
+          <Image
+            src={currentImage}
+            alt={ad.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 768px) 50vw, 25vw"
+            loading="lazy"
+            unoptimized={currentImage.startsWith('http://localhost') || currentImage.startsWith('http://127.0.0.1')}
+            onError={(e) => {
+              // Silently fallback to placeholder - image file may not exist on server
+              if (e.currentTarget.src !== '/placeholder.svg') {
+                e.currentTarget.src = '/placeholder.svg';
+              }
+            }}
           />
+        </Link>
+        {/* Navigation buttons - only show on hover and if multiple images */}
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={handlePrevImage}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+              aria-label="Previous image"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={handleNextImage}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+              aria-label="Next image"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </>
+        )}
+        {/* Image counter dots */}
+        {images.length > 1 && (
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1 z-10">
+            {images.map((_, index) => (
+              <div
+                key={index}
+                className={`w-1.5 h-1.5 rounded-full transition-all ${
+                  index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                }`}
+              />
+            ))}
+          </div>
+        )}
         {/* Status Badge - Diagonal top left (only in admin/dashboard panels) */}
         {showStatusBadge && getStatusBadge()}
         {ad.isPremium && (
