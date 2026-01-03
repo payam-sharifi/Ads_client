@@ -45,12 +45,6 @@ function NavbarContent() {
     setIsMounted(true);
   }, []);
   
-  // Debug: Log unread count
-  React.useEffect(() => {
-    if (isAuthenticated) {
-      console.log('Navbar - Unread count:', unreadCount, 'Loading:', unreadCountLoading, 'Error:', unreadCountError);
-    }
-  }, [unreadCount, unreadCountLoading, unreadCountError, isAuthenticated]);
 
   // Sync search input with URL query
   useEffect(() => {

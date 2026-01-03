@@ -220,6 +220,9 @@ export const useMarkAllAsReadForAd = () => {
       queryClient.invalidateQueries({ queryKey: ['messages', 'inbox'] });
       queryClient.invalidateQueries({ queryKey: ['messages', 'unread-count'] });
       queryClient.invalidateQueries({ queryKey: ['messages', 'unread-count', 'ad', adId] });
+      // Force immediate refetch of unread count queries
+      queryClient.refetchQueries({ queryKey: ['messages', 'unread-count'] });
+      queryClient.refetchQueries({ queryKey: ['messages', 'unread-count', 'ad', adId] });
     },
   });
 };
