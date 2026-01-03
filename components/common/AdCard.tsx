@@ -516,7 +516,12 @@ export default function AdCard({
           </div>
 
           <div className={variant === 'compact' ? 'mt-auto' : 'mt-auto'}>
-            <div className="text-red-600 font-bold text-xs mb-1">{formatPrice(ad.price)}</div>
+            <div className="text-red-600 font-bold text-xs mb-1">
+              {ad.metadata?.isNegotiable 
+                ? (isRTL ? 'قیمت توافقی' : 'Negotiable')
+                : formatPrice(ad.price)
+              }
+            </div>
             <div className="text-[10px] text-gray-500 flex items-center gap-1 flex-wrap">
               {cityName && (
                 <>

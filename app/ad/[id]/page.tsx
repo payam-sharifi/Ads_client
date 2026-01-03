@@ -190,6 +190,18 @@ export default function AdDetailPage() {
                 )}
               </div>
 
+              {/* Price Display */}
+              {ad.price !== undefined && ad.price !== null && (
+                <div className="border-t border-gray-200 pt-6">
+                  <div className="text-2xl font-bold text-red-600">
+                    {ad.metadata?.isNegotiable 
+                      ? (isRTL ? 'قیمت توافقی' : 'Negotiable Price')
+                      : formatPrice(ad.price)
+                    }
+                  </div>
+                </div>
+              )}
+
               <div className="border-t border-gray-200 pt-6">
                 <h2 className="text-xl font-bold mb-4 text-gray-900">{t('ad.description')}</h2>
                 <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{ad.description}</p>

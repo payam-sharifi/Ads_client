@@ -44,6 +44,8 @@ export default function CreateAdPage() {
     description: '',
     showEmail: false,
     showPhone: false,
+    price: undefined as number | undefined,
+    isNegotiable: false,
   });
 
   // Step 3: Category-specific details (metadata)
@@ -183,6 +185,11 @@ export default function CreateAdPage() {
       }
       if (!step2Data.description.trim() || step2Data.description.trim().length < 10) {
         toast.error(isRTL ? 'توضیحات باید حداقل 10 کاراکتر باشد' : 'Description must be at least 10 characters');
+        return false;
+      }
+      // Validate price if not negotiable
+      if (!step2Data.isNegotiable && (!step2Data.price || step2Data.price <= 0)) {
+        toast.error(isRTL ? 'لطفا قیمت را وارد کنید' : 'Please enter a price');
         return false;
       }
       return true;
@@ -338,6 +345,13 @@ export default function CreateAdPage() {
         requestData.price = step3Data.price || 0;
       } else if (categoryType === MainCategoryType.SERVICES) {
         requestData.price = step3Data.price || 0;
+      } else if (categoryType === MainCategoryType.MISC) {
+        // For MISC: use price from step2Data, or 0 if negotiable
+        requestData.price = step2Data.isNegotiable ? 0 : (step2Data.price || 0);
+        // Store negotiable flag in metadata
+        if (step2Data.isNegotiable) {
+          requestData.metadata = { ...requestData.metadata, isNegotiable: true };
+        }
       } else {
         requestData.price = 0; // Jobs don't have price
       }
@@ -530,6 +544,51 @@ export default function CreateAdPage() {
                     placeholder={isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...'}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
+                </div>
+
+                {/* Price Field for MISC */}
+                <div className="border-t border-gray-200 pt-6">
+                  <h3 className="text-lg font-semibold mb-4">{isRTL ? 'قیمت' : 'Price'}</h3>
+                  <div className="space-y-4">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={step2Data.isNegotiable}
+                        onChange={(e) => {
+                          handleStep2Change('isNegotiable', e.target.checked);
+                          if (e.target.checked) {
+                            handleStep2Change('price', undefined);
+                          }
+                        }}
+                        className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                      />
+                      <span className="text-sm text-gray-700">
+                        {isRTL ? 'قیمت توافقی' : 'Negotiable Price'}
+                      </span>
+                    </label>
+                    {!step2Data.isNegotiable && (
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          {isRTL ? 'قیمت (€)' : 'Price (€)'} <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          value={step2Data.price || ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            const numValue = value === '' ? undefined : Math.round(parseFloat(value) || 0);
+                            handleStep2Change('price', numValue);
+                          }}
+                          placeholder={isRTL ? 'قیمت را وارد کنید' : 'Enter price'}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                          dir="ltr"
+                          min="0"
+                          step="1"
+                          required={!step2Data.isNegotiable}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Privacy Settings for MISC */}
