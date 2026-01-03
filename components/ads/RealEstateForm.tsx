@@ -59,52 +59,53 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
         )}
       </div>
 
-      {/* Property Type */}
-      <div className="relative z-10">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'نوع ملک' : 'Property Type'} <span className="text-red-500">*</span>
-        </label>
-        <select
-          value={data.propertyType || ''}
-          onChange={(e) => updateField('propertyType', e.target.value)}
-          className={`w-full px-3 py-2 border rounded-lg ${
-            getFieldError('propertyType') ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20`}
-          style={{ zIndex: 1000 }}
-          dir={isRTL ? 'rtl' : 'ltr'}
-          required
-        >
-          <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
-          <option value={PropertyType.APARTMENT}>{isRTL ? 'آپارتمان' : 'Apartment'}</option>
-          <option value={PropertyType.HOUSE}>{isRTL ? 'خانه' : 'House'}</option>
-          <option value={PropertyType.COMMERCIAL}>{isRTL ? 'تجاری' : 'Commercial'}</option>
-          <option value={PropertyType.LAND}>{isRTL ? 'زمین' : 'Land'}</option>
-          <option value={PropertyType.PARKING}>{isRTL ? 'پارکینگ' : 'Parking'}</option>
-        </select>
-        {getFieldError('propertyType') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('propertyType')}</p>
-        )}
-      </div>
+      {/* Property Type & Postal Code */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="relative z-10">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'نوع ملک' : 'Property Type'} <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={data.propertyType || ''}
+            onChange={(e) => updateField('propertyType', e.target.value)}
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('propertyType') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20`}
+            style={{ zIndex: 1000 }}
+            dir={isRTL ? 'rtl' : 'ltr'}
+            required
+          >
+            <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
+            <option value={PropertyType.APARTMENT}>{isRTL ? 'آپارتمان' : 'Apartment'}</option>
+            <option value={PropertyType.HOUSE}>{isRTL ? 'خانه' : 'House'}</option>
+            <option value={PropertyType.COMMERCIAL}>{isRTL ? 'تجاری' : 'Commercial'}</option>
+            <option value={PropertyType.LAND}>{isRTL ? 'زمین' : 'Land'}</option>
+            <option value={PropertyType.PARKING}>{isRTL ? 'پارکینگ' : 'Parking'}</option>
+          </select>
+          {getFieldError('propertyType') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('propertyType')}</p>
+          )}
+        </div>
 
-      {/* Postal Code */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'کد پستی' : 'Postal Code'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <input
-          type="text"
-          value={data.postalCode || ''}
-          onChange={(e) => updateField('postalCode', e.target.value)}
-          placeholder={isRTL ? '10115' : '10115'}
-          className={`w-full px-3 py-2 border rounded-lg ${
-            getFieldError('postalCode') ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-red-500`}
-          dir="ltr"
-          minLength={5}
-        />
-        {getFieldError('postalCode') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('postalCode')}</p>
-        )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'کد پستی' : 'Postal Code'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <input
+            type="text"
+            value={data.postalCode || ''}
+            onChange={(e) => updateField('postalCode', e.target.value)}
+            placeholder={isRTL ? '10115' : '10115'}
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('postalCode') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+            dir="ltr"
+            minLength={5}
+          />
+          {getFieldError('postalCode') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('postalCode')}</p>
+          )}
+        </div>
       </div>
 
       {/* District */}
@@ -179,94 +180,96 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
         </div>
       ) : null}
 
-      {/* Additional Costs */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'هزینه اضافی (€)' : 'Additional Costs (€)'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <input
-          type="number"
-          value={data.additionalCosts || ''}
-          onChange={(e) => updateField('additionalCosts', parseFloat(e.target.value) || 0)}
-          placeholder={isRTL ? '200' : '200'}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          dir="ltr"
-          min="0"
-        />
+      {/* Additional Costs & Deposit */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'هزینه اضافی (€)' : 'Additional Costs (€)'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <input
+            type="number"
+            value={data.additionalCosts || ''}
+            onChange={(e) => updateField('additionalCosts', parseFloat(e.target.value) || 0)}
+            placeholder={isRTL ? '200' : '200'}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            dir="ltr"
+            min="0"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'ودیعه (€)' : 'Deposit (€)'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <input
+            type="number"
+            value={data.deposit || ''}
+            onChange={(e) => updateField('deposit', parseFloat(e.target.value) || 0)}
+            placeholder={isRTL ? '2400' : '2400'}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            dir="ltr"
+            min="0"
+          />
+        </div>
       </div>
 
-      {/* Deposit */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'ودیعه (€)' : 'Deposit (€)'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <input
-          type="number"
-          value={data.deposit || ''}
-          onChange={(e) => updateField('deposit', parseFloat(e.target.value) || 0)}
-          placeholder={isRTL ? '2400' : '2400'}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          dir="ltr"
-          min="0"
-        />
-      </div>
-
-      {/* Living Area */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'متراژ (m²)' : 'Living Area (m²)'} <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          inputMode="decimal"
-          value={data.livingArea !== undefined && data.livingArea !== null ? String(data.livingArea) : ''}
-          onChange={(e) => {
-            const value = e.target.value.trim();
-            // Allow empty, numbers, and one decimal point
-            if (value === '') {
-              updateField('livingArea', undefined);
-            } else if (/^\d+\.?\d*$/.test(value)) {
-              // Use Number() instead of parseFloat to preserve precision better
-              // But we need to store the exact string value to avoid floating point issues
-              // Store as number but the backend should handle it correctly
-              const numValue = Number(value);
-              if (!isNaN(numValue) && numValue > 0) {
-                updateField('livingArea', numValue);
+      {/* Living Area & Rooms */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'متراژ (m²)' : 'Living Area (m²)'} <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={data.livingArea !== undefined && data.livingArea !== null ? String(data.livingArea) : ''}
+            onChange={(e) => {
+              const value = e.target.value.trim();
+              // Allow empty, numbers, and one decimal point
+              if (value === '') {
+                updateField('livingArea', undefined);
+              } else if (/^\d+\.?\d*$/.test(value)) {
+                // Use Number() instead of parseFloat to preserve precision better
+                // But we need to store the exact string value to avoid floating point issues
+                // Store as number but the backend should handle it correctly
+                const numValue = Number(value);
+                if (!isNaN(numValue) && numValue > 0) {
+                  updateField('livingArea', numValue);
+                }
               }
-            }
-          }}
-          placeholder={isRTL ? '80' : '80'}
-          className={`w-full px-3 py-2 border rounded-lg ${
-            getFieldError('livingArea') ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-red-500`}
-          dir="ltr"
-          required
-        />
-        {getFieldError('livingArea') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('livingArea')}</p>
-        )}
-      </div>
+            }}
+            placeholder={isRTL ? '80' : '80'}
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('livingArea') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+            dir="ltr"
+            required
+          />
+          {getFieldError('livingArea') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('livingArea')}</p>
+          )}
+        </div>
 
-      {/* Rooms */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'تعداد اتاق' : 'Rooms'} <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="number"
-          value={data.rooms || ''}
-          onChange={(e) => updateField('rooms', parseInt(e.target.value) || 0)}
-          placeholder={isRTL ? '3' : '3'}
-          className={`w-full px-3 py-2 border rounded-lg ${
-            getFieldError('rooms') ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-red-500`}
-          dir="ltr"
-          min="1"
-          required
-        />
-        {getFieldError('rooms') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('rooms')}</p>
-        )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'تعداد اتاق' : 'Rooms'} <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            value={data.rooms || ''}
+            onChange={(e) => updateField('rooms', parseInt(e.target.value) || 0)}
+            placeholder={isRTL ? '3' : '3'}
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('rooms') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+            dir="ltr"
+            min="1"
+            required
+          />
+          {getFieldError('rooms') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('rooms')}</p>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -301,35 +304,36 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
         </div>
       </div>
 
-      {/* Year Built */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'سال ساخت' : 'Year Built'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <input
-          type="number"
-          value={data.yearBuilt || ''}
-          onChange={(e) => updateField('yearBuilt', parseInt(e.target.value) || undefined)}
-          placeholder={isRTL ? '2010' : '2010'}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          dir="ltr"
-          min="1800"
-          max={new Date().getFullYear()}
-        />
-      </div>
+      {/* Year Built & Available From */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'سال ساخت' : 'Year Built'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <input
+            type="number"
+            value={data.yearBuilt || ''}
+            onChange={(e) => updateField('yearBuilt', parseInt(e.target.value) || undefined)}
+            placeholder={isRTL ? '2010' : '2010'}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            dir="ltr"
+            min="1800"
+            max={new Date().getFullYear()}
+          />
+        </div>
 
-      {/* Available From */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'موجود از' : 'Available From'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <input
-          type="date"
-          value={data.availableFrom || ''}
-          onChange={(e) => updateField('availableFrom', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          dir="ltr"
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'موجود از' : 'Available From'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <input
+            type="date"
+            value={data.availableFrom || ''}
+            onChange={(e) => updateField('availableFrom', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            dir="ltr"
+          />
+        </div>
       </div>
 
       {/* Features */}

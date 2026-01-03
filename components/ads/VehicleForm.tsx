@@ -92,8 +92,8 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
         </div>
       </div>
 
-      {/* Year - All vehicle types */}
-      <div>
+      {/* Year - All vehicle types - Full width on mobile, half on desktop */}
+      <div className="w-full md:w-1/2">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {isRTL ? 'سال' : 'Year'} <span className="text-red-500">*</span>
         </label>
@@ -141,68 +141,70 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             )}
           </div>
 
-          {/* Frame Size */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {isRTL ? 'اندازه فریم' : 'Frame Size'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-            </label>
-            <input
-              type="text"
-              value={data.frameSize || ''}
-              onChange={(e) => updateField('frameSize', e.target.value)}
-              placeholder={isRTL ? 'M, L, XL' : 'M, L, XL'}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              dir="ltr"
-            />
+          {/* Frame Size & Gears */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {isRTL ? 'اندازه فریم' : 'Frame Size'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+              </label>
+              <input
+                type="text"
+                value={data.frameSize || ''}
+                onChange={(e) => updateField('frameSize', e.target.value)}
+                placeholder={isRTL ? 'M, L, XL' : 'M, L, XL'}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                dir="ltr"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {isRTL ? 'تعداد دنده' : 'Number of Gears'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+              </label>
+              <input
+                type="number"
+                value={data.gears || ''}
+                onChange={(e) => updateField('gears', parseInt(e.target.value) || undefined)}
+                placeholder={isRTL ? '21' : '21'}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                dir="ltr"
+                min="1"
+              />
+            </div>
           </div>
 
-          {/* Gears */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {isRTL ? 'تعداد دنده' : 'Number of Gears'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-            </label>
-            <input
-              type="number"
-              value={data.gears || ''}
-              onChange={(e) => updateField('gears', parseInt(e.target.value) || undefined)}
-              placeholder={isRTL ? '21' : '21'}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              dir="ltr"
-              min="1"
-            />
-          </div>
+          {/* Brake Type & Wheel Size */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative z-10">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {isRTL ? 'نوع ترمز' : 'Brake Type'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+              </label>
+              <select
+                value={data.brakeType || ''}
+                onChange={(e) => updateField('brakeType', e.target.value || undefined)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                dir={isRTL ? 'rtl' : 'ltr'}
+              >
+                <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
+                <option value="rim">{isRTL ? 'کالیپر' : 'Rim Brake'}</option>
+                <option value="disc">{isRTL ? 'دیسکی' : 'Disc Brake'}</option>
+                <option value="drum">{isRTL ? 'طبلکی' : 'Drum Brake'}</option>
+              </select>
+            </div>
 
-          {/* Brake Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {isRTL ? 'نوع ترمز' : 'Brake Type'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-            </label>
-            <select
-              value={data.brakeType || ''}
-              onChange={(e) => updateField('brakeType', e.target.value || undefined)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              dir={isRTL ? 'rtl' : 'ltr'}
-            >
-              <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
-              <option value="rim">{isRTL ? 'کالیپر' : 'Rim Brake'}</option>
-              <option value="disc">{isRTL ? 'دیسکی' : 'Disc Brake'}</option>
-              <option value="drum">{isRTL ? 'طبلکی' : 'Drum Brake'}</option>
-            </select>
-          </div>
-
-          {/* Wheel Size */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {isRTL ? 'اندازه چرخ' : 'Wheel Size'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-            </label>
-            <input
-              type="text"
-              value={data.wheelSize || ''}
-              onChange={(e) => updateField('wheelSize', e.target.value)}
-              placeholder={isRTL ? '26", 27.5", 29"' : '26", 27.5", 29"'}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              dir="ltr"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {isRTL ? 'اندازه چرخ' : 'Wheel Size'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+              </label>
+              <input
+                type="text"
+                value={data.wheelSize || ''}
+                onChange={(e) => updateField('wheelSize', e.target.value)}
+                placeholder={isRTL ? '26", 27.5", 29"' : '26", 27.5", 29"'}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                dir="ltr"
+              />
+            </div>
           </div>
         </>
       )}
@@ -415,8 +417,8 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
             </div>
           </div>
 
-          {/* Inspection Valid Until - Only for cars, motorcycles, vans */}
-          <div>
+          {/* Inspection Valid Until - Only for cars, motorcycles, vans - Full width on mobile, half on desktop */}
+          <div className="w-full md:w-1/2">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {isRTL ? 'معاینه فنی تا' : 'Inspection Valid Until'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
             </label>
@@ -457,50 +459,51 @@ export default function VehicleForm({ data, onChange, errors = {} }: VehicleForm
         </div>
       )}
 
-      {/* Price - All vehicle types */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'قیمت (€)' : 'Price (€)'} <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="number"
-          value={data.price || ''}
-          onChange={(e) => {
-            const value = e.target.value;
-            const intValue = value === '' ? undefined : Math.round(parseFloat(value) || 0);
-            updateField('price', intValue);
-          }}
-          placeholder={isRTL ? '25000' : '25000'}
-          className={`w-full px-3 py-2 border rounded-lg ${
-            getFieldError('price') ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-red-500`}
-          dir="ltr"
-          min="0"
-          step="1"
-        />
-        {getFieldError('price') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('price')}</p>
-        )}
-      </div>
+      {/* Price & Postal Code - All vehicle types */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'قیمت (€)' : 'Price (€)'} <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            value={data.price || ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              const intValue = value === '' ? undefined : Math.round(parseFloat(value) || 0);
+              updateField('price', intValue);
+            }}
+            placeholder={isRTL ? '25000' : '25000'}
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('price') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+            dir="ltr"
+            min="0"
+            step="1"
+          />
+          {getFieldError('price') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('price')}</p>
+          )}
+        </div>
 
-      {/* Postal Code - All vehicle types */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'کد پستی' : 'Postal Code'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <input
-          type="text"
-          value={data.postalCode || ''}
-          onChange={(e) => updateField('postalCode', e.target.value)}
-          placeholder={isRTL ? '10115' : '10115'}
-          className={`w-full px-3 py-2 border rounded-lg ${
-            getFieldError('postalCode') ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-red-500`}
-          dir="ltr"
-        />
-        {getFieldError('postalCode') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('postalCode')}</p>
-        )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'کد پستی' : 'Postal Code'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <input
+            type="text"
+            value={data.postalCode || ''}
+            onChange={(e) => updateField('postalCode', e.target.value)}
+            placeholder={isRTL ? '10115' : '10115'}
+            className={`w-full px-3 py-2 border rounded-lg ${
+              getFieldError('postalCode') ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+            dir="ltr"
+          />
+          {getFieldError('postalCode') && (
+            <p className="mt-1 text-sm text-red-600">{getFieldError('postalCode')}</p>
+          )}
+        </div>
       </div>
     </div>
   );

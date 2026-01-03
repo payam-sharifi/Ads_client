@@ -123,35 +123,36 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
         </div>
       )}
 
-      {/* Service Area */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'محدوده یا منطقه' : 'Area or District'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <input
-          type="text"
-          value={data.serviceRadius ? String(data.serviceRadius) : ''}
-          onChange={(e) => updateField('serviceRadius', e.target.value || undefined)}
-          placeholder={isRTL ? 'محدوده خدمات' : 'Service area'}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          dir={isRTL ? 'rtl' : 'ltr'}
-        />
-      </div>
+      {/* Service Area & Experience Years */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'محدوده یا منطقه' : 'Area or District'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <input
+            type="text"
+            value={data.serviceRadius ? String(data.serviceRadius) : ''}
+            onChange={(e) => updateField('serviceRadius', e.target.value || undefined)}
+            placeholder={isRTL ? 'محدوده خدمات' : 'Service area'}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            dir={isRTL ? 'rtl' : 'ltr'}
+          />
+        </div>
 
-      {/* Experience Years */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'سال‌های تجربه' : 'Years of Experience'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <input
-          type="number"
-          value={data.experienceYears || ''}
-          onChange={(e) => updateField('experienceYears', parseInt(e.target.value) || undefined)}
-          placeholder={isRTL ? '5' : '5'}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          dir="ltr"
-          min="0"
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'سال‌های تجربه' : 'Years of Experience'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <input
+            type="number"
+            value={data.experienceYears || ''}
+            onChange={(e) => updateField('experienceYears', parseInt(e.target.value) || undefined)}
+            placeholder={isRTL ? '5' : '5'}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            dir="ltr"
+            min="0"
+          />
+        </div>
       </div>
 
       {/* Certificates */}

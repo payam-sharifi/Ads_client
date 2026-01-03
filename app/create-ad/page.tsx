@@ -164,29 +164,11 @@ export default function CreateAdPage() {
   };
 
   const validateStep2 = () => {
-    // For Jobs, title and description are in Step 3, so skip validation here
-    // For Misc, only title and description are needed, no step 3
-    if (categoryType === MainCategoryType.JOBS || categoryType === MainCategoryType.MISC) {
-      return true;
-    }
-    
-    if (!step2Data.title.trim() || step2Data.title.trim().length < 3) {
-      toast.error(isRTL ? 'عنوان باید حداقل 3 کاراکتر باشد' : 'Title must be at least 3 characters');
-      return false;
-    }
-    if (!step2Data.description.trim() || step2Data.description.trim().length < 10) {
-      toast.error(isRTL ? 'توضیحات باید حداقل 10 کاراکتر باشد' : 'Description must be at least 10 characters');
-      return false;
-    }
-    return true;
-  };
-
-  const validateStep3 = () => {
     if (!categoryType) {
       return true; // No category selected, skip validation
     }
 
-    // For Misc category, no step 3 validation needed
+    // For Misc category, no step 2 validation needed (no category-specific fields)
     if (categoryType === MainCategoryType.MISC) {
       return true;
     }
@@ -195,7 +177,7 @@ export default function CreateAdPage() {
     let errors: any[] = [];
     const errorMap: Record<string, string> = {};
 
-    // Use step3Data directly for validation (condition is now only in step3 for vehicles)
+    // Use step3Data directly for validation (condition is now only in step2 for vehicles)
     const validationData = step3Data;
 
 
@@ -230,6 +212,24 @@ export default function CreateAdPage() {
     return true;
   };
 
+  const validateStep3 = () => {
+    // For Jobs, title and description are in Step 2, so skip validation here
+    // For Misc, only title and description are needed, no step 2
+    if (categoryType === MainCategoryType.JOBS || categoryType === MainCategoryType.MISC) {
+      return true;
+    }
+    
+    if (!step2Data.title.trim() || step2Data.title.trim().length < 3) {
+      toast.error(isRTL ? 'عنوان باید حداقل 3 کاراکتر باشد' : 'Title must be at least 3 characters');
+      return false;
+    }
+    if (!step2Data.description.trim() || step2Data.description.trim().length < 10) {
+      toast.error(isRTL ? 'توضیحات باید حداقل 10 کاراکتر باشد' : 'Description must be at least 10 characters');
+      return false;
+    }
+    return true;
+  };
+
   const handleNext = () => {
     if (currentStep === 1) {
       if (validateStep1()) {
@@ -237,23 +237,14 @@ export default function CreateAdPage() {
       }
     } else if (currentStep === 2) {
       if (validateStep2()) {
-        // For Misc category, skip step 3 and go directly to submit
-        if (categoryType === MainCategoryType.MISC) {
-          // Trigger form submit
-          const form = document.querySelector('form');
-          if (form) {
-            form.requestSubmit();
-          }
-        } else {
-          setCurrentStep(3);
-        }
+        setCurrentStep(3);
       }
     }
   };
 
   // Reset errors when step changes
   useEffect(() => {
-    if (currentStep !== 3) {
+    if (currentStep !== 2) {
       setStep3Errors({});
     }
   }, [currentStep]);
@@ -414,8 +405,8 @@ export default function CreateAdPage() {
                     </div>
                     <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${currentStep >= step ? 'text-red-600' : 'text-gray-600'} ${isClickable ? 'hover:text-red-700' : ''}`}>
                       {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
-                      {step === 2 && (isRTL ? 'اطلاعات پایه' : 'Basic Info')}
-                      {step === 3 && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
+                      {step === 2 && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
+                      {step === 3 && (isRTL ? 'اطلاعات پایه' : 'Basic Info')}
                     </span>
                   </div>
                   {step < 3 && (
@@ -483,89 +474,8 @@ export default function CreateAdPage() {
           </div>
         )}
 
-        {/* Step 2: Basic Info */}
+        {/* Step 2: Category-specific Details & Images */}
         {currentStep === 2 && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-4">{isRTL ? 'اطلاعات پایه آگهی' : 'Basic Ad Information'}</h2>
-            
-            {/* Title and Description - Hidden for Jobs and Misc (will be in Step 3 for Jobs, not needed for Misc) */}
-            {categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
-                  <input
-                    type="text"
-                    value={step2Data.title}
-                    onChange={(e) => handleStep2Change('title', e.target.value)}
-                    required
-                    placeholder={
-                      categoryType === MainCategoryType.REAL_ESTATE
-                        ? (isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center')
-                        : categoryType === MainCategoryType.VEHICLES
-                        ? (isRTL ? 'مثال: BMW 320d، دوچرخه برقی، موتورسیکلت و...' : 'Example: BMW 320d, Electric bike, Motorcycle, etc.')
-                        : categoryType === MainCategoryType.SERVICES
-                        ? (isRTL ? 'مثال: خدمات تعمیرات ساختمان' : 'Example: Building repair services')
-                        : (isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title')
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'توضیحات' : 'Description'}</label>
-                  <textarea
-                    value={step2Data.description}
-                    onChange={(e) => handleStep2Change('description', e.target.value)}
-                    required
-                    rows={8}
-                    placeholder={
-                      categoryType === MainCategoryType.REAL_ESTATE
-                        ? (isRTL ? 'توضیحات کامل ملک: متراژ، موقعیت، امکانات و...' : 'Full property description: area, location, features...')
-                        : categoryType === MainCategoryType.VEHICLES
-                        ? (isRTL ? 'توضیحات وسیله نقلیه: وضعیت، کارکرد، ویژگی‌ها، امکانات و...' : 'Vehicle description: condition, mileage, features, equipment...')
-                        : categoryType === MainCategoryType.SERVICES
-                        ? (isRTL ? 'توضیحات خدمات: تجربه، تخصص، گواهینامه‌ها و...' : 'Service description: experience, expertise, certificates...')
-                        : (isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...')
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  />
-                </div>
-              </>
-            )}
-
-            {/* Privacy Settings */}
-            <div className="border-t border-gray-200 pt-6 mt-6">
-              <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تنظیمات حریم خصوصی' : 'Privacy Settings'}</h3>
-              <div className="space-y-3">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={step2Data.showEmail}
-                    onChange={(e) => handleStep2Change('showEmail', e.target.checked)}
-                    className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
-                  />
-                  <span className="text-sm text-gray-700">
-                    {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
-                  </span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={step2Data.showPhone}
-                    onChange={(e) => handleStep2Change('showPhone', e.target.checked)}
-                    className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
-                  />
-                  <span className="text-sm text-gray-700">
-                    {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: Category-specific Details & Images */}
-        {currentStep === 3 && (
           <div className="space-y-6 w-full">
             <h2 className="text-2xl font-bold mb-4">{isRTL ? 'جزئیات و تصاویر' : 'Details & Images'}</h2>
             
@@ -675,6 +585,87 @@ export default function CreateAdPage() {
           </div>
         )}
 
+        {/* Step 3: Basic Info */}
+        {currentStep === 3 && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold mb-4">{isRTL ? 'عنوان' : 'Title'}</h2>
+            
+            {/* Title and Description - Hidden for Jobs and Misc (will be in Step 2 for Jobs, not needed for Misc) */}
+            {categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
+                  <input
+                    type="text"
+                    value={step2Data.title}
+                    onChange={(e) => handleStep2Change('title', e.target.value)}
+                    required
+                    placeholder={
+                      categoryType === MainCategoryType.REAL_ESTATE
+                        ? (isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center')
+                        : categoryType === MainCategoryType.VEHICLES
+                        ? (isRTL ? 'مثال: BMW 320d، دوچرخه برقی، موتورسیکلت و...' : 'Example: BMW 320d, Electric bike, Motorcycle, etc.')
+                        : categoryType === MainCategoryType.SERVICES
+                        ? (isRTL ? 'مثال: خدمات تعمیرات ساختمان' : 'Example: Building repair services')
+                        : (isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title')
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'توضیحات' : 'Description'}</label>
+                  <textarea
+                    value={step2Data.description}
+                    onChange={(e) => handleStep2Change('description', e.target.value)}
+                    required
+                    rows={8}
+                    placeholder={
+                      categoryType === MainCategoryType.REAL_ESTATE
+                        ? (isRTL ? 'توضیحات کامل ملک: متراژ، موقعیت، امکانات و...' : 'Full property description: area, location, features...')
+                        : categoryType === MainCategoryType.VEHICLES
+                        ? (isRTL ? 'توضیحات وسیله نقلیه: وضعیت، کارکرد، ویژگی‌ها، امکانات و...' : 'Vehicle description: condition, mileage, features, equipment...')
+                        : categoryType === MainCategoryType.SERVICES
+                        ? (isRTL ? 'توضیحات خدمات: تجربه، تخصص، گواهینامه‌ها و...' : 'Service description: experience, expertise, certificates...')
+                        : (isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...')
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Privacy Settings */}
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تنظیمات حریم خصوصی' : 'Privacy Settings'}</h3>
+              <div className="space-y-3">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={step2Data.showEmail}
+                    onChange={(e) => handleStep2Change('showEmail', e.target.checked)}
+                    className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                  />
+                  <span className="text-sm text-gray-700">
+                    {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
+                  </span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={step2Data.showPhone}
+                    onChange={(e) => handleStep2Change('showPhone', e.target.checked)}
+                    className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                  />
+                  <span className="text-sm text-gray-700">
+                    {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Navigation Buttons */}
         <div className="flex gap-4 justify-between">
           <div>
@@ -685,11 +676,11 @@ export default function CreateAdPage() {
             )}
           </div>
           <div className="flex gap-4">
-            {currentStep < 3 && categoryType !== MainCategoryType.MISC ? (
+            {currentStep < 3 ? (
               <Button type="button" onClick={handleNext} className="flex-1">
                 {isRTL ? 'بعدی' : 'Next'}
               </Button>
-            ) : (currentStep === 2 && categoryType === MainCategoryType.MISC) || currentStep === 3 ? (
+            ) : currentStep === 3 ? (
               <Button type="submit" className="flex-1" disabled={createAdMutation.isPending}>
                 {createAdMutation.isPending ? (isRTL ? 'در حال ایجاد...' : 'Creating...') : (isRTL ? 'ثبت آگهی' : 'Create Ad')}
               </Button>

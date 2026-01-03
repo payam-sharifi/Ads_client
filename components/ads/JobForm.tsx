@@ -132,34 +132,35 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
         </div>
       </div>
 
-      {/* Education Required */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'تحصیلات مورد نیاز' : 'Education Required'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <input
-          type="text"
-          value={data.educationRequired || ''}
-          onChange={(e) => updateField('educationRequired', e.target.value || undefined)}
-          placeholder={isRTL ? 'Bachelor in Computer Science' : 'Bachelor in Computer Science'}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          dir={isRTL ? 'rtl' : 'ltr'}
-        />
-      </div>
+      {/* Education Required & Language Required */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'تحصیلات مورد نیاز' : 'Education Required'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <input
+            type="text"
+            value={data.educationRequired || ''}
+            onChange={(e) => updateField('educationRequired', e.target.value || undefined)}
+            placeholder={isRTL ? 'Bachelor in Computer Science' : 'Bachelor in Computer Science'}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            dir={isRTL ? 'rtl' : 'ltr'}
+          />
+        </div>
 
-      {/* Language Required */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'زبان مورد نیاز' : 'Language Required'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
-        </label>
-        <input
-          type="text"
-          value={data.languageRequired || ''}
-          onChange={(e) => updateField('languageRequired', e.target.value || undefined)}
-          placeholder={isRTL ? 'German B2, English C1' : 'German B2, English C1'}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          dir={isRTL ? 'rtl' : 'ltr'}
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {isRTL ? 'زبان مورد نیاز' : 'Language Required'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          </label>
+          <input
+            type="text"
+            value={data.languageRequired || ''}
+            onChange={(e) => updateField('languageRequired', e.target.value || undefined)}
+            placeholder={isRTL ? 'German B2, English C1' : 'German B2, English C1'}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            dir={isRTL ? 'rtl' : 'ltr'}
+          />
+        </div>
       </div>
 
       {/* Remote Possible */}
