@@ -128,6 +128,13 @@ export default function CreateAdPage() {
       const newData = { ...prev, [name]: value };
       if (name === 'categoryId') {
         setStep3Data({}); // Reset category-specific data when category changes
+        // If switching to MISC and we're on step 3, go back to step 2 (MISC only has 2 steps)
+        if (value) {
+          const newCategory = categories?.find((c) => c.id === value);
+          if (newCategory?.categoryType === MainCategoryType.MISC && currentStep === 3) {
+            setCurrentStep(2);
+          }
+        }
       }
       return newData;
     });
@@ -168,8 +175,16 @@ export default function CreateAdPage() {
       return true; // No category selected, skip validation
     }
 
-    // For Misc category, no step 2 validation needed (no category-specific fields)
+    // For Misc category, validate title and description in step 2
     if (categoryType === MainCategoryType.MISC) {
+      if (!step2Data.title.trim() || step2Data.title.trim().length < 3) {
+        toast.error(isRTL ? 'عنوان باید حداقل 3 کاراکتر باشد' : 'Title must be at least 3 characters');
+        return false;
+      }
+      if (!step2Data.description.trim() || step2Data.description.trim().length < 10) {
+        toast.error(isRTL ? 'توضیحات باید حداقل 10 کاراکتر باشد' : 'Description must be at least 10 characters');
+        return false;
+      }
       return true;
     }
 
@@ -214,7 +229,7 @@ export default function CreateAdPage() {
 
   const validateStep3 = () => {
     // For Jobs, title and description are in Step 2, so skip validation here
-    // For Misc, only title and description are needed, no step 2
+    // For Misc, validation is done in step 2, so skip here
     if (categoryType === MainCategoryType.JOBS || categoryType === MainCategoryType.MISC) {
       return true;
     }
@@ -237,6 +252,11 @@ export default function CreateAdPage() {
       }
     } else if (currentStep === 2) {
       if (validateStep2()) {
+        // For MISC category, step 2 is the final step, so don't go to step 3
+        if (categoryType === MainCategoryType.MISC) {
+          // Step 2 is final for MISC, submit will be handled by form
+          return;
+        }
         setCurrentStep(3);
       }
     }
@@ -384,7 +404,7 @@ export default function CreateAdPage() {
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center w-full">
-            {[1, 2, 3].map((step) => {
+            {(categoryType === MainCategoryType.MISC ? [1, 2] : [1, 2, 3]).map((step) => {
               const isCompleted = step < currentStep;
               const isClickable = isCompleted;
               
@@ -405,11 +425,12 @@ export default function CreateAdPage() {
                     </div>
                     <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${currentStep >= step ? 'text-red-600' : 'text-gray-600'} ${isClickable ? 'hover:text-red-700' : ''}`}>
                       {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
-                      {step === 2 && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
+                      {step === 2 && categoryType === MainCategoryType.MISC && (isRTL ? 'اطلاعات و تصاویر' : 'Info & Images')}
+                      {step === 2 && categoryType !== MainCategoryType.MISC && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
                       {step === 3 && (isRTL ? 'اطلاعات پایه' : 'Basic Info')}
                     </span>
                   </div>
-                  {step < 3 && (
+                  {((categoryType === MainCategoryType.MISC && step < 2) || (categoryType !== MainCategoryType.MISC && step < 3)) && (
                     <div 
                       className={`flex-1 h-[2px] md:h-1.5 mx-1 md:mx-4 transition-colors ${currentStep > step ? 'bg-red-600' : 'bg-gray-500'} ${isClickable ? 'cursor-pointer hover:bg-red-700' : ''}`} 
                       style={{ minWidth: '16px' }}
@@ -474,13 +495,76 @@ export default function CreateAdPage() {
           </div>
         )}
 
-        {/* Step 2: Category-specific Details & Images */}
+        {/* Step 2: Category-specific Details & Images (or Info & Images for MISC) */}
         {currentStep === 2 && (
           <div className="space-y-6 w-full">
-            <h2 className="text-2xl font-bold mb-4">{isRTL ? 'جزئیات و تصاویر' : 'Details & Images'}</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              {categoryType === MainCategoryType.MISC 
+                ? (isRTL ? 'اطلاعات و تصاویر' : 'Info & Images')
+                : (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')
+              }
+            </h2>
             
-            {/* Category-specific Forms */}
-            {categoryType && (
+            {/* For MISC: Show Title, Description, and Images in Step 2 */}
+            {categoryType === MainCategoryType.MISC && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
+                  <input
+                    type="text"
+                    value={step2Data.title}
+                    onChange={(e) => handleStep2Change('title', e.target.value)}
+                    required
+                    placeholder={isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title'}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">{isRTL ? 'توضیحات' : 'Description'}</label>
+                  <textarea
+                    value={step2Data.description}
+                    onChange={(e) => handleStep2Change('description', e.target.value)}
+                    required
+                    rows={8}
+                    placeholder={isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...'}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
+
+                {/* Privacy Settings for MISC */}
+                <div className="border-t border-gray-200 pt-6">
+                  <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تنظیمات حریم خصوصی' : 'Privacy Settings'}</h3>
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={step2Data.showEmail}
+                        onChange={(e) => handleStep2Change('showEmail', e.target.checked)}
+                        className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                      />
+                      <span className="text-sm text-gray-700">
+                        {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
+                      </span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={step2Data.showPhone}
+                        onChange={(e) => handleStep2Change('showPhone', e.target.checked)}
+                        className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                      />
+                      <span className="text-sm text-gray-700">
+                        {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </>
+            )}
+            
+            {/* Category-specific Forms (for non-MISC categories) */}
+            {categoryType && categoryType !== MainCategoryType.MISC && (
               <div className="space-y-4">
                 {categoryType === MainCategoryType.REAL_ESTATE && (
                   <RealEstateForm 
@@ -514,7 +598,7 @@ export default function CreateAdPage() {
             )}
 
             {/* Image Upload */}
-            <div className="border-t border-gray-300 pt-6">
+            <div className={`border-t border-gray-300 pt-6 ${categoryType === MainCategoryType.MISC ? '' : 'mt-6'}`}>
               <label className="block text-sm font-medium mb-2">
                 {isRTL ? 'تصاویر' : 'Images'} 
                 <span className="text-gray-500 text-xs ml-2">
@@ -676,15 +760,29 @@ export default function CreateAdPage() {
             )}
           </div>
           <div className="flex gap-4">
-            {currentStep < 3 ? (
-              <Button type="button" onClick={handleNext} className="flex-1">
-                {isRTL ? 'بعدی' : 'Next'}
-              </Button>
-            ) : currentStep === 3 ? (
-              <Button type="submit" className="flex-1" disabled={createAdMutation.isPending}>
-                {createAdMutation.isPending ? (isRTL ? 'در حال ایجاد...' : 'Creating...') : (isRTL ? 'ثبت آگهی' : 'Create Ad')}
-              </Button>
-            ) : null}
+            {categoryType === MainCategoryType.MISC ? (
+              // For MISC, step 2 is the final step
+              currentStep === 2 ? (
+                <Button type="submit" className="flex-1" disabled={createAdMutation.isPending}>
+                  {createAdMutation.isPending ? (isRTL ? 'در حال ایجاد...' : 'Creating...') : (isRTL ? 'ثبت آگهی' : 'Create Ad')}
+                </Button>
+              ) : (
+                <Button type="button" onClick={handleNext} className="flex-1">
+                  {isRTL ? 'بعدی' : 'Next'}
+                </Button>
+              )
+            ) : (
+              // For other categories, use the original 3-step flow
+              currentStep < 3 ? (
+                <Button type="button" onClick={handleNext} className="flex-1">
+                  {isRTL ? 'بعدی' : 'Next'}
+                </Button>
+              ) : currentStep === 3 ? (
+                <Button type="submit" className="flex-1" disabled={createAdMutation.isPending}>
+                  {createAdMutation.isPending ? (isRTL ? 'در حال ایجاد...' : 'Creating...') : (isRTL ? 'ثبت آگهی' : 'Create Ad')}
+                </Button>
+              ) : null
+            )}
             <Button type="button" variant="outline" onClick={() => router.back()}>
               {isRTL ? 'لغو' : 'Cancel'}
             </Button>

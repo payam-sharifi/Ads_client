@@ -534,7 +534,7 @@ export default function EditAdPage() {
                       <div key={img.id} className="relative group">
                         <div className="relative h-20 md:h-24 w-full rounded-lg overflow-hidden bg-gray-100">
                           <Image
-                            src={img.url.startsWith('http') ? img.url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5001'}${img.url}`}
+                            src={img.url.startsWith('http') ? img.url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001'}${img.url}`}
                             alt="Ad image"
                             fill
                             className="object-cover"
