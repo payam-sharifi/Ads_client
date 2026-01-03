@@ -15,6 +15,7 @@ import Button from '@/components/common/Button';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
+import { getImageUrl } from '@/lib/utils/imageUtils';
 
 export default function AdDetailPage() {
   const params = useParams();
@@ -126,10 +127,13 @@ export default function AdDetailPage() {
   const adImages = images || ad.images || [];
   const galleryImages =
     adImages.length > 0
-      ? adImages.map((img) => ({
-          original: img.url.startsWith('http') ? img.url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001'}${img.url}`,
-          thumbnail: img.url.startsWith('http') ? img.url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001'}${img.url}`,
-        }))
+      ? adImages.map((img) => {
+          const fullUrl = getImageUrl(img.url);
+          return {
+            original: fullUrl,
+            thumbnail: fullUrl,
+          };
+        })
       : [{ original: '/placeholder.svg', thumbnail: '/placeholder.svg' }];
 
   return (
