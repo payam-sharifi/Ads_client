@@ -20,7 +20,8 @@ function NavbarContent() {
   const logoutMutation = useLogout();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { selectedCityId } = useCityStore();
+  const { selectedCityId, setSelectedCity: setSelectedCityInStore, clearSelectedCity } = useCityStore();
+  const cityIdFromUrl = searchParams?.get('cityId') || '';
   const urlSearchQuery = searchParams?.get('search') || '';
   const [searchInput, setSearchInput] = useState(urlSearchQuery);
   const [showCategories, setShowCategories] = useState(false);
@@ -92,18 +93,20 @@ function NavbarContent() {
   
   const parentCategories = categories.filter(cat => !cat.parentId);
   
-  // Sync selectedCity with selectedCityId from store
+  // Sync selectedCity with selectedCityId from store or URL
   useEffect(() => {
-    if (selectedCityId && selectedCityId !== selectedCity) {
-      setSelectedCity(selectedCityId);
-    } else if (!selectedCityId && selectedCity) {
+    const activeCityId = cityIdFromUrl || selectedCityId;
+    if (activeCityId && activeCityId !== selectedCity) {
+      setSelectedCity(activeCityId);
+    } else if (!activeCityId && selectedCity) {
       setSelectedCity(null);
     }
-  }, [selectedCityId, selectedCity]);
+  }, [selectedCityId, cityIdFromUrl, selectedCity]);
   
-  // Get selected city display name
-  const selectedCityName = (selectedCity || selectedCityId)
-    ? getLocalizedName(filteredCities.find(c => c.id === (selectedCity || selectedCityId))?.name, locale)
+  // Get selected city display name - use URL cityId first, then store, then local state
+  const activeCityIdForDisplay = cityIdFromUrl || selectedCityId || selectedCity;
+  const selectedCityName = activeCityIdForDisplay && activeCityIdForDisplay !== 'all'
+    ? getLocalizedName(filteredCities.find(c => c.id === activeCityIdForDisplay)?.name, locale)
     : (locale === 'fa' ? 'همه شهرها' : 'Alle Städte');
   
   // Close dropdowns when clicking outside
@@ -196,6 +199,7 @@ function NavbarContent() {
                     <button
                       onClick={() => {
                         setSelectedCity(null);
+                        clearSelectedCity();
                         setShowCities(false);
                         router.push('/');
                       }}
@@ -210,6 +214,7 @@ function NavbarContent() {
                         href={`/?cityId=${city.id}`}
                         onClick={() => {
                           setSelectedCity(city.id);
+                          setSelectedCityInStore(city.id);
                           setShowCities(false);
                         }}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
