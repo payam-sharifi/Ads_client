@@ -21,8 +21,22 @@ const nextConfig: NextConfig = {
         port: '3001',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'apimytodos.appventuregmbh.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'apimytodos.appventuregmbh.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
-    unoptimized: process.env.NODE_ENV === 'development',
+    // Disable image optimization in production to prevent RAM issues
+    // Images will be served directly from the source
+    unoptimized: true,
   },
 };
 

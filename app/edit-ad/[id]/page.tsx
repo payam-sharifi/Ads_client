@@ -538,6 +538,7 @@ export default function EditAdPage() {
                             alt="Ad image"
                             fill
                             className="object-cover"
+                            unoptimized={true}
                           />
                         </div>
                         <button

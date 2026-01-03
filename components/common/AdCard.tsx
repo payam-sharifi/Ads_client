@@ -237,7 +237,7 @@ export default function AdCard({
               className="object-cover transition-transform duration-300 hover:scale-105"
               sizes="(max-width: 768px) 96px, 96px"
               loading="lazy"
-              unoptimized={currentImage.startsWith('http://localhost') || currentImage.startsWith('http://127.0.0.1')}
+              unoptimized={true}
               onError={(e) => {
                 // Silently fallback to placeholder - image file may not exist on server
                 if (e.currentTarget.src !== '/placeholder.svg') {
@@ -431,7 +431,7 @@ export default function AdCard({
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes={variant === 'compact' ? "(max-width: 768px) 128px, 25vw" : "(max-width: 768px) 50vw, 25vw"}
             loading="lazy"
-            unoptimized={currentImage.startsWith('http://localhost') || currentImage.startsWith('http://127.0.0.1')}
+            unoptimized={true}
             onError={(e) => {
               // Silently fallback to placeholder - image file may not exist on server
               if (e.currentTarget.src !== '/placeholder.svg') {
@@ -570,7 +570,7 @@ export default function AdCard({
           className="object-cover group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 768px) 50vw, 25vw"
           loading="lazy"
-          unoptimized={currentImage.startsWith('http://localhost') || currentImage.startsWith('http://127.0.0.1')}
+          unoptimized={true}
           onError={(e) => {
             // Silently fallback to placeholder - image file may not exist on server
             if (e.currentTarget.src !== '/placeholder.svg') {
