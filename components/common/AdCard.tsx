@@ -156,28 +156,28 @@ export default function AdCard({
         <div className="flex flex-col flex-1 p-2 justify-between min-w-0">
           <div className="flex-1">
             <Link href={`/ad/${ad.id}`}>
-              <h3 className="font-medium text-xs text-gray-900 line-clamp-2 mb-1 hover:text-red-600 transition-colors cursor-pointer">
+              <h3 className="font-medium text-[10px] text-gray-900 line-clamp-2 mb-1 hover:text-red-600 transition-colors cursor-pointer">
                 {ad.title}
               </h3>
             </Link>
 
             {/* Category Name */}
             {categoryName && (
-              <div className="text-xs text-gray-500 mb-1">
+              <div className="text-[10px] text-gray-500 mb-1">
                 {categoryName}
               </div>
             )}
 
             {/* Condition Badge */}
             {getConditionText() && (
-              <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded mb-1 w-fit">
+              <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-medium rounded mb-1 w-fit">
                 {getConditionText()}
               </span>
             )}
 
-            <div className="text-red-600 font-bold text-sm mb-1">{formatPrice(ad.price)}</div>
+            <div className="text-red-600 font-bold text-xs mb-1">{formatPrice(ad.price)}</div>
             
-            <div className="text-xs text-gray-500 flex items-center gap-1 flex-wrap">
+            <div className="text-[10px] text-gray-500 flex items-center gap-1 flex-wrap">
               {cityName && (
                 <>
                   <span>{cityName}</span>
@@ -253,8 +253,8 @@ export default function AdCard({
         <div className={`
           relative overflow-hidden bg-gray-100 flex-shrink-0
           ${variant === 'compact' 
-            ? 'w-24 h-24 md:w-32 md:h-32' 
-            : 'w-full aspect-[4/3]'
+            ? 'w-20 h-20 md:w-32 md:h-32 min-w-[80px] min-h-[80px]' 
+            : 'w-full aspect-[4/3] min-h-[120px]'
           }
         `}>
           <Image
@@ -290,8 +290,8 @@ export default function AdCard({
             <h3 className={`
               font-medium text-gray-900 group-hover:text-red-600 transition-colors
               ${variant === 'compact' 
-                ? 'text-xs line-clamp-2 mb-1' 
-                : 'text-xs line-clamp-2 mb-1 leading-tight min-h-[2rem]'
+                ? 'text-[10px] line-clamp-2 mb-1' 
+                : 'text-[10px] line-clamp-2 mb-1 leading-tight min-h-[1.5rem]'
               }
             `}>
               {ad.title}
@@ -299,22 +299,22 @@ export default function AdCard({
 
             {/* Category Name */}
             {categoryName && (
-              <div className="text-xs text-gray-500 mb-1">
+              <div className="text-[10px] text-gray-500 mb-1">
                 {categoryName}
               </div>
             )}
 
             {/* Condition Badge */}
             {getConditionText() && (
-              <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded mb-1 w-fit">
+              <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-medium rounded mb-1 w-fit">
                 {getConditionText()}
               </span>
             )}
           </div>
 
           <div className={variant === 'compact' ? 'mt-auto' : 'mt-auto'}>
-            <div className="text-red-600 font-bold text-sm mb-1">{formatPrice(ad.price)}</div>
-            <div className="text-xs text-gray-500 flex items-center gap-1 flex-wrap">
+            <div className="text-red-600 font-bold text-xs mb-1">{formatPrice(ad.price)}</div>
+            <div className="text-[10px] text-gray-500 flex items-center gap-1 flex-wrap">
               {cityName && (
                 <>
                   <span>{cityName}</span>
@@ -360,23 +360,23 @@ export default function AdCard({
         )}
       </div>
       <div className="flex flex-col flex-1 p-2">
-        <h3 className="font-medium text-xs text-gray-900 line-clamp-2 mb-1 group-hover:text-red-600 transition-colors leading-tight min-h-[2rem]">
+        <h3 className="font-medium text-[10px] text-gray-900 line-clamp-2 mb-1 group-hover:text-red-600 transition-colors leading-tight min-h-[1.5rem]">
           {ad.title}
         </h3>
         {/* Category Name */}
         {categoryName && (
-          <div className="text-xs text-gray-500 mb-1">
+          <div className="text-[10px] text-gray-500 mb-1">
             {categoryName}
           </div>
         )}
         {getConditionText() && (
-          <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded mb-1 w-fit">
+          <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-medium rounded mb-1 w-fit">
             {getConditionText()}
           </span>
         )}
         <div className="mt-auto">
-          <div className="text-red-600 font-bold text-sm mb-1">{formatPrice(ad.price)}</div>
-          <div className="text-xs text-gray-500 flex items-center gap-1 flex-wrap">
+          <div className="text-red-600 font-bold text-xs mb-1">{formatPrice(ad.price)}</div>
+          <div className="text-[10px] text-gray-500 flex items-center gap-1 flex-wrap">
             {cityName && (
               <>
                 <span>{cityName}</span>

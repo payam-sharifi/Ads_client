@@ -127,7 +127,7 @@ export default function BottomNavigation() {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-[100] md:hidden" 
+      className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-[9999] md:hidden safe-area-inset-bottom" 
       style={{ 
         position: 'fixed', 
         bottom: 0, 
@@ -135,7 +135,8 @@ export default function BottomNavigation() {
         right: 0, 
         width: '100vw',
         maxWidth: '100%',
-        overflowX: 'hidden'
+        overflowX: 'hidden',
+        paddingBottom: 'env(safe-area-inset-bottom, 0)'
       }}
     >
       <div 
@@ -174,7 +175,7 @@ export default function BottomNavigation() {
               </div>
             </div>
             <span className={`
-              text-[10px] leading-tight mt-0.5 text-center truncate w-full
+              text-[9px] leading-tight mt-0.5 text-center truncate w-full
               ${item.highlight ? 'text-red-600 font-semibold' : ''}
             `}>
               {item.label}

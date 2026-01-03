@@ -200,7 +200,7 @@ function HomePageContent() {
                 router.push(`/?cityId=${activeCityId}&search=${encodeURIComponent(trimmedInput)}`);
               }
             }}
-            className="flex items-center gap-2 bg-gray-50 rounded-lg border border-gray-300 px-3 py-2"
+            className="flex items-center gap-1 bg-gray-50 rounded-lg border border-gray-300 px-2 py-1.5 min-w-0"
             dir={isRTL ? 'rtl' : 'ltr'}
           >
             {/* Search Input */}
@@ -210,37 +210,38 @@ function HomePageContent() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder={isRTL ? 'جستجو در همه آگهی‌ها' : 'Suche in allen Anzeigen'}
-              className="flex-1 bg-transparent text-gray-700 text-sm outline-none placeholder-gray-500"
+              className="flex-1 bg-transparent text-gray-700 text-xs outline-none placeholder-gray-500 min-w-0"
               dir={isRTL ? 'rtl' : 'ltr'}
+              style={{ fontSize: '12px' }}
             />
             
             {/* Separator */}
-            <div className="h-4 w-px bg-gray-300" />
+            <div className="h-3 w-px bg-gray-300 flex-shrink-0" />
             
             {/* Search Icon Button */}
             <button
               type="submit"
               className="text-gray-500 hover:text-gray-700 transition-colors flex-shrink-0"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
             
             {/* Separator */}
-            <div className="h-4 w-px bg-gray-300" />
+            <div className="h-3 w-px bg-gray-300 flex-shrink-0" />
             
             {/* City Selector Button */}
             <button
               type="button"
               onClick={() => setShowCitySelector(true)}
-              className="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 transition-colors flex-shrink-0"
+              className="flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors flex-shrink-0 min-w-0"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <span className="text-sm font-medium whitespace-nowrap">
+              <span className="text-xs font-medium truncate max-w-[60px] sm:max-w-none" style={{ fontSize: '11px' }}>
                 {activeCityId === 'all' 
                   ? (isRTL ? 'همه شهرها' : 'Alle Städte')
                   : (selectedCityName || (isRTL ? 'انتخاب شهر' : 'Stadt wählen'))
