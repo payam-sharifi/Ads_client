@@ -121,6 +121,7 @@ export default function AdCard({
   
   // Image carousel state
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
   const images = ad.images && ad.images.length > 0 
     ? [...ad.images].sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
     : [];
@@ -153,27 +154,51 @@ export default function AdCard({
   }, []);
   
   const handleImageTouchStart = useCallback((e: React.TouchEvent) => {
+    e.stopPropagation();
     const touch = e.touches[0];
-    (e.currentTarget as HTMLElement).setAttribute('data-touch-x', touch.clientX.toString());
+    if (touch) {
+      (e.currentTarget as HTMLElement).setAttribute('data-touch-x', touch.clientX.toString());
+      (e.currentTarget as HTMLElement).setAttribute('data-touch-y', touch.clientY.toString());
+    }
   }, []);
   
   const handleImageTouchEnd = useCallback((e: React.TouchEvent) => {
+    e.stopPropagation();
     const element = e.currentTarget as HTMLElement;
     const startX = parseFloat(element.getAttribute('data-touch-x') || '0');
+    const startY = parseFloat(element.getAttribute('data-touch-y') || '0');
     const touch = e.changedTouches[0];
-    const endX = touch.clientX;
-    const diff = startX - endX;
     
-    if (Math.abs(diff) > 50 && images.length > 1) {
-      if (diff > 0) {
+    if (!touch) {
+      element.removeAttribute('data-touch-x');
+      element.removeAttribute('data-touch-y');
+      setIsSwiping(false);
+      return;
+    }
+    
+    const endX = touch.clientX;
+    const endY = touch.clientY;
+    const diffX = startX - endX;
+    const diffY = startY - endY;
+    
+    // Only handle horizontal swipes (ignore vertical scrolling)
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50 && images.length > 1) {
+      e.preventDefault();
+      setIsSwiping(true);
+      if (diffX > 0) {
         // Swipe left - next image
         setCurrentImageIndex((prev) => (prev + 1) % images.length);
       } else {
         // Swipe right - previous image
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
       }
+      // Reset swipe flag after a short delay to prevent navigation
+      setTimeout(() => setIsSwiping(false), 300);
+    } else {
+      setIsSwiping(false);
     }
     element.removeAttribute('data-touch-x');
+    element.removeAttribute('data-touch-y');
   }, [images.length]);
 
   // Dashboard variant: horizontal layout with edit/delete buttons
@@ -192,6 +217,18 @@ export default function AdCard({
             className="absolute inset-0"
             onTouchStart={handleImageTouchStart}
             onTouchEnd={handleImageTouchEnd}
+            onTouchMove={(e) => {
+              // Prevent scrolling while swiping horizontally
+              const element = e.currentTarget as HTMLElement;
+              const startX = parseFloat(element.getAttribute('data-touch-x') || '0');
+              const touch = e.touches[0];
+              if (touch && startX !== 0) {
+                const diffX = Math.abs(startX - touch.clientX);
+                if (diffX > 10) {
+                  e.preventDefault();
+                }
+              }
+            }}
           >
             <Image
               src={currentImage}
@@ -214,7 +251,7 @@ export default function AdCard({
             <>
               <button
                 onClick={handlePrevImage}
-                className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-100 transition-opacity z-20"
                 aria-label="Previous image"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,7 +260,7 @@ export default function AdCard({
               </button>
               <button
                 onClick={handleNextImage}
-                className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-100 transition-opacity z-20"
                 aria-label="Next image"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -343,6 +380,13 @@ export default function AdCard({
     return (
       <Link
         href={`/ad/${ad.id}`}
+        onClick={(e) => {
+          // Prevent navigation if user was swiping
+          if (isSwiping) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}
         className={`
           flex transition-all overflow-hidden group
           ${variant === 'compact' 
@@ -366,6 +410,18 @@ export default function AdCard({
           `}
           onTouchStart={handleImageTouchStart}
           onTouchEnd={handleImageTouchEnd}
+          onTouchMove={(e) => {
+            // Prevent scrolling while swiping horizontally
+            const element = e.currentTarget as HTMLElement;
+            const startX = parseFloat(element.getAttribute('data-touch-x') || '0');
+            const touch = e.touches[0];
+            if (touch && startX !== 0) {
+              const diffX = Math.abs(startX - touch.clientX);
+              if (diffX > 10) {
+                e.preventDefault();
+              }
+            }
+          }}
           onClick={handleImageContainerClick}
         >
           <Image
@@ -388,7 +444,7 @@ export default function AdCard({
             <>
               <button
                 onClick={handlePrevImage}
-                className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-100 transition-opacity z-20"
                 aria-label="Previous image"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -397,7 +453,7 @@ export default function AdCard({
               </button>
               <button
                 onClick={handleNextImage}
-                className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-100 transition-opacity z-20"
                 aria-label="Next image"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -480,12 +536,31 @@ export default function AdCard({
   return (
     <Link
       href={`/ad/${ad.id}`}
+      onClick={(e) => {
+        // Prevent navigation if user was swiping
+        if (isSwiping) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }}
       className="flex flex-col bg-gray-50 border-b border-gray-200 rounded-none md:bg-white md:rounded-lg md:border md:border-gray-200 md:hover:border-red-300 md:hover:shadow-md transition-all overflow-hidden group"
     >
       <div 
         className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 group"
         onTouchStart={handleImageTouchStart}
         onTouchEnd={handleImageTouchEnd}
+        onTouchMove={(e) => {
+          // Prevent scrolling while swiping horizontally
+          const element = e.currentTarget as HTMLElement;
+          const startX = parseFloat(element.getAttribute('data-touch-x') || '0');
+          const touch = e.touches[0];
+          if (touch && startX !== 0) {
+            const diffX = Math.abs(startX - touch.clientX);
+            if (diffX > 10) {
+              e.preventDefault();
+            }
+          }
+        }}
         onClick={handleImageContainerClick}
       >
         <Image
@@ -506,24 +581,24 @@ export default function AdCard({
         {/* Navigation buttons - only show on hover and if multiple images */}
         {images.length > 1 && (
           <>
-            <button
-              onClick={handlePrevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-20"
-              aria-label="Previous image"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              onClick={handleNextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-20"
-              aria-label="Next image"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+              <button
+                onClick={handlePrevImage}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 opacity-100 transition-opacity z-20"
+                aria-label="Previous image"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={handleNextImage}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 opacity-100 transition-opacity z-20"
+                aria-label="Next image"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
           </>
         )}
         {/* Image counter dots */}
