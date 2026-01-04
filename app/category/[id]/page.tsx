@@ -61,6 +61,8 @@ export default function CategoryPage() {
   });
   const [showCitySelector, setShowCitySelector] = useState(false);
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  // Temporary filters for editing in drawer (only applied when drawer is closed)
+  const [tempFilters, setTempFilters] = useState(filters);
 
   const { data: category, isLoading: categoryLoading } = useCategory(categoryId);
   const { data: cities = [] } = useCities();
@@ -118,36 +120,97 @@ export default function CategoryPage() {
     return !cityNameFa.includes('تهران') && !cityNameDe.includes('tehran') && !cityNameEn.includes('tehran');
   }) || [];
   
-  const { data: adsData, isLoading: adsLoading } = useAds({
+  // Build query params from filters - only include non-empty values
+  const adsQueryParams: Record<string, any> = {
     categoryId,
-    // Don't send cityId if it's empty or 'all' - this shows all cities
-    cityId: filters.cityId && filters.cityId !== 'all' ? filters.cityId : undefined,
-    minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
-    maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
-    search: filters.search || undefined,
     status: 'APPROVED',
     limit: 20,
-  });
+  };
+  
+  // Add cityId if not empty and not 'all'
+  if (filters.cityId && filters.cityId !== 'all') {
+    adsQueryParams.cityId = filters.cityId;
+  }
+  
+  // Add price filters if they have values
+  if (filters.minPrice) {
+    adsQueryParams.minPrice = Number(filters.minPrice);
+  }
+  if (filters.maxPrice) {
+    adsQueryParams.maxPrice = Number(filters.maxPrice);
+  }
+  
+  // Add search if it has a value
+  if (filters.search) {
+    adsQueryParams.search = filters.search;
+  }
+  
+  // Add category-specific filters if they have values (will be passed to API, backend may need to support them)
+  if (filters.offerType) {
+    adsQueryParams.offerType = filters.offerType;
+  }
+  if (filters.propertyType) {
+    adsQueryParams.propertyType = filters.propertyType;
+  }
+  if (filters.minArea) {
+    adsQueryParams.minArea = Number(filters.minArea);
+  }
+  if (filters.maxArea) {
+    adsQueryParams.maxArea = Number(filters.maxArea);
+  }
+  if (filters.rooms) {
+    adsQueryParams.rooms = filters.rooms;
+  }
+  if (filters.brand) {
+    adsQueryParams.brand = filters.brand;
+  }
+  if (filters.model) {
+    adsQueryParams.model = filters.model;
+  }
+  if (filters.minYear) {
+    adsQueryParams.minYear = Number(filters.minYear);
+  }
+  if (filters.maxYear) {
+    adsQueryParams.maxYear = Number(filters.maxYear);
+  }
+  if (filters.maxMileage) {
+    adsQueryParams.maxMileage = Number(filters.maxMileage);
+  }
+  if (filters.fuelType) {
+    adsQueryParams.fuelType = filters.fuelType;
+  }
+  if (filters.transmission) {
+    adsQueryParams.transmission = filters.transmission;
+  }
+  if (filters.serviceCategory) {
+    adsQueryParams.serviceCategory = filters.serviceCategory;
+  }
+  if (filters.pricingType) {
+    adsQueryParams.pricingType = filters.pricingType;
+  }
+  if (filters.jobType) {
+    adsQueryParams.jobType = filters.jobType;
+  }
+  if (filters.experienceLevel) {
+    adsQueryParams.experienceLevel = filters.experienceLevel;
+  }
+  if (filters.minSalary) {
+    adsQueryParams.minSalary = Number(filters.minSalary);
+  }
+  if (filters.maxSalary) {
+    adsQueryParams.maxSalary = Number(filters.maxSalary);
+  }
+  // #region agent log
+  fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:123',message:'useAds called with query params',data:{adsQueryParams,allFilters:filters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+  // #endregion
+  const { data: adsData, isLoading: adsLoading } = useAds(adsQueryParams);
 
   // Get category type
   const categoryType = category?.categoryType as MainCategoryType | undefined;
 
   // Build filter options based on category type
   const getFilterOptions = (): FilterOption[] => {
-    const baseFilters: FilterOption[] = [
-      {
-        key: 'cityId',
-        label: locale === 'fa' ? 'شهر' : 'Stadt',
-        type: 'select',
-        options: [
-          { value: '', label: locale === 'fa' ? 'همه شهرها' : 'Alle Städte' },
-          ...filteredCities.map((city) => ({
-            value: city.id,
-            label: getLocalizedName(city.name, locale),
-          })),
-        ],
-      },
-    ];
+    const baseFilters: FilterOption[] = [];
 
     if (!categoryType) {
       // Default filters for unknown category types
@@ -408,8 +471,27 @@ export default function CategoryPage() {
 
   const filterOptions = getFilterOptions();
 
+  // Sync tempFilters with filters when drawer opens
+  React.useEffect(() => {
+    if (showFilterDrawer) {
+      // #region agent log
+      fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:401',message:'Sync tempFilters with filters when drawer opens',data:{showFilterDrawer,currentFilters:filters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+      // #endregion
+      setTempFilters(filters);
+    }
+  }, [showFilterDrawer, filters]);
+
   const handleFilterChange = (key: string, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:407',message:'handleFilterChange called',data:{key,value},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
+    setTempFilters((prev) => {
+      const newTempFilters = { ...prev, [key]: value };
+      // #region agent log
+      fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:408',message:'tempFilters updated in handleFilterChange',data:{key,value,newTempFilters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
+      return newTempFilters;
+    });
   };
 
   const handleReset = () => {
@@ -418,7 +500,7 @@ export default function CategoryPage() {
       ? cityIdFromUrl 
       : (selectedCityId && selectedCityId !== 'all' ? selectedCityId : '');
     
-    setFilters({
+    setTempFilters({
       cityId: defaultCityId,
       minPrice: '',
       maxPrice: '',
@@ -442,6 +524,18 @@ export default function CategoryPage() {
       minSalary: '',
       maxSalary: '',
     });
+  };
+
+  // Apply filters when drawer is closed
+  const handleCloseFilterDrawer = () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:444',message:'handleCloseFilterDrawer called',data:{tempFilters,currentFilters:filters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    setFilters(tempFilters);
+    setShowFilterDrawer(false);
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:446',message:'Filters applied, drawer closed',data:{appliedFilters:tempFilters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
   };
 
   if (categoryLoading) {
@@ -636,7 +730,7 @@ export default function CategoryPage() {
           <>
             <div
               className="fixed inset-0 backdrop-blur-sm bg-white/30 z-50"
-              onClick={() => setShowFilterDrawer(false)}
+              onClick={handleCloseFilterDrawer}
             />
             <div className={`
               fixed top-0 bottom-0 w-80 max-w-[90vw] bg-white z-50 shadow-xl overflow-y-auto
@@ -647,7 +741,7 @@ export default function CategoryPage() {
                   {isRTL ? 'فیلترها' : 'Filter'}
                 </h2>
                 <button
-                  onClick={() => setShowFilterDrawer(false)}
+                  onClick={handleCloseFilterDrawer}
                   className="text-gray-500 hover:text-gray-700"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -658,28 +752,11 @@ export default function CategoryPage() {
               <div className="p-4">
                 <div className="bg-white rounded-lg border border-gray-200 p-2 md:p-3">
                   <FilterBar
-                    filters={filters}
+                    filters={tempFilters}
                     filterOptions={filterOptions}
                     onFilterChange={handleFilterChange}
                     onReset={handleReset}
                   />
-                  <div className="mt-4 flex gap-2">
-                    <button
-                      onClick={() => {
-                        handleReset();
-                        setShowFilterDrawer(false);
-                      }}
-                      className="flex-1 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                    >
-                      {locale === 'fa' ? 'پاک کردن' : 'Zurücksetzen'}
-                    </button>
-                    <button
-                      onClick={() => setShowFilterDrawer(false)}
-                      className="flex-1 px-4 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700"
-                    >
-                      {locale === 'fa' ? 'اعمال فیلتر' : 'Anwenden'}
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>

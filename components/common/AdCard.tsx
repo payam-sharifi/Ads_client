@@ -157,7 +157,7 @@ export default function AdCard({
     e.stopPropagation();
     const touch = e.touches[0];
     if (touch) {
-      (e.currentTarget as HTMLElement).setAttribute('data-touch-x', touch.clientX.toString());
+    (e.currentTarget as HTMLElement).setAttribute('data-touch-x', touch.clientX.toString());
       (e.currentTarget as HTMLElement).setAttribute('data-touch-y', touch.clientY.toString());
     }
   }, []);
@@ -586,24 +586,24 @@ export default function AdCard({
         {/* Navigation buttons - only show on hover and if multiple images */}
         {images.length > 1 && (
           <>
-              <button
-                onClick={handlePrevImage}
+            <button
+              onClick={handlePrevImage}
                 className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 opacity-100 transition-opacity z-20"
-                aria-label="Previous image"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                onClick={handleNextImage}
+              aria-label="Previous image"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={handleNextImage}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 opacity-100 transition-opacity z-20"
-                aria-label="Next image"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+              aria-label="Next image"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </>
         )}
         {/* Image counter dots */}
