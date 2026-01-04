@@ -142,7 +142,7 @@ export default function CreateAdPage() {
     });
   };
 
-  const handleStep2Change = (name: string, value: string | boolean) => {
+  const handleStep2Change = (name: string, value: string | boolean | number | undefined) => {
     setStep2Data((prev) => ({ ...prev, [name]: value }));
   };
 
