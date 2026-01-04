@@ -25,13 +25,7 @@ export const useAdminStats = () => {
   return useQuery({
     queryKey: ['admin', 'stats'],
     queryFn: async () => {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:27',message:'queryFn: entry',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
       // Fetch stats by querying different endpoints
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:29',message:'before Promise.all',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
       let adsRes, usersRes, reportsRes;
       try {
         [adsRes, usersRes, reportsRes] = await Promise.all([
@@ -39,32 +33,17 @@ export const useAdminStats = () => {
           apiClient.get('/users', { params: { limit: 1 } }),
           apiClient.get('/reports', { params: { status: 'pending', limit: 1 } }),
         ]);
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:36',message:'Promise.all: success',data:{adsStatus:adsRes?.status,usersStatus:usersRes?.status,reportsStatus:reportsRes?.status},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
       } catch (error: any) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:38',message:'Promise.all: error',data:{errorMessage:error?.message,errorStatus:error?.response?.status,errorData:error?.response?.data},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
         throw error;
       }
 
       // Get pending ads count
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:42',message:'before pendingAds request',data:{timestamp:Date.now()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
       let pendingAdsRes;
       try {
         pendingAdsRes = await apiClient.get('/ads', {
           params: { status: 'PENDING_APPROVAL', limit: 1 },
         });
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:48',message:'pendingAds: success',data:{hasPagination:!!pendingAdsRes?.data?.pagination,hasTotal:!!pendingAdsRes?.data?.total,paginationTotal:pendingAdsRes?.data?.pagination?.total},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
       } catch (error: any) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:51',message:'pendingAds: error',data:{errorMessage:error?.message,errorStatus:error?.response?.status},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         throw error;
       }
 
@@ -75,9 +54,6 @@ export const useAdminStats = () => {
           params: { status: 'APPROVED', limit: 1 },
         });
       } catch (error: any) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:72',message:'approvedAds: error',data:{errorMessage:error?.message,errorStatus:error?.response?.status},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         throw error;
       }
 
@@ -88,9 +64,6 @@ export const useAdminStats = () => {
           params: { status: 'REJECTED', limit: 1 },
         });
       } catch (error: any) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:80',message:'rejectedAds: error',data:{errorMessage:error?.message,errorStatus:error?.response?.status},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         throw error;
       }
 
@@ -101,9 +74,6 @@ export const useAdminStats = () => {
           params: { isBlocked: true, limit: 1 },
         });
       } catch (error: any) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:88',message:'blockedUsers: error',data:{errorMessage:error?.message,errorStatus:error?.response?.status},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         throw error;
       }
 
@@ -114,9 +84,6 @@ export const useAdminStats = () => {
           params: { isSuspended: true, limit: 1 },
         });
       } catch (error: any) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:96',message:'suspendedUsers: error',data:{errorMessage:error?.message,errorStatus:error?.response?.status},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         throw error;
       }
 
@@ -174,9 +141,6 @@ export const useAdminStats = () => {
         totalAdmins = 0;
       }
 
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:114',message:'before return statement',data:{hasPendingAdsRes:!!pendingAdsRes,hasApprovedAdsRes:!!approvedAdsRes,hasRejectedAdsRes:!!rejectedAdsRes,totalMessages},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       const result = {
         pendingAds: pendingAdsRes?.data?.pagination?.total || pendingAdsRes?.data?.total || 0,
         approvedAds: approvedAdsRes?.data?.pagination?.total || approvedAdsRes?.data?.total || 0,
@@ -191,9 +155,6 @@ export const useAdminStats = () => {
         totalCities,
         totalAdmins,
       } as AdminStats;
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b43a6682-6986-4e79-9b73-4d93dd0f722a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useAdminStats.ts:128',message:'queryFn: success return',data:{result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       return result;
     },
   });

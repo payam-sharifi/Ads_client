@@ -200,9 +200,6 @@ export default function CategoryPage() {
   if (filters.maxSalary) {
     adsQueryParams.maxSalary = Number(filters.maxSalary);
   }
-  // #region agent log
-  fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:123',message:'useAds called with query params',data:{adsQueryParams,allFilters:filters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-  // #endregion
   const { data: adsData, isLoading: adsLoading } = useAds(adsQueryParams);
 
   // Get category type
@@ -474,24 +471,12 @@ export default function CategoryPage() {
   // Sync tempFilters with filters when drawer opens
   React.useEffect(() => {
     if (showFilterDrawer) {
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:401',message:'Sync tempFilters with filters when drawer opens',data:{showFilterDrawer,currentFilters:filters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       setTempFilters(filters);
     }
   }, [showFilterDrawer, filters]);
 
   const handleFilterChange = (key: string, value: any) => {
-    // #region agent log
-    fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:407',message:'handleFilterChange called',data:{key,value},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    setTempFilters((prev) => {
-      const newTempFilters = { ...prev, [key]: value };
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:408',message:'tempFilters updated in handleFilterChange',data:{key,value,newTempFilters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
-      return newTempFilters;
-    });
+    setTempFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleReset = () => {
@@ -528,14 +513,8 @@ export default function CategoryPage() {
 
   // Apply filters when drawer is closed
   const handleCloseFilterDrawer = () => {
-    // #region agent log
-    fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:444',message:'handleCloseFilterDrawer called',data:{tempFilters,currentFilters:filters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     setFilters(tempFilters);
     setShowFilterDrawer(false);
-    // #region agent log
-    fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/[id]/page.tsx:446',message:'Filters applied, drawer closed',data:{appliedFilters:tempFilters},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
   };
 
   if (categoryLoading) {

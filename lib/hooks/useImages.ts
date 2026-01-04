@@ -105,9 +105,6 @@ export const useUploadImage = () => {
       }
     },
     onSuccess: (_, variables) => {
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useImages.ts:107',message:'Image upload success - invalidating queries',data:{adId:variables.adId},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
       queryClient.invalidateQueries({ queryKey: ['images', 'ad', variables.adId] });
       queryClient.invalidateQueries({ queryKey: ['ad', variables.adId] });
       // Also invalidate ads lists to ensure dashboard shows updated ad with images
@@ -116,9 +113,6 @@ export const useUploadImage = () => {
       // Force refetch to ensure UI updates immediately (similar to useDeleteAd)
       queryClient.refetchQueries({ queryKey: ['ads', 'my'] });
       queryClient.refetchQueries({ queryKey: ['ad', variables.adId] });
-      // #region agent log
-      fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useImages.ts:118',message:'Queries invalidated and refetched',data:{adId:variables.adId,invalidatedKeys:['images','ad','ads','ads/my']},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
     },
   });
 };

@@ -47,13 +47,6 @@ export default function DashboardPage() {
   // API: GET /api/ads/user/my
   const { data: ads, isLoading, error } = useMyAds();
   
-  // #region agent log
-  React.useEffect(() => {
-    if (ads) {
-      fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dashboard/page.tsx:48',message:'Ads data received',data:{adsCount:ads.length,adsWithImages:ads.filter(ad=>ad.images&&ad.images.length>0).length,ads:ads.map(ad=>({id:ad.id,imagesCount:ad.images?.length||0}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    }
-  }, [ads]);
-  // #endregion
 
   // Fetch admin stats (only for admins)
   const { data: stats, isLoading: statsLoading, error: statsError } = useAdminStats();
