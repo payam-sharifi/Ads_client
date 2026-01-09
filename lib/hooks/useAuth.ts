@@ -14,6 +14,11 @@ export interface SignupRequest {
   password: string;
 }
 
+export interface VerifyEmailRequest {
+  email: string;
+  code: string;
+}
+
 export interface AuthResponse {
   access_token: string;
   refresh_token?: string;
@@ -47,12 +52,21 @@ export const useLogin = () => {
 };
 
 export const useSignup = () => {
+  return useMutation({
+    mutationFn: async (data: SignupRequest) => {
+      const response = await apiClient.post<{ message: string; email: string }>('/auth/signup', data);
+      return response.data;
+    },
+  });
+};
+
+export const useVerifyEmail = () => {
   const queryClient = useQueryClient();
   const setAuth = useAuthStore((state) => state.setAuth);
 
   return useMutation({
-    mutationFn: async (data: SignupRequest) => {
-      const response = await apiClient.post<AuthResponse>('/auth/signup', data);
+    mutationFn: async (data: VerifyEmailRequest) => {
+      const response = await apiClient.post<AuthResponse>('/auth/complete-signup', data);
       return response.data;
     },
     onSuccess: (data) => {

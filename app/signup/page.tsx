@@ -39,10 +39,9 @@ export default function SignupPage() {
         phone: formData.phone,
         password: formData.password,
       });
-      toast.success(t('auth.signupSuccess'));
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 1000);
+      toast.success('کد تأیید به ایمیل شما ارسال شد');
+      // Redirect to verification page with email as query parameter
+      router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || t('auth.signupError'));
     }
