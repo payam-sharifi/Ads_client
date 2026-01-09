@@ -76,6 +76,15 @@ export const useVerifyEmail = () => {
   });
 };
 
+export const useResendVerificationCode = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const response = await apiClient.post<{ message: string; email: string }>('/email-verification/resend', { email });
+      return response.data;
+    },
+  });
+};
+
 /**
  * API Hook: POST /api/auth/refresh
  * Refresh access token using refresh token
