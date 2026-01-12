@@ -27,7 +27,7 @@ jobs:
             npm install
             npm run build
             pm2 delete Ads_client || true
-            PORT=7500 pm2 start /Ads/Ads_client/node_modules/next/dist/bin/next --name "Ads_client" -- start 
+            PORT=5500 pm2 start /Ads/Ads_client/node_modules/next/dist/bin/next --name "Ads_client" -- start 
             pm2 save
       
             
