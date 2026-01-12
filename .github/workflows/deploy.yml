@@ -27,7 +27,7 @@ jobs:
             npm install
             npm run build
             pm2 delete Ads_client || true
-            PORT=5500 pm2 start npm --name "Ads_client" --watch -- start
+            PORT=5500 pm2 start npm --name "Ads_client" --no-watch -- start
             pm2 save
             pm2 startup
             
