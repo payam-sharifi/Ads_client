@@ -22,6 +22,12 @@ function HomePageContent() {
   const cityIdFromUrl = searchParams?.get('cityId') || '';
   const { selectedCityId, hasSelectedCity, setSelectedCity } = useCityStore();
 
+  // #region agent log
+  useEffect(() => {
+    fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:24',message:'Hydration check homepage',data:{selectedCityId,cityIdFromUrl},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'F'})}).catch(()=>{});
+  }, []);
+  // #endregion
+
   // Use cityId from URL or store
   // 'all' means show all cities, empty means show landing page
   const activeCityId = cityIdFromUrl || selectedCityId;

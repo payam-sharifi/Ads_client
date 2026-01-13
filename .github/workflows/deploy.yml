@@ -22,7 +22,7 @@ jobs:
           port: 22
           timeout: 5m
           script: |
-            cd /Ads/Ads_client
+            cd /Ads/Ads_clientnpm run build
             git pull origin master
             npm install
             npm run build

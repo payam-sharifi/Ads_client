@@ -5,12 +5,12 @@ const withPWA = withPWAInit({
   dest: "public",
   disable: process.env.NODE_ENV === "development", // Disable PWA in development for faster compilation
   register: true,
-  skipWaiting: true,
+  workboxOptions: {
+    skipWaiting: true,
+  },
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: false,
   reloadOnOnline: true,
-  swMinify: true,
-  fallbackToCacheWaitTime: 500,
 });
 
 const nextConfig: NextConfig = {

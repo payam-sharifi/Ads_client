@@ -96,6 +96,11 @@ export default function CategoryPage() {
   };
 
   const [filters, setFilters] = useState(getInitialFilters());
+  // #region agent log
+  React.useEffect(() => {
+    fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'category/page.tsx:99',message:'Hydration check filters',data:{filters,windowSearch:typeof window !== 'undefined' ? window.location.search : 'ssr'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
+  }, []);
+  // #endregion
   const [showCitySelector, setShowCitySelector] = useState(false);
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
   // Temporary filters for editing in drawer (only applied when drawer is closed)
