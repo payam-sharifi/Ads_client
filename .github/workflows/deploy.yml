@@ -22,8 +22,8 @@ jobs:
           port: 22
           timeout: 5m
           script: |
-            cd /Ads/Ads_clientnpm run build
-            git pull origin master
+            cd /Ads/Ads_client
+            git pull 
             npm install
             npm run build
             pm2 delete Ads_client || true
