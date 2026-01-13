@@ -3,12 +3,6 @@ import { useAuthStore } from '@/lib/stores/authStore';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
-// #region agent log
-if (typeof window !== 'undefined') {
-  fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/api/client.ts:6',message:'API URL check',data:{API_BASE_URL,env:process.env.NEXT_PUBLIC_API_URL},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'I'})}).catch(()=>{});
-}
-// #endregion
-
 // Create axios instance
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
