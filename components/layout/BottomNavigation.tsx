@@ -138,7 +138,7 @@ export default function BottomNavigation() {
         width: '100vw',
         maxWidth: '100%',
         overflowX: 'hidden',
-        paddingBottom: 'env(safe-area-inset-bottom, 0)'
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)'
       }}
     >
       <div 
