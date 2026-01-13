@@ -14,12 +14,56 @@ import BackButton from '@/components/common/BackButton';
 import { usePathname } from 'next/navigation';
 import { useCityStore } from '@/lib/stores/cityStore';
 
+// #region agent log
+const log = (message: string, data?: any) => {
+  fetch('http://127.0.0.1:7246/ingest/fe4c5ec4-2787-4be7-9054-016ec7118181', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      location: 'Navbar.tsx',
+      message,
+      data,
+      timestamp: Date.now(),
+      sessionId: 'debug-session',
+      hypothesisId: 'PWA-CHECK'
+    })
+  }).catch(() => {});
+};
+// #endregion
+
 function NavbarContent() {
   const { locale, setLocale, t, isRTL } = useI18n();
   const { isAuthenticated, user } = useAuthStore();
   const logoutMutation = useLogout();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // #region PWA logic
+  useEffect(() => {
+    log('NavbarContent mounted');
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        log('Service Worker registrations', { count: registrations.length });
+        registrations.forEach(reg => {
+          log('Service Worker registration details', {
+            scope: reg.scope,
+            active: !!reg.active,
+            installing: !!reg.installing,
+            waiting: !!reg.waiting
+          });
+        });
+      });
+    }
+
+    const handleBeforeInstallPrompt = (e: any) => {
+      log('beforeinstallprompt event fired');
+      // e.preventDefault(); // Don't prevent default, we want the icon to show
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+  // #endregion
   const { selectedCityId, setSelectedCity: setSelectedCityInStore, clearSelectedCity } = useCityStore();
   const cityIdFromUrl = searchParams?.get('cityId') || '';
   const urlSearchQuery = searchParams?.get('search') || '';

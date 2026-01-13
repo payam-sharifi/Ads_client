@@ -6,6 +6,7 @@ import { QueryProvider } from "@/lib/providers/QueryProvider";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BottomNavigation from "@/components/layout/BottomNavigation";
+import OfflineBanner from "@/components/common/OfflineBanner";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -22,6 +23,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Classified Ads - آگهی‌ها",
   description: "Persian and German classified ads platform in Germany",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Classified Ads",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport = {
@@ -29,6 +39,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  themeColor: '#3b82f6',
 };
 
 export default function RootLayout({
@@ -42,6 +53,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen bg-gray-50 overflow-x-hidden`}
         style={{ overflowX: 'hidden', width: '100%', maxWidth: '100vw' }}
       >
+        <OfflineBanner />
         <QueryProvider>
           <I18nProvider>
             <Navbar />
