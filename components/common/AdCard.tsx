@@ -69,6 +69,17 @@ export default function AdCard({
     return conditions[ad.condition]?.[locale] || null;
   };
 
+  const getRealEstateOfferTypeText = () => {
+    if (ad.category?.categoryType !== 'real_estate' || !ad.metadata?.offerType) return null;
+    
+    const offerTypes: Record<string, { fa: string; de: string }> = {
+      rent: { fa: 'اجاره', de: 'Miete' },
+      sale: { fa: 'فروش', de: 'Verkauf' },
+    };
+    
+    return offerTypes[ad.metadata.offerType]?.[locale] || null;
+  };
+
   const getStatusBadge = () => {
     if (!ad.status) return null;
     
@@ -307,12 +318,19 @@ export default function AdCard({
               </div>
             )}
 
-            {/* Condition Badge */}
-            {getConditionText() && (
-              <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-medium rounded mb-1 w-fit">
-                {getConditionText()}
-              </span>
-            )}
+            {/* Condition & Real Estate Offer Type Badges */}
+            <div className="flex flex-wrap gap-1 mb-1">
+              {getConditionText() && (
+                <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-medium rounded w-fit">
+                  {getConditionText()}
+                </span>
+              )}
+              {getRealEstateOfferTypeText() && (
+                <span className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-medium rounded w-fit">
+                  {getRealEstateOfferTypeText()}
+                </span>
+              )}
+            </div>
 
             <div className="text-red-600 font-bold text-xs mb-1">{formatPrice(ad.price)}</div>
             
@@ -507,12 +525,19 @@ export default function AdCard({
               </div>
             )}
 
-            {/* Condition Badge */}
-            {getConditionText() && (
-              <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-medium rounded mb-1 w-fit">
-                {getConditionText()}
-              </span>
-            )}
+            {/* Condition & Real Estate Offer Type Badges */}
+            <div className="flex flex-wrap gap-1 mb-1">
+              {getConditionText() && (
+                <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-medium rounded w-fit">
+                  {getConditionText()}
+                </span>
+              )}
+              {getRealEstateOfferTypeText() && (
+                <span className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-medium rounded w-fit">
+                  {getRealEstateOfferTypeText()}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className={variant === 'compact' ? 'mt-auto' : 'mt-auto'}>
@@ -637,11 +662,19 @@ export default function AdCard({
             {categoryName}
           </div>
         )}
-        {getConditionText() && (
-          <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-medium rounded mb-1 w-fit">
-            {getConditionText()}
-          </span>
-        )}
+        {/* Condition & Real Estate Offer Type Badges */}
+        <div className="flex flex-wrap gap-1 mb-1">
+          {getConditionText() && (
+            <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-medium rounded w-fit">
+              {getConditionText()}
+            </span>
+          )}
+          {getRealEstateOfferTypeText() && (
+            <span className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-medium rounded w-fit">
+              {getRealEstateOfferTypeText()}
+            </span>
+          )}
+        </div>
         <div className="mt-auto">
           <div className="text-red-600 font-bold text-xs mb-1">{formatPrice(ad.price)}</div>
           <div className="text-[10px] text-gray-500 flex items-center gap-1 flex-wrap">

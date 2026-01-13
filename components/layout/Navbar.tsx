@@ -254,7 +254,7 @@ function NavbarContent() {
                 <div className={`absolute top-full ${isRTL ? 'right-0' : 'left-0'} mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto`}>
                   <div className="py-1">
                     <Link
-                      href="/categories"
+                      href={activeCityIdForDisplay && activeCityIdForDisplay !== 'all' ? `/?cityId=${activeCityIdForDisplay}` : '/'}
                       onClick={() => setShowCategories(false)}
                       className="block px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 border-b border-gray-200"
                       dir={isRTL ? 'rtl' : 'ltr'}
@@ -267,7 +267,7 @@ function NavbarContent() {
                       parentCategories.map((category) => (
                         <Link
                           key={category.id}
-                          href={`/category/${category.id}`}
+                          href={`/category/${category.id}${activeCityIdForDisplay && activeCityIdForDisplay !== 'all' ? `?cityId=${activeCityIdForDisplay}` : ''}`}
                           onClick={() => setShowCategories(false)}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           dir={isRTL ? 'rtl' : 'ltr'}

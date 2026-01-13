@@ -325,7 +325,7 @@ function HomePageContent() {
             {parentCategories.slice(0, 8).map((category) => (
               <Link
                 key={category.id}
-                href={`/category/${category.id}`}
+                href={`/category/${category.id}${activeCityId && activeCityId !== 'all' ? `?cityId=${activeCityId}` : ''}`}
                 className="flex flex-col items-center justify-center bg-white rounded-lg border border-gray-200 p-1 hover:border-red-300 hover:shadow-md transition-all group"
               >
                 <div className="text-2xl md:text-4xl mb-2 group-hover:scale-110 transition-transform">

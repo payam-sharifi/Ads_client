@@ -659,7 +659,7 @@ export default function CategoryPage() {
                 </h1>
                 {category.parent && (
                   <Link
-                    href={`/category/${category.parent.id}`}
+                    href={`/category/${category.parent.id}${activeCityId && activeCityId !== 'all' ? `?cityId=${activeCityId}` : ''}`}
                     className="text-xs text-blue-600 hover:text-blue-800"
                     dir={isRTL ? 'rtl' : 'ltr'}
                   >
@@ -692,7 +692,7 @@ export default function CategoryPage() {
                 {category.children.map((child) => (
                   <Link
                     key={child.id}
-                    href={`/category/${child.id}`}
+                    href={`/category/${child.id}${activeCityId && activeCityId !== 'all' ? `?cityId=${activeCityId}` : ''}`}
                     className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs text-gray-700 transition-colors"
                   >
                     {child.icon && <span className="mr-1">{child.icon}</span>}

@@ -6,11 +6,13 @@ import { usePathname } from 'next/navigation';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { useUnreadMessagesCount } from '@/lib/hooks/useMessages';
+import { useCityStore } from '@/lib/stores/cityStore';
 
 export default function BottomNavigation() {
   const pathname = usePathname();
   const { isRTL } = useI18n();
   const { isAuthenticated, user } = useAuthStore();
+  const { selectedCityId } = useCityStore();
   // Only fetch unread count when authenticated - hook already handles this
   const { data: unreadCount = 0 } = useUnreadMessagesCount();
 
@@ -28,7 +30,7 @@ export default function BottomNavigation() {
   }> = [
     {
       id: 'home',
-      href: '/',
+      href: selectedCityId && selectedCityId !== 'all' ? `/?cityId=${selectedCityId}` : '/',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />

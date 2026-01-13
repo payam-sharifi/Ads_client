@@ -6,6 +6,7 @@ import { useCategories } from '@/lib/hooks/useCategories';
 import { Category } from '@/lib/hooks/useCategories';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { getLocalizedCategoryName } from '@/lib/utils/localizedNames';
+import { useCityStore } from '@/lib/stores/cityStore';
 
 /**
  * Categories List Page
@@ -16,6 +17,7 @@ import { getLocalizedCategoryName } from '@/lib/utils/localizedNames';
 export default function CategoriesPage() {
   const { data: categories, isLoading } = useCategories();
   const { locale, isRTL } = useI18n();
+  const { selectedCityId } = useCityStore();
 
   if (isLoading) {
     return (
@@ -40,7 +42,7 @@ export default function CategoriesPage() {
   const renderCategory = (category: Category, level = 0) => (
     <Link
       key={category.id}
-      href={`/category/${category.id}`}
+      href={`/category/${category.id}${selectedCityId && selectedCityId !== 'all' ? `?cityId=${selectedCityId}` : ''}`}
       className={`block bg-white rounded-lg border border-gray-200 p-6 hover:border-red-500 hover:shadow-md transition-all ${
         level > 0 ? 'ml-6' : ''
       }`}

@@ -59,57 +59,6 @@ export default function SignupPage() {
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const signupMutation = useSignup();
   
-  // #region agent log
-  const phoneContainerRef = React.useRef<HTMLDivElement>(null);
-  const selectRef = React.useRef<HTMLSelectElement>(null);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  
-  React.useEffect(() => {
-    const measureDimensions = () => {
-      if (phoneContainerRef.current && selectRef.current && inputRef.current) {
-        const container = phoneContainerRef.current;
-        const select = selectRef.current;
-        const input = inputRef.current;
-        const containerWidth = container.offsetWidth;
-        const selectWidth = select.offsetWidth;
-        const inputWidth = input.offsetWidth;
-        const viewportWidth = window.innerWidth;
-        const containerScrollWidth = container.scrollWidth;
-        const hasOverflow = containerScrollWidth > containerWidth;
-        const gap = 8; // gap-2 = 0.5rem = 8px
-        const selectScrollWidth = select.scrollWidth;
-        const selectClientWidth = select.clientWidth;
-        const selectTextOverflow = selectScrollWidth > selectClientWidth;
-        const selectComputedStyle = window.getComputedStyle(select);
-        const selectMaxWidth = selectComputedStyle.maxWidth;
-        const selectMinWidth = selectComputedStyle.minWidth;
-        const selectFlexShrink = selectComputedStyle.flexShrink;
-        
-        fetch('http://127.0.0.1:7251/ingest/16dff4fb-acde-45fe-9026-2a312fc80629',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'signup/page.tsx:measureDimensions',message:'Phone field dimensions',data:{containerWidth,selectWidth,inputWidth,viewportWidth,containerScrollWidth,hasOverflow,gap,totalWidth:selectWidth+inputWidth+gap,selectedCode:selectedCountryCode,selectScrollWidth,selectClientWidth,selectTextOverflow,selectMaxWidth,selectMinWidth,selectFlexShrink},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'F,G,H,I'})}).catch(()=>{});
-      }
-    };
-    
-    measureDimensions();
-    const resizeObserver = new ResizeObserver(measureDimensions);
-    if (phoneContainerRef.current) {
-      resizeObserver.observe(phoneContainerRef.current);
-    }
-    if (selectRef.current) {
-      resizeObserver.observe(selectRef.current);
-    }
-    if (inputRef.current) {
-      resizeObserver.observe(inputRef.current);
-    }
-    
-    window.addEventListener('resize', measureDimensions);
-    
-    return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener('resize', measureDimensions);
-    };
-  }, [selectedCountryCode]);
-  // #endregion
-
   // Email validation regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   
@@ -260,9 +209,8 @@ export default function SignupPage() {
 
           <div>
             <label className="block text-sm font-medium mb-2">{t('auth.phone')}</label>
-            <div ref={phoneContainerRef} className="flex gap-2">
+            <div className="flex gap-2">
               <input
-                ref={inputRef}
                 type="tel"
                 name="phoneNumber"
                 value={phoneNumber}
@@ -274,7 +222,6 @@ export default function SignupPage() {
                 dir="ltr"
               />
               <select
-                ref={selectRef}
                 value={selectedCountryCode}
                 onChange={handleCountryCodeChange}
                 className={`px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-[100px] md:w-auto md:min-w-[140px] flex-shrink-0 ${
