@@ -27,38 +27,75 @@ export default function CategoryPage() {
   const searchParams = useSearchParams();
   const categoryId = params?.id as string;
   const cityIdFromUrl = searchParams?.get('cityId') || '';
+  const pageFromUrl = searchParams?.get('page') || '1';
   const { locale, isRTL, t } = useI18n();
   const { selectedCityId, setSelectedCity } = useCityStore();
+  
   // Initialize cityId from URL or store
   const initialCityId = cityIdFromUrl && cityIdFromUrl !== 'all' ? cityIdFromUrl : (selectedCityId && selectedCityId !== 'all' ? selectedCityId : '');
-  const [filters, setFilters] = useState({
-    cityId: initialCityId,
-    minPrice: '',
-    maxPrice: '',
-    search: '',
-    // Real Estate filters
-    offerType: '',
-    propertyType: '',
-    minArea: '',
-    maxArea: '',
-    rooms: '',
-    // Vehicle filters
-    brand: '',
-    model: '',
-    minYear: '',
-    maxYear: '',
-    maxMileage: '',
-    fuelType: '',
-    transmission: '',
-    // Service filters
-    serviceCategory: '',
-    pricingType: '',
-    // Job filters
-    jobType: '',
-    experienceLevel: '',
-    minSalary: '',
-    maxSalary: '',
-  });
+  
+  // Initialize filters from URL search params
+  const getInitialFilters = () => {
+    if (typeof window === 'undefined') {
+      return {
+        cityId: initialCityId,
+        minPrice: '',
+        maxPrice: '',
+        search: '',
+        condition: '',
+        offerType: '',
+        propertyType: '',
+        minArea: '',
+        maxArea: '',
+        rooms: '',
+        brand: '',
+        model: '',
+        minYear: '',
+        maxYear: '',
+        maxMileage: '',
+        fuelType: '',
+        transmission: '',
+        serviceCategory: '',
+        pricingType: '',
+        jobType: '',
+        experienceLevel: '',
+        minSalary: '',
+        maxSalary: '',
+      };
+    }
+    const params = new URLSearchParams(window.location.search);
+    return {
+      cityId: params.get('cityId') || initialCityId,
+      minPrice: params.get('minPrice') || '',
+      maxPrice: params.get('maxPrice') || '',
+      search: params.get('search') || '',
+      condition: params.get('condition') || '',
+      // Real Estate filters
+      offerType: params.get('offerType') || '',
+      propertyType: params.get('propertyType') || '',
+      minArea: params.get('minArea') || '',
+      maxArea: params.get('maxArea') || '',
+      rooms: params.get('rooms') || '',
+      // Vehicle filters
+      brand: params.get('brand') || '',
+      model: params.get('model') || '',
+      minYear: params.get('minYear') || '',
+      maxYear: params.get('maxYear') || '',
+      maxMileage: params.get('maxMileage') || '',
+      fuelType: params.get('fuelType') || '',
+      transmission: params.get('transmission') || '',
+      // Service filters
+      serviceCategory: params.get('serviceCategory') || '',
+      pricingType: params.get('pricingType') || '',
+      // Job filters
+      jobType: params.get('jobType') || '',
+      experienceLevel: params.get('experienceLevel') || '',
+      minSalary: params.get('minSalary') || '',
+      maxSalary: params.get('maxSalary') || '',
+    };
+  };
+
+  const [filters, setFilters] = useState(getInitialFilters());
   const [showCitySelector, setShowCitySelector] = useState(false);
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
   // Temporary filters for editing in drawer (only applied when drawer is closed)
@@ -67,19 +104,41 @@ export default function CategoryPage() {
   const { data: category, isLoading: categoryLoading } = useCategory(categoryId);
   const { data: cities = [] } = useCities();
   
-  // Sync cityId from URL or store to filters
+  // Sync filters from URL search params when they change
   React.useEffect(() => {
-    const newCityId = cityIdFromUrl && cityIdFromUrl !== 'all' 
-      ? cityIdFromUrl 
-      : (selectedCityId && selectedCityId !== 'all' ? selectedCityId : '');
+    if (typeof window === 'undefined') return;
     
-    if (newCityId !== filters.cityId) {
-      setFilters(prev => ({ ...prev, cityId: newCityId }));
-      if (newCityId && newCityId !== selectedCityId) {
-        setSelectedCity(newCityId);
+    const params = new URLSearchParams(window.location.search);
+    const updatedFilters: any = {};
+    
+    const filterKeys = [
+      'cityId', 'minPrice', 'maxPrice', 'search', 'condition',
+      'offerType', 'propertyType', 'minArea', 'maxArea', 'rooms',
+      'brand', 'model', 'minYear', 'maxYear', 'maxMileage', 'fuelType', 'transmission',
+      'serviceCategory', 'pricingType',
+      'jobType', 'experienceLevel', 'minSalary', 'maxSalary'
+    ];
+
+    let hasChanges = false;
+    filterKeys.forEach(key => {
+      const value = params.get(key) || '';
+      if (filters[key as keyof typeof filters] !== value) {
+        updatedFilters[key] = value;
+        hasChanges = true;
+      } else {
+        updatedFilters[key] = filters[key as keyof typeof filters];
+      }
+    });
+
+    if (hasChanges) {
+      setFilters(updatedFilters);
+      
+      // Also sync city store if cityId changed
+      if (updatedFilters.cityId && updatedFilters.cityId !== selectedCityId) {
+        setSelectedCity(updatedFilters.cityId);
       }
     }
-  }, [cityIdFromUrl, selectedCityId, filters.cityId, setSelectedCity]);
+  }, [searchParams, selectedCityId, setSelectedCity]);
   
   // Get selected city name
   const activeCityId = filters.cityId || selectedCityId;
@@ -95,20 +154,17 @@ export default function CategoryPage() {
   });
   
   const handleCityChange = (cityId: string | null) => {
+    const params = new URLSearchParams(window.location.search);
+    params.delete('page'); // Reset to first page
     if (cityId) {
       setSelectedCity(cityId);
       setFilters(prev => ({ ...prev, cityId }));
-      // Update URL with cityId
-      const params = new URLSearchParams();
       params.set('cityId', cityId);
-      router.push(`/category/${categoryId}?${params.toString()}`);
     } else {
-      // Show all cities
       setFilters(prev => ({ ...prev, cityId: '' }));
-      const params = new URLSearchParams();
       params.set('cityId', 'all');
-      router.push(`/category/${categoryId}?${params.toString()}`);
     }
+    router.push(`/category/${categoryId}?${params.toString()}`);
     setShowCitySelector(false);
   };
   
@@ -125,6 +181,7 @@ export default function CategoryPage() {
     categoryId,
     status: 'APPROVED',
     limit: 20,
+    page: Number(pageFromUrl),
   };
   
   // Add cityId if not empty and not 'all'
@@ -143,6 +200,10 @@ export default function CategoryPage() {
   // Add search if it has a value
   if (filters.search) {
     adsQueryParams.search = filters.search;
+  }
+  
+  if (filters.condition) {
+    adsQueryParams.condition = filters.condition;
   }
   
   // Add category-specific filters if they have values (will be passed to API, backend may need to support them)
@@ -200,6 +261,7 @@ export default function CategoryPage() {
   if (filters.maxSalary) {
     adsQueryParams.maxSalary = Number(filters.maxSalary);
   }
+  
   const { data: adsData, isLoading: adsLoading } = useAds(adsQueryParams);
 
   // Get category type
@@ -297,6 +359,17 @@ export default function CategoryPage() {
       case MainCategoryType.VEHICLES:
         return [
           ...baseFilters,
+          {
+            key: 'condition',
+            label: locale === 'fa' ? 'وضعیت' : 'Condition',
+            type: 'select',
+            options: [
+              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: 'new', label: locale === 'fa' ? 'نو' : 'New' },
+              { value: 'like-new', label: locale === 'fa' ? 'در حد نو' : 'Like New' },
+              { value: 'used', label: locale === 'fa' ? 'کارکرده' : 'Used' },
+            ],
+          },
           {
             key: 'brand',
             label: locale === 'fa' ? 'برند' : 'Brand',
@@ -485,11 +558,12 @@ export default function CategoryPage() {
       ? cityIdFromUrl 
       : (selectedCityId && selectedCityId !== 'all' ? selectedCityId : '');
     
-    setTempFilters({
+    const resetFilters = {
       cityId: defaultCityId,
       minPrice: '',
       maxPrice: '',
       search: '',
+      condition: '',
       offerType: '',
       propertyType: '',
       minArea: '',
@@ -508,13 +582,31 @@ export default function CategoryPage() {
       experienceLevel: '',
       minSalary: '',
       maxSalary: '',
-    });
+    };
+    
+    setTempFilters(resetFilters);
+    
+    // Also update URL immediately or on close? 
+    // Usually reset in drawer only resets temp state.
+    // The handleCloseFilterDrawer will apply it to URL.
   };
 
   // Apply filters when drawer is closed
   const handleCloseFilterDrawer = () => {
     setFilters(tempFilters);
     setShowFilterDrawer(false);
+    
+    // Sync filters to URL
+    const params = new URLSearchParams(window.location.search);
+    params.delete('page'); // Reset to first page
+    Object.entries(tempFilters).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, String(value));
+      } else {
+        params.delete(key);
+      }
+    });
+    router.push(`/category/${categoryId}?${params.toString()}`, { scroll: false });
   };
 
   if (categoryLoading) {
@@ -788,7 +880,11 @@ export default function CategoryPage() {
             {pagination && pagination.totalPages > 1 && (
               <div className="mt-6 flex justify-center gap-2">
                 <button
-                  onClick={() => router.push(`/category/${categoryId}?page=${pagination.page - 1}`)}
+                  onClick={() => {
+                    const params = new URLSearchParams(window.location.search);
+                    params.set('page', String(pagination.page - 1));
+                    router.push(`/category/${categoryId}?${params.toString()}`);
+                  }}
                   disabled={pagination.page === 1}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                   dir={isRTL ? 'rtl' : 'ltr'}
@@ -799,7 +895,11 @@ export default function CategoryPage() {
                   {locale === 'fa' ? `صفحه ${pagination.page} از ${pagination.totalPages}` : `Seite ${pagination.page} von ${pagination.totalPages}`}
                 </span>
                 <button
-                  onClick={() => router.push(`/category/${categoryId}?page=${pagination.page + 1}`)}
+                  onClick={() => {
+                    const params = new URLSearchParams(window.location.search);
+                    params.set('page', String(pagination.page + 1));
+                    router.push(`/category/${categoryId}?${params.toString()}`);
+                  }}
                   disabled={pagination.page === pagination.totalPages}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                   dir={isRTL ? 'rtl' : 'ltr'}
