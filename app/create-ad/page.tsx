@@ -134,7 +134,7 @@ export default function CreateAdPage() {
         // If switching to MISC and we're on step 3, go back to step 2 (MISC only has 2 steps)
         if (value) {
           const newCategory = categories?.find((c) => c.id === value);
-          if (newCategory?.categoryType === MainCategoryType.MISC && currentStep === 3) {
+          if ((newCategory?.categoryType === MainCategoryType.MISC || newCategory?.categoryType === MainCategoryType.PERSONAL_HOME) && currentStep === 3) {
             setCurrentStep(2);
           }
         }
@@ -179,7 +179,7 @@ export default function CreateAdPage() {
     }
 
     // For Misc category, validate title and description in step 2
-    if (categoryType === MainCategoryType.MISC) {
+    if (categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) {
       if (!step2Data.title.trim() || step2Data.title.trim().length < 3) {
         toast.error(isRTL ? 'عنوان باید حداقل 3 کاراکتر باشد' : 'Title must be at least 3 characters');
         return false;
@@ -238,7 +238,7 @@ export default function CreateAdPage() {
   const validateStep3 = () => {
     // For Jobs, title and description are in Step 2, so skip validation here
     // For Misc, validation is done in step 2, so skip here
-    if (categoryType === MainCategoryType.JOBS || categoryType === MainCategoryType.MISC) {
+    if (categoryType === MainCategoryType.JOBS || categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) {
       return true;
     }
     
@@ -261,7 +261,7 @@ export default function CreateAdPage() {
     } else if (currentStep === 2) {
       if (validateStep2()) {
         // For MISC category, step 2 is the final step, so don't go to step 3
-        if (categoryType === MainCategoryType.MISC) {
+        if (categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) {
           // Step 2 is final for MISC, submit will be handled by form
           return;
         }
@@ -298,7 +298,7 @@ export default function CreateAdPage() {
     }
 
     // Validate images based on category
-    const requiresImages = categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC;
+    const requiresImages = categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME;
     if (requiresImages && imageFiles.length === 0) {
       toast.error(isRTL ? 'حداقل یک تصویر الزامی است' : 'At least one image is required');
       return;
@@ -346,12 +346,12 @@ export default function CreateAdPage() {
         requestData.price = step3Data.price || 0;
       } else if (categoryType === MainCategoryType.SERVICES) {
         requestData.price = step3Data.price || 0;
-      } else if (categoryType === MainCategoryType.MISC) {
+      } else if (categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) {
         // For MISC: use price from step2Data, or 0 if negotiable
         requestData.price = step2Data.isNegotiable ? 0 : (step2Data.price || 0);
-        // Store negotiable flag in metadata
+        // Store negotiable flag at top level for backend
         if (step2Data.isNegotiable) {
-          requestData.metadata = { ...requestData.metadata, isNegotiable: true };
+          requestData.isNegotiable = true;
         }
       } else {
         requestData.price = 0; // Jobs don't have price
@@ -419,7 +419,7 @@ export default function CreateAdPage() {
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center w-full">
-            {(categoryType === MainCategoryType.MISC ? [1, 2] : [1, 2, 3]).map((step) => {
+            {(categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME ? [1, 2] : [1, 2, 3]).map((step) => {
               const isCompleted = step < currentStep;
               const isClickable = isCompleted;
               
@@ -440,12 +440,12 @@ export default function CreateAdPage() {
                     </div>
                     <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${currentStep >= step ? 'text-red-600' : 'text-gray-600'} ${isClickable ? 'hover:text-red-700' : ''}`}>
                       {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
-                      {step === 2 && categoryType === MainCategoryType.MISC && (isRTL ? 'اطلاعات و تصاویر' : 'Info & Images')}
-                      {step === 2 && categoryType !== MainCategoryType.MISC && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
+                      {step === 2 && (categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) && (isRTL ? 'اطلاعات و تصاویر' : 'Info & Images')}
+                      {step === 2 && (categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME) && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
                       {step === 3 && (isRTL ? 'اطلاعات پایه' : 'Basic Info')}
                     </span>
                   </div>
-                  {((categoryType === MainCategoryType.MISC && step < 2) || (categoryType !== MainCategoryType.MISC && step < 3)) && (
+                  {(((categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) && step < 2) || ((categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME) && step < 3)) && (
                     <div 
                       className={`flex-1 h-[2px] md:h-1.5 mx-1 md:mx-4 transition-colors ${currentStep > step ? 'bg-red-600' : 'bg-gray-500'} ${isClickable ? 'cursor-pointer hover:bg-red-700' : ''}`} 
                       style={{ minWidth: '16px' }}
@@ -558,14 +558,14 @@ export default function CreateAdPage() {
         {currentStep === 2 && (
           <div className="space-y-6 w-full">
             <h2 className="text-2xl font-bold mb-4">
-              {categoryType === MainCategoryType.MISC 
+              {(categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) 
                 ? (isRTL ? 'اطلاعات و تصاویر' : 'Info & Images')
                 : (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')
               }
             </h2>
             
-            {/* For MISC: Show Title, Description, and Images in Step 2 */}
-            {categoryType === MainCategoryType.MISC && (
+            {/* For MISC/PERSONAL_HOME: Show Title, Description, and Images in Step 2 */}
+            {(categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) && (
               <>
                 <div>
                   <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
@@ -668,7 +668,7 @@ export default function CreateAdPage() {
             )}
             
             {/* Category-specific Forms (for non-MISC categories) */}
-            {categoryType && categoryType !== MainCategoryType.MISC && (
+            {categoryType && categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME && (
               <div className="space-y-4">
                 {categoryType === MainCategoryType.REAL_ESTATE && (
                   <RealEstateForm 
@@ -702,7 +702,7 @@ export default function CreateAdPage() {
             )}
 
             {/* Image Upload */}
-            <div className={`border-t border-gray-300 pt-6 ${categoryType === MainCategoryType.MISC ? '' : 'mt-6'}`}>
+            <div className={`border-t border-gray-300 pt-6 ${categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME ? '' : 'mt-6'}`}>
               <label className="block text-sm font-medium mb-2">
                 {isRTL ? 'تصاویر' : 'Images'} 
                 <span className="text-gray-500 text-xs ml-2">
@@ -864,8 +864,8 @@ export default function CreateAdPage() {
             )}
           </div>
           <div className="flex gap-4">
-            {categoryType === MainCategoryType.MISC ? (
-              // For MISC, step 2 is the final step
+            {(categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) ? (
+              // For MISC and PERSONAL_HOME, step 2 is the final step
               currentStep === 2 ? (
                 <Button type="submit" className="flex-1" disabled={createAdMutation.isPending}>
                   {createAdMutation.isPending ? (isRTL ? 'در حال ایجاد...' : 'Creating...') : (isRTL ? 'ثبت آگهی' : 'Create Ad')}

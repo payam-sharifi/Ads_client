@@ -22,6 +22,7 @@ export interface Ad {
   isPremium: boolean;
   showEmail?: boolean;
   showPhone?: boolean;
+  isNegotiable?: boolean;
   rejectionReason?: string;
   createdAt: string;
   updatedAt?: string;
@@ -184,8 +185,12 @@ export const useCreateAd = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newAd: Partial<Ad>) => {
-      const response = await apiClient.post<Ad>('/ads', newAd);
-      return response.data;
+      try {
+        const response = await apiClient.post<Ad>('/ads', newAd);
+        return response.data;
+      } catch (error: any) {
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ads'] });

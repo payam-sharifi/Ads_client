@@ -518,6 +518,7 @@ export default function CategoryPage() {
           },
         ];
 
+      case MainCategoryType.PERSONAL_HOME:
       case MainCategoryType.MISC:
       default:
         return [

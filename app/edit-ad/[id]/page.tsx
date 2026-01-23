@@ -205,7 +205,7 @@ export default function EditAdPage() {
     }
 
     // For Misc category, no step 2 validation needed
-    if (categoryType === MainCategoryType.MISC) {
+    if (categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) {
       return true;
     }
 
@@ -245,7 +245,7 @@ export default function EditAdPage() {
   const validateStep3 = () => {
     // For Jobs, title and description are in Step 2, so skip validation here
     // For Misc, only title and description are needed
-    if (categoryType === MainCategoryType.JOBS || categoryType === MainCategoryType.MISC) {
+    if (categoryType === MainCategoryType.JOBS || categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) {
       return true;
     }
     
@@ -679,7 +679,7 @@ export default function EditAdPage() {
               <h2 className="text-2xl font-bold mb-4">{isRTL ? 'عنوان' : 'Title'}</h2>
               
               {/* Title and Description - Hidden for Jobs and Misc */}
-              {categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC && (
+              {categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME && (
                 <>
                   <div>
                     <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>

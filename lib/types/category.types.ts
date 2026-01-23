@@ -9,6 +9,7 @@ export enum MainCategoryType {
   VEHICLES = 'vehicles',
   SERVICES = 'services',
   JOBS = 'jobs',
+  PERSONAL_HOME = 'personal_home',
   MISC = 'misc',
 }
 
