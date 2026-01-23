@@ -126,7 +126,7 @@ export default function AdCard({
     );
   };
 
-  const cityName = getLocalizedName(ad.city?.name, locale);
+  const cityName = getLocalizedName(ad.city?.name, locale) || (isRTL ? 'همه شهرها' : 'Alle Städte');
   const categoryName = getLocalizedCategoryName(ad.category?.name, locale);
   const firstImage = getFirstImageUrl(ad.images);
   

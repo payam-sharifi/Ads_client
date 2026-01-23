@@ -24,7 +24,6 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
   const serviceCategoryLabels: Record<ServiceCategory, { fa: string; de: string }> = {
     [ServiceCategory.CONSTRUCTION]: { fa: 'ساختمان', de: 'Bauwesen' },
     [ServiceCategory.TRANSPORT]: { fa: 'حمل و نقل', de: 'Transport' },
-    [ServiceCategory.SHIPPING]: { fa: 'ارسال بار', de: 'Versand' },
     [ServiceCategory.REPAIRS]: { fa: 'تعمیرات', de: 'Repairs' },
     [ServiceCategory.EDUCATION]: { fa: 'آموزش', de: 'Education' },
     [ServiceCategory.PERSONAL_SERVICES]: { fa: 'خدمات شخصی', de: 'Personal Services' },

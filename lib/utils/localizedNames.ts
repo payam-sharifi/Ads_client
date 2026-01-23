@@ -90,7 +90,6 @@ export function getLocalizedServiceCategory(
   const serviceCategoryMap: Record<ServiceCategory, { fa: string; de: string }> = {
     [ServiceCategory.CONSTRUCTION]: { fa: 'ساختمان', de: 'Bauwesen' },
     [ServiceCategory.TRANSPORT]: { fa: 'حمل و نقل', de: 'Transport' },
-    [ServiceCategory.SHIPPING]: { fa: 'ارسال بار', de: 'Versand' },
     [ServiceCategory.REPAIRS]: { fa: 'تعمیرات', de: 'Reparaturen' },
     [ServiceCategory.EDUCATION]: { fa: 'آموزش', de: 'Bildung' },
     [ServiceCategory.PERSONAL_SERVICES]: { fa: 'خدمات شخصی', de: 'Persönliche Dienstleistungen' },

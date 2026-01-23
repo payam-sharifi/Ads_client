@@ -36,6 +36,7 @@ export default function CreateAdPage() {
     categoryId: '',
     subcategoryId: '',
     cityId: '',
+    showInAllCities: false,
   });
 
   // Step 2: Basic Info
@@ -161,7 +162,7 @@ export default function CreateAdPage() {
       toast.error(isRTL ? 'لطفا دسته‌بندی را انتخاب کنید' : 'Please select a category');
       return false;
     }
-    if (!step1Data.cityId) {
+    if (!step1Data.showInAllCities && !step1Data.cityId) {
       toast.error(isRTL ? 'لطفا شهر را انتخاب کنید' : 'Please select a city');
       return false;
     }
@@ -314,7 +315,7 @@ export default function CreateAdPage() {
         title: step2Data.title.trim(),
         description: step2Data.description.trim(),
         categoryId: step1Data.categoryId,
-        cityId: step1Data.cityId,
+        cityId: step1Data.showInAllCities ? undefined : step1Data.cityId,
         showEmail: step2Data.showEmail || false,
         showPhone: step2Data.showPhone || false,
         ...step3Data, // Merge all category-specific fields (condition is now in step3Data for vehicles)
@@ -483,12 +484,19 @@ export default function CreateAdPage() {
               </div>
 
               <div className="relative z-10 w-full md:w-1/2">
-                <label className="block text-sm font-medium mb-2">{isRTL ? 'شهر' : 'City'}</label>
+                <label className={`block text-sm font-medium mb-2 ${step1Data.showInAllCities ? 'text-gray-400' : ''}`}>
+                  {isRTL ? 'شهر' : 'City'}
+                </label>
                 <select
                   value={step1Data.cityId}
                   onChange={(e) => handleStep1Change('cityId', e.target.value)}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20"
+                  required={!step1Data.showInAllCities}
+                  disabled={step1Data.showInAllCities}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20 transition-colors ${
+                    step1Data.showInAllCities 
+                      ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed' 
+                      : 'border-gray-300'
+                  }`}
                   style={{ zIndex: 1000 }}
                 >
                   <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
@@ -498,6 +506,43 @@ export default function CreateAdPage() {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              {/* Show in all cities toggle */}
+              <div className="flex items-center gap-3 py-2">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <div className="relative flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={step1Data.showInAllCities}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setStep1Data(prev => ({
+                          ...prev,
+                          showInAllCities: checked,
+                          // Clear cityId if checking "all cities"
+                          cityId: checked ? '' : prev.cityId
+                        }));
+                      }}
+                      className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 transition-all checked:border-red-600 checked:bg-red-600 focus:outline-none"
+                    />
+                    <svg
+                      className="pointer-events-none absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">
+                    {isRTL ? 'نمایش در کل شهرها' : 'Show in all cities'}
+                  </span>
+                </label>
               </div>
             </div>
 

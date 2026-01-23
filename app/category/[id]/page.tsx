@@ -447,7 +447,6 @@ export default function CategoryPage() {
               { value: '', label: locale === 'fa' ? 'همه' : 'All' },
               { value: 'construction', label: locale === 'fa' ? 'ساختمان' : 'Bauwesen' },
               { value: 'transport', label: locale === 'fa' ? 'حمل و نقل' : 'Transport' },
-              { value: 'shipping', label: locale === 'fa' ? 'ارسال بار' : 'Versand' },
               { value: 'repairs', label: locale === 'fa' ? 'تعمیرات' : 'Repairs' },
               { value: 'education', label: locale === 'fa' ? 'آموزش' : 'Education' },
               { value: 'personal_services', label: locale === 'fa' ? 'خدمات شخصی' : 'Personal Services' },

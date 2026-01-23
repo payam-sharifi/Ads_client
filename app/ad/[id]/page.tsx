@@ -172,7 +172,7 @@ export default function AdDetailPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                       <span dir={isRTL ? 'rtl' : 'ltr'}>
-                        {getLocalizedName(ad.city?.name, locale) || 'N/A'}
+                        {getLocalizedName(ad.city?.name, locale) || (isRTL ? 'همه شهرها' : 'Alle Städte')}
                       </span>
                     </span>
                     <span>•</span>
