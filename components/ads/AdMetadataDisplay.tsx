@@ -4,7 +4,7 @@ import React from 'react';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { MainCategoryType, RealEstateMetadata, VehicleMetadata, ServiceMetadata, JobMetadata } from '@/lib/types/category.types';
 import { Ad } from '@/lib/hooks/useAds';
-import { getLocalizedPropertyType } from '@/lib/utils/localizedNames';
+import { getLocalizedPropertyType, getLocalizedServiceCategory } from '@/lib/utils/localizedNames';
 
 interface AdMetadataDisplayProps {
   ad: Ad;
@@ -312,7 +312,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
               {isRTL ? 'دسته خدمات' : 'Service Category'}
             </span>
             <span className="font-medium text-gray-900 capitalize">
-              {service.serviceCategory.replace('_', ' ')}
+              {getLocalizedServiceCategory(service.serviceCategory, locale)}
             </span>
           </div>
         )}

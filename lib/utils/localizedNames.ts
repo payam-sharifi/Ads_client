@@ -1,5 +1,5 @@
 import { Locale } from '@/lib/i18n';
-import { PropertyType } from '@/lib/types/category.types';
+import { PropertyType, ServiceCategory } from '@/lib/types/category.types';
 
 /**
  * Multilingual name structure from backend
@@ -78,3 +78,28 @@ export function getLocalizedPropertyType(
   return locale === 'fa' ? localized.fa : localized.de;
 }
 
+/**
+ * Get localized name for service categories
+ */
+export function getLocalizedServiceCategory(
+  serviceCategory: ServiceCategory | string | undefined | null,
+  locale: Locale
+): string {
+  if (!serviceCategory) return '';
+  
+  const serviceCategoryMap: Record<ServiceCategory, { fa: string; de: string }> = {
+    [ServiceCategory.CONSTRUCTION]: { fa: 'ساختمان', de: 'Bauwesen' },
+    [ServiceCategory.TRANSPORT]: { fa: 'حمل و نقل', de: 'Transport' },
+    [ServiceCategory.SHIPPING]: { fa: 'ارسال بار', de: 'Versand' },
+    [ServiceCategory.REPAIRS]: { fa: 'تعمیرات', de: 'Reparaturen' },
+    [ServiceCategory.EDUCATION]: { fa: 'آموزش', de: 'Bildung' },
+    [ServiceCategory.PERSONAL_SERVICES]: { fa: 'خدمات شخصی', de: 'Persönliche Dienstleistungen' },
+  };
+  
+  const type = serviceCategory as ServiceCategory;
+  const localized = serviceCategoryMap[type];
+  
+  if (!localized) return String(serviceCategory).replace('_', ' ');
+  
+  return locale === 'fa' ? localized.fa : localized.de;
+}

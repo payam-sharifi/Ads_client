@@ -445,10 +445,10 @@ export default function CategoryPage() {
             type: 'select',
             options: [
               { value: '', label: locale === 'fa' ? 'همه' : 'All' },
-              { value: 'home_services', label: locale === 'fa' ? 'خدمات منزل' : 'Home Services' },
+              { value: 'construction', label: locale === 'fa' ? 'ساختمان' : 'Bauwesen' },
               { value: 'transport', label: locale === 'fa' ? 'حمل و نقل' : 'Transport' },
+              { value: 'shipping', label: locale === 'fa' ? 'ارسال بار' : 'Versand' },
               { value: 'repairs', label: locale === 'fa' ? 'تعمیرات' : 'Repairs' },
-              { value: 'it_design', label: locale === 'fa' ? 'IT و طراحی' : 'IT & Design' },
               { value: 'education', label: locale === 'fa' ? 'آموزش' : 'Education' },
               { value: 'personal_services', label: locale === 'fa' ? 'خدمات شخصی' : 'Personal Services' },
             ],
