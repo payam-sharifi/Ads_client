@@ -197,8 +197,8 @@ export default function CategoryPage() {
     adsQueryParams.maxPrice = Number(filters.maxPrice);
   }
   
-  // Add search if it has a value
-  if (filters.search) {
+  // Add search if it has a value and is at least 3 characters
+  if (filters.search && filters.search.length >= 3) {
     adsQueryParams.search = filters.search;
   }
   
@@ -524,6 +524,12 @@ export default function CategoryPage() {
         return [
           ...baseFilters,
           {
+            key: 'search',
+            label: locale === 'fa' ? 'جستجو در عنوان و متن' : 'Suche in Titel und Text',
+            type: 'text',
+            placeholder: locale === 'fa' ? 'حداقل ۳ حرف...' : 'Mind. 3 Zeichen...',
+          },
+          {
             key: 'minPrice',
             label: locale === 'fa' ? 'حداقل قیمت (€)' : 'Min Price (€)',
             type: 'number',
@@ -550,6 +556,23 @@ export default function CategoryPage() {
 
   const handleFilterChange = (key: string, value: any) => {
     setTempFilters((prev) => ({ ...prev, [key]: value }));
+    
+    // Live filter for search after 3 characters
+    if (key === 'search' && (String(value).length >= 3 || String(value).length === 0)) {
+      setFilters(prev => ({ ...prev, search: String(value) }));
+      
+      // Update URL search param without closing drawer
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        if (value) {
+          params.set('search', String(value));
+        } else {
+          params.delete('search');
+        }
+        params.delete('page');
+        window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+      }
+    }
   };
 
   const handleReset = () => {
