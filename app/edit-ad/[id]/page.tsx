@@ -17,6 +17,7 @@ import VehicleForm from '@/components/ads/VehicleForm';
 import ServiceForm from '@/components/ads/ServiceForm';
 import JobForm from '@/components/ads/JobForm';
 import { validateRealEstate, validateVehicle, validateService, validateJob } from '@/lib/validation/category-forms';
+import { getImageUrl } from '@/lib/utils/imageUtils';
 import Button from '@/components/common/Button';
 import { toast } from 'react-toastify';
 
@@ -580,7 +581,7 @@ export default function EditAdPage() {
                       <div key={img.id} className="relative group">
                         <div className="relative h-20 md:h-24 w-full rounded-lg overflow-hidden bg-gray-100">
                           <Image
-                            src={img.url.startsWith('http') ? img.url : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001'}${img.url}`}
+                            src={getImageUrl(img.url)}
                             alt="Ad image"
                             fill
                             className="object-cover"
