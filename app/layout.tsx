@@ -21,13 +21,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Classified Ads - آگهی‌ها",
-  description: "Persian and German classified ads platform in Germany",
+  title: "JarBezan!",
+  description: "Persian and German Advertisment platform in Germany",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Classified Ads",
+    title: "JarBezan!",
   },
   formatDetection: {
     telephone: false,
