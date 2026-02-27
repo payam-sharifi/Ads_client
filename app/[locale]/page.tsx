@@ -3,7 +3,7 @@
 import React, { Suspense, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useTranslation } from '@/lib/contexts/I18nContext';
+import { useI18n } from '@/lib/contexts/I18nContext';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useInfiniteAds } from '@/lib/hooks/useAds';
 import { useCities } from '@/lib/hooks/useCities';
@@ -15,7 +15,7 @@ import CitySelectionLanding from '@/components/landing/CitySelectionLanding';
 import BottomNavigation from '@/components/layout/BottomNavigation';
 
 function HomePageContent() {
-  const { t, locale, setLocale, isRTL } = useTranslation();
+  const { t, locale, setLocale, isRTL } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchQuery = searchParams?.get('search') || '';
