@@ -55,6 +55,13 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      // Cloudflare R2 (public bucket URLs - add your custom domain if using one)
+      {
+        protocol: 'https',
+        hostname: '**.r2.dev',
+        port: '',
+        pathname: '/**',
+      },
     ],
     // Disable image optimization in production to prevent RAM issues
     // Images will be served directly from the source
