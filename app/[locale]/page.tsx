@@ -3,7 +3,7 @@
 import React, { Suspense, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useI18n } from '@/lib/contexts/I18nContext';
+import { useTranslation } from '@/lib/contexts/I18nContext';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useInfiniteAds } from '@/lib/hooks/useAds';
 import { useCities } from '@/lib/hooks/useCities';
@@ -15,7 +15,7 @@ import CitySelectionLanding from '@/components/landing/CitySelectionLanding';
 import BottomNavigation from '@/components/layout/BottomNavigation';
 
 function HomePageContent() {
-  const { t, locale, setLocale, isRTL } = useI18n();
+  const { t, locale, setLocale, isRTL } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchQuery = searchParams?.get('search') || '';
@@ -249,8 +249,9 @@ function HomePageContent() {
                 }
               </span>
             </button>
-            {/* Language Select - Mobile */}
+            {/* Separator */}
             <div className="h-3 w-px bg-gray-300 flex-shrink-0" />
+            {/* Language Toggle */}
             <button
               type="button"
               onClick={() => setLocale(locale === 'fa' ? 'de' : 'fa')}
