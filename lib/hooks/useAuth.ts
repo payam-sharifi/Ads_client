@@ -12,6 +12,7 @@ export interface SignupRequest {
   email: string;
   phone: string;
   password: string;
+  locale?: 'fa' | 'de';
 }
 
 export interface VerifyEmailRequest {

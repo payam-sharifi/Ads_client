@@ -46,7 +46,7 @@ const countryCodes = [
 
 export default function SignupPage() {
   const router = useRouter();
-  const { t, isRTL } = useI18n();
+  const { t, isRTL, locale } = useI18n();
   const [selectedCountryCode, setSelectedCountryCode] = React.useState('+49'); // Germany default
   const [phoneNumber, setPhoneNumber] = React.useState('');
   const [formData, setFormData] = React.useState({
@@ -157,6 +157,7 @@ export default function SignupPage() {
         email: formData.email.trim(),
         phone: fullPhone,
         password: formData.password,
+        locale,
       });
       toast.success('کد تأیید به ایمیل شما ارسال شد');
       // Redirect to verification page with email as query parameter
