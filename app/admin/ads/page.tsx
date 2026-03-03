@@ -307,16 +307,23 @@ export default function AdminAdsPage() {
   useEffect(() => {
     const handleScroll = () => {
       if (openActionsMenu) {
-        setOpenActionsMenu(null);
+        // On mobile, the bottom sheet is fixed; scroll (e.g. from tap/scroll-into-view) would close
+        // the menu before the button click fires. Only close on scroll for desktop dropdown.
+        if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+          setOpenActionsMenu(null);
+        }
       }
     };
     
     const handleClickOutside = (event: MouseEvent) => {
       if (openActionsMenu) {
+        // On mobile, the bottom sheet has no data-action-menu; handleClickOutside would treat
+        // taps on action buttons as "outside" and close before the action runs. The overlay
+        // handles closing on mobile; only use this for desktop dropdown.
+        if (typeof window !== 'undefined' && window.innerWidth < 768) return;
         const target = event.target as HTMLElement;
         const button = buttonRefs.current[openActionsMenu];
         const menu = document.querySelector('[data-action-menu]');
-        
         if (button && !button.contains(target) && menu && !menu.contains(target)) {
           setOpenActionsMenu(null);
         }
