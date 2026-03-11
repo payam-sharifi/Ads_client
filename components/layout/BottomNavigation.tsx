@@ -129,6 +129,7 @@ export default function BottomNavigation() {
 
   return (
     <nav 
+      dir="ltr"
       className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-[9999] md:hidden safe-area-inset-bottom" 
       style={{ 
         position: 'fixed', 

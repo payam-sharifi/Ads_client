@@ -21,8 +21,8 @@ export default function BackButton({ className = '', variant = 'default' }: Back
     }
   };
 
-  // LTR: back = left arrow (←). RTL: back = right arrow (→)
-  const arrowPath = isRTL ? 'M9 5l7 7-7 7' : 'M15 19l-7-7 7-7';
+  // Always use left-pointing arrow (←) regardless of locale - consistent navigation direction in mobile
+  const arrowPath = 'M15 19l-7-7 7-7';
 
   if (variant === 'icon-only') {
     return (
