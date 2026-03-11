@@ -12,7 +12,6 @@ import AdCard from '@/components/common/AdCard';
 import { toast } from 'react-toastify';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
 import CitySelectionLanding from '@/components/landing/CitySelectionLanding';
-import BottomNavigation from '@/components/layout/BottomNavigation';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 
 function HomePageContent() {
@@ -31,6 +30,7 @@ function HomePageContent() {
   const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories();
   const { data: cities = [] } = useCities();
   const [showCitySelector, setShowCitySelector] = React.useState(false);
+  const [showCategoriesSelector, setShowCategoriesSelector] = React.useState(false);
   const [searchInput, setSearchInput] = React.useState(searchQuery);
 
   // If cityId is in URL, save it to store (but not if it's 'all')
@@ -212,7 +212,7 @@ function HomePageContent() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder={t('home.searchInAllAds')}
-              className="flex-1 bg-transparent text-gray-700 text-xs outline-none placeholder-gray-500 min-w-0"
+              className="flex-1 bg-transparent text-gray-700 text-xs outline-none placeholder:text-[10px] placeholder-gray-500 min-w-0"
               dir={isRTL ? 'rtl' : 'ltr'}
               style={{ fontSize: '12px' }}
             />
@@ -230,6 +230,22 @@ function HomePageContent() {
               </svg>
             </button>
             
+            {/* Separator */}
+            <div className="h-3 w-px bg-gray-300 flex-shrink-0" />
+            
+            {/* Categories Selector Button */}
+            <button
+              type="button"
+              onClick={() => setShowCategoriesSelector(true)}
+              className="flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors flex-shrink-0 min-w-0"
+            >
+              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+              <span className="text-xs font-medium truncate max-w-[60px] sm:max-w-none" style={{ fontSize: '11px' }}>
+                {t('nav.categories')}
+              </span>
+            </button>
             {/* Separator */}
             <div className="h-3 w-px bg-gray-300 flex-shrink-0" />
             
@@ -317,6 +333,58 @@ function HomePageContent() {
                     </button>
                   );
                 })}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Categories Selector Modal - Mobile */}
+      {showCategoriesSelector && (
+        <>
+          <div
+            className="fixed inset-0 backdrop-blur-sm bg-white/30 z-50 md:hidden"
+            onClick={() => setShowCategoriesSelector(false)}
+          />
+          <div className={`fixed ${isRTL ? 'left-0' : 'right-0'} top-0 bottom-0 w-80 bg-white z-50 md:hidden overflow-y-auto shadow-xl`}>
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900">
+                {t('nav.categories')}
+              </h2>
+              <button
+                onClick={() => setShowCategoriesSelector(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4">
+              <div className="space-y-2">
+                <Link
+                  href={activeCityId && activeCityId !== 'all' ? `/?cityId=${activeCityId}` : '/'}
+                  onClick={() => setShowCategoriesSelector(false)}
+                  className="block w-full text-right px-4 py-3 rounded-lg border bg-white border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-gray-50 font-medium"
+                  dir={isRTL ? 'rtl' : 'ltr'}
+                >
+                  {locale === 'fa' ? 'همه دسته‌بندی‌ها' : 'Alle Kategorien'}
+                </Link>
+                {categoriesLoading ? (
+                  <div className="px-4 py-2 text-sm text-gray-500">{t('common.loading')}</div>
+                ) : (
+                  (parentCategories || []).map((category) => (
+                    <Link
+                      key={category.id}
+                      href={`/category/${category.id}${activeCityId && activeCityId !== 'all' ? `?cityId=${activeCityId}` : ''}`}
+                      onClick={() => setShowCategoriesSelector(false)}
+                      className="block w-full text-right px-4 py-3 rounded-lg border bg-white border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-gray-50"
+                      dir={isRTL ? 'rtl' : 'ltr'}
+                    >
+                      {getLocalizedCategoryName(category.name, locale)}
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
           </div>
