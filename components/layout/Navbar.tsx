@@ -172,12 +172,11 @@ function NavbarContent() {
             
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <div className="w-10 h-8 bg-red-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">Ads</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900 mr-1 hidden sm:inline">
-               Persian
-              </span>
+              <img
+                src="/icons/icon-192x192.png"
+                alt="JarBezan"
+                className="h-10 w-10 object-contain"
+              />
             </Link>
 
             {/* Location Selector */}
@@ -426,8 +425,12 @@ export default function Navbar() {
         <div className="container mx-auto px-2 sm:px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-4">
-              <Link href="/" className="text-xl sm:text-2xl font-bold text-red-600">
-                آگهی‌ها
+              <Link href="/" className="flex items-center">
+                <img
+                  src="/icons/icon-192x192.png"
+                  alt="JarBezan"
+                  className="h-10 w-10 object-contain"
+                />
               </Link>
             </div>
           </div>
