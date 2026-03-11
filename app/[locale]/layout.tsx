@@ -59,6 +59,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import BottomNavigation from '@/components/layout/BottomNavigation';
 import OfflineBanner from '@/components/common/OfflineBanner';
+import DocumentDirectionSync from '@/components/common/DocumentDirectionSync';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -85,7 +86,8 @@ export default async function LocaleLayout({ children, params }: Props) {
   ];
 
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <DocumentDirectionSync />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
