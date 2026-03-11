@@ -35,12 +35,17 @@ function deepMerge<T extends Record<string, unknown>>(
 const loadMessages = (locale: string) =>
   import(`../messages/${locale}.json`).then((m) => m.default);
 
-const getCachedMessages = (locale: string) =>
-  unstable_cache(
+const getCachedMessages = (locale: string) => {
+  if (process.env.NODE_ENV === 'development') {
+    return loadMessages(locale); // بدون cache
+  }
+
+  return unstable_cache(
     async () => loadMessages(locale),
     [`messages-${locale}`],
     { revalidate: 3600, tags: [`messages-${locale}`] }
   )();
+};
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;

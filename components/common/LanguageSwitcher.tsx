@@ -26,7 +26,10 @@ export default function LanguageSwitcher() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     };
@@ -60,7 +63,12 @@ export default function LanguageSwitcher() {
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -77,7 +85,9 @@ export default function LanguageSwitcher() {
                   : "text-gray-700 hover:bg-gray-50"
               }`}
             >
-              <span className="text-base leading-none">{localeFlags[loc] || "🌐"}</span>
+              <span className="text-base leading-none">
+                {localeFlags[loc] || "🌐"}
+              </span>
               {localeLabels[loc] || loc.toUpperCase()}
             </button>
           ))}
