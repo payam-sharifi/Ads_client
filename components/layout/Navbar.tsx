@@ -162,7 +162,7 @@ function NavbarContent() {
   };
 
   return (
-    <nav className="hidden md:block bg-white border-b border-gray-200 sticky top-0 z-50">
+    <nav className="hidden md:block bg-white border-b border-gray-200 sticky top-0 z-50" dir="rtl">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Left side - Back Button, Logo and Location */}
@@ -192,7 +192,7 @@ function NavbarContent() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span className="text-sm font-medium text-gray-700" dir={isRTL ? 'rtl' : 'ltr'}>
+                <span className="text-sm font-medium text-gray-700" dir="rtl">
                   {!isMounted || citiesLoading ? (locale === 'fa' ? 'همه شهرها' : 'Alle Städte') : selectedCityName}
                 </span>
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,7 +202,7 @@ function NavbarContent() {
               
               {/* Cities Dropdown */}
               {showCities && (
-                <div className={`absolute top-full ${isRTL ? 'right-0' : 'left-0'} mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto`}>
+                <div className={`absolute top-full right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto`}>
                   <div className="py-1">
                     <button
                       onClick={() => {
@@ -224,7 +224,7 @@ function NavbarContent() {
                         }
                       }}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      dir={isRTL ? 'rtl' : 'ltr'}
+                      dir="rtl"
                     >
                       {locale === 'fa' ? 'همه شهرها' : 'Alle Städte'}
                     </button>
@@ -238,7 +238,7 @@ function NavbarContent() {
                           setShowCities(false);
                         }}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        dir={isRTL ? 'rtl' : 'ltr'}
+                        dir="rtl"
                       >
                         {getLocalizedName(city.name, locale)}
                       </Link>
@@ -265,13 +265,13 @@ function NavbarContent() {
               
               {/* Categories Dropdown Menu */}
               {showCategories && (
-                <div className={`absolute top-full ${isRTL ? 'right-0' : 'left-0'} mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto`}>
+                <div className={`absolute top-full right-0 mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto`}>
                   <div className="py-1">
                     <Link
                       href={activeCityIdForDisplay && activeCityIdForDisplay !== 'all' ? `/?cityId=${activeCityIdForDisplay}` : '/'}
                       onClick={() => setShowCategories(false)}
                       className="block px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 border-b border-gray-200"
-                      dir={isRTL ? 'rtl' : 'ltr'}
+                      dir="rtl"
                     >
                       {locale === 'fa' ? 'همه دسته‌بندی‌ها' : 'Alle Kategorien'}
                     </Link>
@@ -284,7 +284,7 @@ function NavbarContent() {
                           href={`/category/${category.id}${activeCityIdForDisplay && activeCityIdForDisplay !== 'all' ? `?cityId=${activeCityIdForDisplay}` : ''}`}
                           onClick={() => setShowCategories(false)}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          dir={isRTL ? 'rtl' : 'ltr'}
+                          dir="rtl"
                         >
                           {getLocalizedCategoryName(category.name, locale)}
                         </Link>
@@ -299,7 +299,7 @@ function NavbarContent() {
           {/* Center - Search Bar */}
           <form onSubmit={handleSearch} className="flex-1 max-w-2xl mx-4 hidden md:block">
             <div className="relative flex items-center">
-              <span className={`absolute ${isRTL ? 'right-4' : 'left-4'} text-sm text-gray-500 pointer-events-none z-10`}>
+              <span className="absolute right-4 text-sm text-gray-500 pointer-events-none z-10">
                 {isRTL ? 'جستجو' : 'Search'}
               </span>
               <input
@@ -307,14 +307,12 @@ function NavbarContent() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder=""
-                className={`w-full py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-gray-50 ${
-                  isRTL ? 'pl-4 pr-16' : 'pr-4 pl-16'
-                }`}
-                dir={isRTL ? 'rtl' : 'ltr'}
+                className="w-full py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-gray-50 pl-4 pr-16"
+                dir="rtl"
               />
               <button
                 type="submit"
-                className={`absolute ${isRTL ? 'left-3' : 'right-3'} top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary-600 z-10`}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary-600 z-10"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

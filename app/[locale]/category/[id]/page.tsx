@@ -658,7 +658,7 @@ export default function CategoryPage() {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Search Bar with City Selector - Mobile */}
-      <div className="bg-white border-b border-gray-200 md:hidden sticky top-0 z-40">
+      <div className="bg-white border-b border-gray-200 md:hidden sticky top-0 z-40" dir="rtl">
         <div className="container mx-auto px-4 py-3">
           <form
             onSubmit={(e) => {
@@ -670,7 +670,7 @@ export default function CategoryPage() {
               }
             }}
             className="flex items-center gap-1 bg-gray-50 rounded-lg border border-gray-300 px-2 py-1.5 min-w-0"
-            dir={isRTL ? 'rtl' : 'ltr'}
+            dir="rtl"
           >
             {/* Search Input */}
             <input
@@ -679,7 +679,7 @@ export default function CategoryPage() {
               placeholder={isRTL ? 'جستجو در همه آگهی‌ها' : 'Suche in allen Anzeigen'}
               defaultValue={filters.search}
               className="flex-1 bg-transparent text-gray-700 text-xs outline-none placeholder:text-[10px] placeholder-gray-500 min-w-0"
-              dir={isRTL ? 'rtl' : 'ltr'}
+              dir="rtl"
               style={{ fontSize: '12px' }}
             />
             

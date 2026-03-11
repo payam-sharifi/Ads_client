@@ -192,7 +192,7 @@ function HomePageContent() {
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
       {/* Search Bar with City Selector - Mobile */}
-      <div className="bg-white border-b border-gray-200 md:hidden sticky top-0 z-40">
+      <div className="bg-white border-b border-gray-200 md:hidden sticky top-0 z-40" dir="rtl">
         <div className="container mx-auto px-4 py-3">
           <form
             onSubmit={(e) => {
@@ -203,7 +203,7 @@ function HomePageContent() {
               }
             }}
             className="flex items-center gap-1 bg-gray-50 rounded-lg border border-gray-300 px-2 py-1.5 min-w-0"
-            dir={isRTL ? 'rtl' : 'ltr'}
+            dir="rtl"
           >
             {/* Search Input */}
             <input
@@ -213,7 +213,7 @@ function HomePageContent() {
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder={t('home.searchInAllAds')}
               className="flex-1 bg-transparent text-gray-700 text-xs outline-none placeholder:text-[10px] placeholder-gray-500 min-w-0"
-              dir={isRTL ? 'rtl' : 'ltr'}
+              dir="rtl"
               style={{ fontSize: '12px' }}
             />
             
