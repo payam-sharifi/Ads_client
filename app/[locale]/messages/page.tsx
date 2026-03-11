@@ -119,7 +119,7 @@ export default function MessagesPage() {
                     setSortBy('newest');
                     setShowSortMenu(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-red-50 text-red-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-primary-50 text-primary-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
                 >
                   {isRTL ? 'جدیدترین' : 'Newest'}
                 </button>
@@ -128,7 +128,7 @@ export default function MessagesPage() {
                     setSortBy('oldest');
                     setShowSortMenu(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'oldest' ? 'bg-red-50 text-red-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'oldest' ? 'bg-primary-50 text-primary-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
                 >
                   {isRTL ? 'قدیمی‌ترین' : 'Oldest'}
                 </button>
@@ -137,7 +137,7 @@ export default function MessagesPage() {
                     setSortBy('unread');
                     setShowSortMenu(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'unread' ? 'bg-red-50 text-red-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'unread' ? 'bg-primary-50 text-primary-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
                 >
                   {isRTL ? 'خوانده نشده' : 'Unread'}
                 </button>
@@ -165,7 +165,7 @@ export default function MessagesPage() {
               onClick={() => handleConversationClick(conversation.adId, conversation.otherUser.id)}
               className={`bg-white rounded-lg border p-3 sm:p-4 cursor-pointer hover:shadow-md transition-all ${
                 conversation.unreadCount > 0 
-                  ? 'border-red-300 bg-red-50' 
+                  ? 'border-primary-300 bg-primary-50' 
                   : 'border-gray-200'
               }`}
             >
@@ -202,7 +202,7 @@ export default function MessagesPage() {
                       </p>
                     </div>
                     {conversation.unreadCount > 0 && (
-                      <span className="flex-shrink-0 ml-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center min-w-[20px] sm:min-w-[24px]">
+                      <span className="flex-shrink-0 ml-2 bg-primary-600 text-white text-xs font-bold rounded-full h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center min-w-[20px] sm:min-w-[24px]">
                         {conversation.unreadCount > 9 ? '9+' : conversation.unreadCount}
                       </span>
                     )}

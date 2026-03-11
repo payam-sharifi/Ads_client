@@ -41,8 +41,8 @@ export default function AdminCategoriesPage() {
 
   if (!canManage) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-800">You do not have permission to manage categories</p>
+      <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+        <p className="text-primary-800">You do not have permission to manage categories</p>
       </div>
     );
   }
@@ -56,7 +56,7 @@ export default function AdminCategoriesPage() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
         >
           + Create Category
         </button>
@@ -112,7 +112,7 @@ export default function AdminCategoriesPage() {
                         }
                       }}
                       disabled={deleteCategoryMutation.isPending}
-                      className="px-3 py-1 text-sm text-red-600 hover:text-red-900 disabled:opacity-50"
+                      className="px-3 py-1 text-sm text-primary-600 hover:text-primary-900 disabled:opacity-50"
                     >
                       {deleteCategoryMutation.isPending ? 'Deleting...' : 'Delete'}
                     </button>
@@ -183,7 +183,7 @@ export default function AdminCategoriesPage() {
                   type="text"
                   value={formData.nameEn}
                   onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -192,7 +192,7 @@ export default function AdminCategoriesPage() {
                   type="text"
                   value={formData.nameDe}
                   onChange={(e) => setFormData({ ...formData, nameDe: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -201,7 +201,7 @@ export default function AdminCategoriesPage() {
                   type="text"
                   value={formData.nameFa}
                   onChange={(e) => setFormData({ ...formData, nameFa: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -211,7 +211,7 @@ export default function AdminCategoriesPage() {
                   value={formData.icon}
                   onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
                   placeholder="🚗"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -219,7 +219,7 @@ export default function AdminCategoriesPage() {
                 <select
                   value={formData.parentId}
                   onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="">None (Root Category)</option>
                   {categories
@@ -246,7 +246,7 @@ export default function AdminCategoriesPage() {
                 <button
                   type="submit"
                   disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
                 >
                   {createCategoryMutation.isPending || updateCategoryMutation.isPending
                     ? 'Saving...'

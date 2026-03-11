@@ -29,8 +29,8 @@ export default function AdminCitiesPage() {
 
   if (!canManage) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-800">You do not have permission to manage cities</p>
+      <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+        <p className="text-primary-800">You do not have permission to manage cities</p>
       </div>
     );
   }
@@ -68,7 +68,7 @@ export default function AdminCitiesPage() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
         >
           + Create City
         </button>
@@ -112,7 +112,7 @@ export default function AdminCitiesPage() {
                   type="text"
                   value={formData.nameEn}
                   onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -121,7 +121,7 @@ export default function AdminCitiesPage() {
                   type="text"
                   value={formData.nameDe}
                   onChange={(e) => setFormData({ ...formData, nameDe: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -130,7 +130,7 @@ export default function AdminCitiesPage() {
                   type="text"
                   value={formData.nameFa}
                   onChange={(e) => setFormData({ ...formData, nameFa: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div className="flex gap-3 justify-end">
@@ -147,7 +147,7 @@ export default function AdminCitiesPage() {
                 <button
                   type="submit"
                   disabled={createCityMutation.isPending}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
                 >
                   {createCityMutation.isPending ? 'Creating...' : 'Create City'}
                 </button>

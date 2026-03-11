@@ -25,8 +25,8 @@ export default function MessageDetailPage() {
 
   if (!hasPermission('messages.view')) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-800">You do not have permission to view messages</p>
+      <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+        <p className="text-primary-800">You do not have permission to view messages</p>
       </div>
     );
   }
@@ -42,7 +42,7 @@ export default function MessageDetailPage() {
   if (error || !message) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
-        <p className="text-red-600">Message not found or failed to load</p>
+        <p className="text-primary-600">Message not found or failed to load</p>
         <button
           onClick={() => router.push('/admin/messages')}
           className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"

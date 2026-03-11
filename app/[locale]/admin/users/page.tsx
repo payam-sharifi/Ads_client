@@ -194,7 +194,7 @@ export default function AdminUsersPage() {
             }}
             className={`px-4 py-2 rounded-lg text-sm font-medium ${
               !isBlocked && !isSuspended
-                ? 'bg-red-600 text-white'
+                ? 'bg-primary-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -207,7 +207,7 @@ export default function AdminUsersPage() {
             }}
             className={`px-4 py-2 rounded-lg text-sm font-medium ${
               isBlocked
-                ? 'bg-red-600 text-white'
+                ? 'bg-primary-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -220,7 +220,7 @@ export default function AdminUsersPage() {
             }}
             className={`px-4 py-2 rounded-lg text-sm font-medium ${
               isSuspended
-                ? 'bg-red-600 text-white'
+                ? 'bg-primary-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -286,7 +286,7 @@ export default function AdminUsersPage() {
                     <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
                       <div className="flex flex-col gap-1">
                         {user.isBlocked && (
-                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-primary-100 text-primary-800">
                             {locale === 'fa' ? 'بلاک شده' : 'Blocked'}
                           </span>
                         )}
@@ -384,7 +384,7 @@ export default function AdminUsersPage() {
                                             setOpenActionsMenu(null);
                                           }}
                                           disabled={blockMutation.isPending}
-                                          className="w-full flex items-center gap-3 px-4 py-3 text-base text-red-700 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                          className="w-full flex items-center gap-3 px-4 py-3 text-base text-primary-700 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
@@ -462,7 +462,7 @@ export default function AdminUsersPage() {
                                               setOpenActionsMenu(null);
                                             }}
                                             disabled={blockMutation.isPending}
-                                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-700 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                           >
                                         <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
@@ -587,7 +587,7 @@ export default function AdminUsersPage() {
               value={suspendUntil}
               onChange={(e) => setSuspendUntil(e.target.value)}
               min={new Date().toISOString().slice(0, 16)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-4"
             />
             <div className="flex gap-3 justify-end">
               <button

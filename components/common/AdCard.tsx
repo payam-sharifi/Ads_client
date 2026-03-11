@@ -99,7 +99,7 @@ export default function AdCard({
       },
       REJECTED: {
         text: { fa: 'رد شده', de: 'Abgelehnt', en: 'Rejected' },
-        bgColor: 'bg-red-600',
+        bgColor: 'bg-primary-600',
         textColor: 'text-white',
       },
       PENDING_APPROVAL: {
@@ -221,7 +221,7 @@ export default function AdCard({
       <div className={`
         flex flex-col transition-all overflow-hidden
         bg-gray-50 border-b border-gray-200 rounded-none
-        md:bg-white md:rounded-lg md:border md:border-red-200 md:hover:border-red-300 md:hover:shadow-md
+        md:bg-white md:rounded-lg md:border md:border-primary-200 md:hover:border-primary-300 md:hover:shadow-md
         ${isRTL ? 'flex-row-reverse' : 'flex-row'}
       `}>
         {/* Image - Left (Right in RTL) */}
@@ -309,7 +309,7 @@ export default function AdCard({
         <div className="flex flex-col flex-1 p-2 justify-between min-w-0">
           <div className="flex-1">
             <Link href={`/ad/${ad.id}`}>
-              <h3 className="font-medium text-[10px] text-gray-900 line-clamp-2 mb-1 hover:text-red-600 transition-colors cursor-pointer">
+              <h3 className="font-medium text-[10px] text-gray-900 line-clamp-2 mb-1 hover:text-primary-600 transition-colors cursor-pointer">
                 {ad.title}
               </h3>
             </Link>
@@ -335,7 +335,7 @@ export default function AdCard({
               )}
             </div>
 
-            <div className="text-red-600 font-bold text-xs mb-1">{formatPrice(ad.price)}</div>
+            <div className="text-primary-600 font-bold text-xs mb-1">{formatPrice(ad.price)}</div>
             
             <div className="text-[10px] text-gray-500 flex items-center gap-1 flex-wrap">
               {cityName && (
@@ -413,10 +413,10 @@ export default function AdCard({
           ${variant === 'compact' 
             ? `flex-row ${isRTL ? 'flex-row-reverse' : ''} 
                bg-gray-50 border-b border-gray-200 rounded-none
-               md:bg-white md:border md:border-gray-200 md:border-b-0 md:rounded-lg md:hover:border-red-300 md:hover:shadow-md` 
+               md:bg-white md:border md:border-gray-200 md:border-b-0 md:rounded-lg md:hover:border-primary-300 md:hover:shadow-md` 
             : `flex-col md:flex-col
                bg-gray-50 border-b border-gray-200 rounded-none
-               md:bg-white md:rounded-lg md:border md:border-gray-200 md:hover:border-red-300 md:hover:shadow-md`
+               md:bg-white md:rounded-lg md:border md:border-gray-200 md:hover:border-primary-300 md:hover:shadow-md`
           }
         `}
       >
@@ -512,7 +512,7 @@ export default function AdCard({
         `}>
           <div>
             <h3 className={`
-              font-medium text-gray-900 group-hover:text-red-600 transition-colors
+              font-medium text-gray-900 group-hover:text-primary-600 transition-colors
               ${variant === 'compact' 
                 ? 'text-[10px] line-clamp-2 mb-1' 
                 : 'text-[10px] line-clamp-2 mb-1 leading-tight min-h-[1.5rem]'
@@ -544,7 +544,7 @@ export default function AdCard({
           </div>
 
           <div className={variant === 'compact' ? 'mt-auto' : 'mt-auto'}>
-            <div className="text-red-600 font-bold text-xs mb-1">
+            <div className="text-primary-600 font-bold text-xs mb-1">
               {ad.metadata?.isNegotiable 
                 ? (isRTL ? 'قیمت توافقی' : 'Negotiable')
                 : formatPrice(ad.price)
@@ -576,7 +576,7 @@ export default function AdCard({
           e.stopPropagation();
         }
       }}
-      className="flex flex-col bg-gray-50 border-b border-gray-200 rounded-none md:bg-white md:rounded-lg md:border md:border-gray-200 md:hover:border-red-300 md:hover:shadow-md transition-all overflow-hidden group"
+      className="flex flex-col bg-gray-50 border-b border-gray-200 rounded-none md:bg-white md:rounded-lg md:border md:border-gray-200 md:hover:border-primary-300 md:hover:shadow-md transition-all overflow-hidden group"
     >
       <div 
         className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 group"
@@ -656,7 +656,7 @@ export default function AdCard({
         )}
       </div>
       <div className="flex flex-col flex-1 p-2">
-        <h3 className="font-medium text-[10px] text-gray-900 line-clamp-2 mb-1 group-hover:text-red-600 transition-colors leading-tight min-h-[1.5rem]">
+        <h3 className="font-medium text-[10px] text-gray-900 line-clamp-2 mb-1 group-hover:text-primary-600 transition-colors leading-tight min-h-[1.5rem]">
           {ad.title}
         </h3>
         {/* Category Name */}
@@ -679,7 +679,7 @@ export default function AdCard({
           )}
         </div>
         <div className="mt-auto">
-          <div className="text-red-600 font-bold text-xs mb-1">{formatPrice(ad.price)}</div>
+          <div className="text-primary-600 font-bold text-xs mb-1">{formatPrice(ad.price)}</div>
           <div className="text-[10px] text-gray-500 flex items-center gap-1 flex-wrap">
             {cityName && (
               <>

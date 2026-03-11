@@ -186,7 +186,7 @@ function NavbarContent() {
                   setShowCities(!showCities);
                   setShowCategories(false);
                 }}
-                className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-lg hover:border-red-500 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-lg hover:border-primary-500 transition-colors"
               >
                 <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -255,7 +255,7 @@ function NavbarContent() {
                   setShowCategories(!showCategories);
                   setShowCities(false);
                 }}
-                className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-lg hover:border-red-500 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-lg hover:border-primary-500 transition-colors"
               >
                 <span className="text-sm font-medium text-gray-700">{t('nav.categories')}</span>
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -307,14 +307,14 @@ function NavbarContent() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder=""
-                className={`w-full py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm bg-gray-50 ${
+                className={`w-full py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-gray-50 ${
                   isRTL ? 'pl-4 pr-16' : 'pr-4 pl-16'
                 }`}
                 dir={isRTL ? 'rtl' : 'ltr'}
               />
               <button
                 type="submit"
-                className={`absolute ${isRTL ? 'left-3' : 'right-3'} top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-600 z-10`}
+                className={`absolute ${isRTL ? 'left-3' : 'right-3'} top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary-600 z-10`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -330,7 +330,7 @@ function NavbarContent() {
                 {(user?.role?.name === 'ADMIN' || user?.role?.name === 'SUPER_ADMIN') && (
                   <Link 
                     href="/admin" 
-                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-red-600 transition-colors"
+                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-primary-600 transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -340,7 +340,7 @@ function NavbarContent() {
                 )}
                 <Link 
                   href="/dashboard" 
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-red-600 transition-colors"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-primary-600 transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -349,14 +349,14 @@ function NavbarContent() {
                 </Link>
                 <Link 
                   href="/messages" 
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-red-600 transition-colors"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-primary-600 transition-colors"
                 >
                   <div className="relative inline-flex">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                     {isAuthenticated && typeof unreadCount === 'number' && unreadCount > 0 && (
-                      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center min-w-[20px] px-1 shadow-lg z-10 leading-none">
+                      <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center min-w-[20px] px-1 shadow-lg z-10 leading-none">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}
@@ -365,7 +365,7 @@ function NavbarContent() {
                 </Link>
                 <Link 
                   href="/support" 
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-red-600 transition-colors"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-primary-600 transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -374,7 +374,7 @@ function NavbarContent() {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-red-600 transition-colors"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-primary-600 transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -386,7 +386,7 @@ function NavbarContent() {
               <>
                 <Link 
                   href="/login" 
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-red-600 transition-colors"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:text-primary-600 transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -399,7 +399,7 @@ function NavbarContent() {
             {/* Post Ad Button */}
             <Link 
               href="/create-ad" 
-              className="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-sm font-medium transition-colors shadow-sm"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

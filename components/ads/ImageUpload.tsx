@@ -89,7 +89,7 @@ export default function ImageUpload({
           files.length >= maxFiles
             ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50'
             : isDragActive
-              ? 'border-red-500 bg-red-50'
+              ? 'border-primary-500 bg-primary-50'
               : 'border-gray-300 hover:border-gray-400 active:bg-gray-50'
         }`}
         style={{ WebkitTapHighlightColor: 'transparent', minHeight: '60px' }}
@@ -137,7 +137,7 @@ export default function ImageUpload({
               <button
                 type="button"
                 onClick={() => removeImage(index)}
-                className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm hover:bg-red-700"
+                className="absolute top-1 right-1 bg-primary-600 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm hover:bg-primary-700"
                 aria-label={isRTL ? 'حذف تصویر' : 'Remove image'}
               >
                 ×

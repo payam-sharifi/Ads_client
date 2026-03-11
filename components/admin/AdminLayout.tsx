@@ -194,7 +194,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-red-50 text-red-700 border border-red-200'
+                        ? 'bg-primary-50 text-primary-700 border border-primary-200'
                         : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                     }`}
                   >
@@ -203,7 +203,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       <span>{item.label}</span>
                     </div>
                     {item.href === '/admin/messages' && unreadCount > 0 && (
-                      <span className="bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center min-w-[20px] px-1">
+                      <span className="bg-primary-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center min-w-[20px] px-1">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}

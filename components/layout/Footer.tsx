@@ -21,12 +21,12 @@ export default function Footer() {
             <h3 className="text-sm font-bold text-gray-900 mb-3">{t('footer.usefulLinks')}</h3>
             <ul className="space-y-2 text-xs text-gray-600">
               <li>
-                <Link href="/" className="hover:text-red-600 transition-colors">
+                <Link href="/" className="hover:text-primary-600 transition-colors">
                   {t('nav.home')}
                 </Link>
               </li>
               <li>
-                <Link href="/categories" className="hover:text-red-600 transition-colors">
+                <Link href="/categories" className="hover:text-primary-600 transition-colors">
                   {t('nav.categories')}
                 </Link>
               </li>
@@ -36,12 +36,12 @@ export default function Footer() {
             <h3 className="text-sm font-bold text-gray-900 mb-3">{t('footer.support')}</h3>
             <ul className="space-y-2 text-xs text-gray-600">
               <li>
-                <Link href="/contact" className="hover:text-red-600 transition-colors">
+                <Link href="/contact" className="hover:text-primary-600 transition-colors">
                   {t('footer.contact')}
                 </Link>
               </li>
               <li>
-                <Link href="/help" className="hover:text-red-600 transition-colors">
+                <Link href="/help" className="hover:text-primary-600 transition-colors">
                   {t('footer.help')}
                 </Link>
               </li>
@@ -51,12 +51,12 @@ export default function Footer() {
             <h3 className="text-sm font-bold text-gray-900 mb-3">{t('footer.legal')}</h3>
             <ul className="space-y-2 text-xs text-gray-600">
               <li>
-                <Link href="/terms" className="hover:text-red-600 transition-colors">
+                <Link href="/terms" className="hover:text-primary-600 transition-colors">
                   {t('footer.terms')}
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-red-600 transition-colors">
+                <Link href="/privacy" className="hover:text-primary-600 transition-colors">
                   {t('footer.privacy')}
                 </Link>
               </li>

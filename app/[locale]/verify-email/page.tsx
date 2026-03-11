@@ -147,7 +147,7 @@ function VerifyEmailContent() {
     return (
       <div className="container mx-auto px-4 py-12 max-w-md">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <p className="text-red-600 mb-4">ایمیل یافت نشد</p>
+          <p className="text-primary-600 mb-4">ایمیل یافت نشد</p>
           <Link href="/signup">
             <Button>بازگشت به ثبت نام</Button>
           </Link>
@@ -181,7 +181,7 @@ function VerifyEmailContent() {
                 onChange={(e) => handleCodeChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
-                className="w-16 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-16 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 autoFocus={index === 0}
                 disabled={verifyMutation.isPending || timeLeft <= 0}
               />
@@ -202,7 +202,7 @@ function VerifyEmailContent() {
 
           {!verifyMutation.isPending && timeLeft <= 0 && (
             <div className="space-y-4">
-              <p className="text-center text-red-600 text-sm mb-4">
+              <p className="text-center text-primary-600 text-sm mb-4">
                 کد منقضی شده است
               </p>
               <div className="flex gap-3">

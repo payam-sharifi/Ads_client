@@ -92,7 +92,7 @@ export default function AdminReportsPage() {
           <select
             value={type || ''}
             onChange={(e) => router.push(`/admin/reports?type=${e.target.value || ''}`)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="">All Types</option>
             <option value="ad">Ads</option>
@@ -101,7 +101,7 @@ export default function AdminReportsPage() {
           <select
             value={status || ''}
             onChange={(e) => router.push(`/admin/reports?status=${e.target.value || ''}`)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="">All Statuses</option>
             <option value="pending">Pending</option>
@@ -246,7 +246,7 @@ export default function AdminReportsPage() {
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value as any)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="pending">Pending</option>
                   <option value="reviewed">Reviewed</option>
@@ -261,7 +261,7 @@ export default function AdminReportsPage() {
                   onChange={(e) => setAdminNotes(e.target.value)}
                   placeholder="Add notes about this report..."
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
             </div>
@@ -279,7 +279,7 @@ export default function AdminReportsPage() {
               <button
                 onClick={handleUpdateStatus}
                 disabled={updateStatusMutation.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {updateStatusMutation.isPending ? 'Updating...' : 'Update Status'}
               </button>

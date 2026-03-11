@@ -84,8 +84,8 @@ export default function DashboardPage() {
 
     if (statsError) {
       return (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">Failed to load dashboard statistics</p>
+        <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+          <p className="text-primary-800">Failed to load dashboard statistics</p>
         </div>
       );
     }
@@ -193,7 +193,7 @@ export default function DashboardPage() {
     const colorClasses = {
       yellow: 'bg-yellow-50 border-yellow-200 text-yellow-800',
       green: 'bg-green-50 border-green-200 text-green-800',
-      red: 'bg-red-50 border-red-200 text-red-800',
+      red: 'bg-primary-50 border-primary-200 text-primary-800',
       blue: 'bg-blue-50 border-blue-200 text-blue-800',
       orange: 'bg-orange-50 border-orange-200 text-orange-800',
       purple: 'bg-purple-50 border-purple-200 text-purple-800',
@@ -257,7 +257,7 @@ export default function DashboardPage() {
         {/* Mobile: Profile link and Logout button */}
         <div className="md:hidden flex items-center gap-3">
           <Link href="/profile">
-            <button className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors">
+            <button className="flex items-center gap-2 text-gray-600 hover:text-primary-600 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
@@ -274,7 +274,7 @@ export default function DashboardPage() {
               }
             }}
             disabled={logoutMutation.isPending}
-            className="flex items-center gap-2 text-red-600 hover:text-red-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors disabled:opacity-50"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

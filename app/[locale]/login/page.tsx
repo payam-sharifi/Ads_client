@@ -47,7 +47,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 md:px-3 py-2 md:py-1.5 text-sm md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-4 md:px-3 py-2 md:py-1.5 text-sm md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               dir="ltr"
             />
           </div>
@@ -59,13 +59,13 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 md:px-3 py-2 md:py-1.5 text-sm md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-4 md:px-3 py-2 md:py-1.5 text-sm md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               dir="ltr"
             />
           </div>
 
           <div className="flex justify-between items-center">
-            <Link href="/forgot-password" className="text-red-600 hover:underline text-sm md:text-xs">
+            <Link href="/forgot-password" className="text-primary-600 hover:underline text-sm md:text-xs">
               {t('auth.forgotPassword')}
             </Link>
           </div>
@@ -76,7 +76,7 @@ export default function LoginPage() {
 
           <div className="text-center mt-4 md:mt-3">
             <span className="text-gray-600 text-sm md:text-xs">{t('auth.noAccount')} </span>
-            <Link href="/signup" className="text-red-600 hover:underline font-medium text-sm md:text-xs">
+            <Link href="/signup" className="text-primary-600 hover:underline font-medium text-sm md:text-xs">
               {t('auth.signup')}
             </Link>
           </div>

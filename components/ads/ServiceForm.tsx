@@ -36,15 +36,15 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
         {/* Service Category */}
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'دسته خدمات' : 'Service Category'} <span className="text-red-500">*</span>
+            {isRTL ? 'دسته خدمات' : 'Service Category'} <span className="text-primary-500">*</span>
           </label>
           <div className="relative" style={{ zIndex: 1000 }}>
             <select
               value={data.serviceCategory || ''}
               onChange={(e) => updateField('serviceCategory', e.target.value)}
             className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('serviceCategory') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              getFieldError('serviceCategory') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500`}
               dir={isRTL ? 'rtl' : 'ltr'}
             >
             <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
@@ -56,14 +56,14 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
           </select>
           </div>
           {getFieldError('serviceCategory') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('serviceCategory')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('serviceCategory')}</p>
           )}
         </div>
 
         {/* Pricing Type */}
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نوع قیمت‌گذاری' : 'Pricing Type'} <span className="text-red-500">*</span>
+            {isRTL ? 'نوع قیمت‌گذاری' : 'Pricing Type'} <span className="text-primary-500">*</span>
           </label>
           <select
             value={data.pricingType || ''}
@@ -74,8 +74,8 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
               }
             }}
             className={`w-full px-3 py-2 border rounded-lg relative z-20 ${
-              getFieldError('pricingType') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              getFieldError('pricingType') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500`}
             style={{ zIndex: 1000 }}
             dir={isRTL ? 'rtl' : 'ltr'}
           >
@@ -85,7 +85,7 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
             <option value={PricingType.NEGOTIABLE}>{isRTL ? 'قابل مذاکره' : 'Negotiable'}</option>
           </select>
           {getFieldError('pricingType') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('pricingType')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('pricingType')}</p>
           )}
         </div>
       </div>
@@ -97,7 +97,7 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
             {data.pricingType === PricingType.HOURLY 
               ? (isRTL ? 'قیمت ساعتی (€)' : 'Price per Hour (€)')
               : (isRTL ? 'قیمت (€)' : 'Price (€)')
-            } <span className="text-red-500">*</span>
+            } <span className="text-primary-500">*</span>
           </label>
           <input
             type="number"
@@ -110,14 +110,14 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
             }}
             placeholder={isRTL ? '25' : '25'}
             className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('price') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              getFieldError('price') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500`}
             dir="ltr"
             min="0"
             step="1"
           />
           {getFieldError('price') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('price')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('price')}</p>
           )}
         </div>
       )}

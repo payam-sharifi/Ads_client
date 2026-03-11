@@ -193,7 +193,7 @@ export default function AdDetailPage() {
               {/* Price Display */}
               {ad.price !== undefined && ad.price !== null && (
                 <div className="border-t border-gray-200 pt-6">
-                  <div className="text-2xl font-bold text-red-600">
+                  <div className="text-2xl font-bold text-primary-600">
                     {ad.metadata?.isNegotiable 
                       ? (isRTL ? 'قیمت توافقی' : 'Negotiable Price')
                       : formatPrice(ad.price)
@@ -391,8 +391,8 @@ export default function AdDetailPage() {
                   disabled={bookmarkMutation.isPending || unbookmarkMutation.isPending}
                   className={`w-full px-4 py-2 rounded-lg border-2 transition-colors ${
                     isBookmarked
-                      ? 'bg-red-50 border-red-500 text-red-600'
-                      : 'border-gray-300 text-gray-700 hover:border-red-500 hover:text-red-600'
+                      ? 'bg-primary-50 border-primary-500 text-primary-600'
+                      : 'border-gray-300 text-gray-700 hover:border-primary-500 hover:text-primary-600'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   <span className="flex items-center justify-center gap-2">
@@ -438,7 +438,7 @@ export default function AdDetailPage() {
                     {!showMessageForm ? (
                       <>
                         <Link href={`/messages/${adId}`} className="block w-full mb-2">
-                          <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                          <Button className="w-full bg-primary-600 hover:bg-primary-700 text-white">
                             {t('ad.message')}
                           </Button>
                         </Link>
@@ -456,14 +456,14 @@ export default function AdDetailPage() {
                           value={message}
                           onChange={(e) => setMessage(e.target.value)}
                           placeholder={isRTL ? 'پیام خود را بنویسید...' : 'Schreiben Sie Ihre Nachricht...'}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                           rows={4}
                         />
                         <div className="flex gap-2">
                           <Button
                             onClick={handleSendMessage}
                             disabled={sendMessageMutation.isPending}
-                            className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                            className="flex-1 bg-primary-600 hover:bg-primary-700 text-white"
                           >
                             {sendMessageMutation.isPending ? t('common.loading') : t('common.submit')}
                           </Button>
@@ -476,7 +476,7 @@ export default function AdDetailPage() {
                   </>
                 ) : (
                   <Button
-                    className="w-full bg-red-600 hover:bg-red-700 text-white"
+                    className="w-full bg-primary-600 hover:bg-primary-700 text-white"
                     onClick={() => router.push('/login')}
                   >
                     {t('auth.login')} {t('ad.message')}
@@ -489,7 +489,7 @@ export default function AdDetailPage() {
             {!isOwner && isAuthenticated && (
               <button
                 onClick={() => setShowReportModal(true)}
-                className="w-full mt-3 px-4 py-2 text-sm text-red-600 border border-red-300 rounded-lg hover:bg-red-50"
+                className="w-full mt-3 px-4 py-2 text-sm text-primary-600 border border-primary-300 rounded-lg hover:bg-primary-50"
               >
                 Report this ad
               </button>
@@ -511,7 +511,7 @@ export default function AdDetailPage() {
               onChange={(e) => setReportReason(e.target.value)}
               placeholder="Enter reason (minimum 10 characters)..."
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-4"
             />
             <div className="flex gap-3 justify-end">
               <button
@@ -526,7 +526,7 @@ export default function AdDetailPage() {
               <button
                 onClick={handleReport}
                 disabled={createReportMutation.isPending || !reportReason.trim() || reportReason.trim().length < 10}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {createReportMutation.isPending ? 'Submitting...' : 'Submit Report'}
               </button>

@@ -26,7 +26,7 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
       {/* Job Title */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'عنوان شغل' : 'Job Title'} <span className="text-red-500">*</span>
+          {isRTL ? 'عنوان شغل' : 'Job Title'} <span className="text-primary-500">*</span>
         </label>
         <input
           type="text"
@@ -34,32 +34,32 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
           onChange={(e) => updateField('jobTitle', e.target.value)}
           placeholder={isRTL ? 'توسعه‌دهنده Full Stack' : 'Full Stack Developer'}
           className={`w-full px-3 py-2 border rounded-lg ${
-            getFieldError('jobTitle') ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-red-500`}
+            getFieldError('jobTitle') ? 'border-primary-500' : 'border-gray-300'
+          } focus:outline-none focus:ring-2 focus:ring-primary-500`}
           dir={isRTL ? 'rtl' : 'ltr'}
         />
         {getFieldError('jobTitle') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('jobTitle')}</p>
+          <p className="mt-1 text-sm text-primary-600">{getFieldError('jobTitle')}</p>
         )}
       </div>
 
       {/* Job Description */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'توضیحات شغل' : 'Job Description'} <span className="text-red-500">*</span>
+          {isRTL ? 'توضیحات شغل' : 'Job Description'} <span className="text-primary-500">*</span>
         </label>
         <textarea
           value={data.jobDescription || ''}
           onChange={(e) => updateField('jobDescription', e.target.value)}
           placeholder={isRTL ? 'ما در حال جستجوی...' : 'We are looking for...'}
           className={`w-full px-3 py-2 border rounded-lg ${
-            getFieldError('jobDescription') ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-red-500`}
+            getFieldError('jobDescription') ? 'border-primary-500' : 'border-gray-300'
+          } focus:outline-none focus:ring-2 focus:ring-primary-500`}
           rows={5}
           dir={isRTL ? 'rtl' : 'ltr'}
         />
         {getFieldError('jobDescription') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('jobDescription')}</p>
+          <p className="mt-1 text-sm text-primary-600">{getFieldError('jobDescription')}</p>
         )}
       </div>
 
@@ -67,15 +67,15 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
       <div className="grid grid-cols-2 gap-4">
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نوع شغل' : 'Job Type'} <span className="text-red-500">*</span>
+            {isRTL ? 'نوع شغل' : 'Job Type'} <span className="text-primary-500">*</span>
           </label>
           <div className="relative" style={{ zIndex: 1000 }}>
             <select
               value={data.jobType || ''}
               onChange={(e) => updateField('jobType', e.target.value)}
               className={`w-full px-3 py-2 border rounded-lg ${
-                getFieldError('jobType') ? 'border-red-500' : 'border-gray-300'
-              } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                getFieldError('jobType') ? 'border-primary-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-primary-500`}
               dir={isRTL ? 'rtl' : 'ltr'}
             >
             <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
@@ -87,12 +87,12 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
           </select>
           </div>
         {getFieldError('jobType') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('jobType')}</p>
+          <p className="mt-1 text-sm text-primary-600">{getFieldError('jobType')}</p>
         )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'صنعت' : 'Industry'} <span className="text-red-500">*</span>
+            {isRTL ? 'صنعت' : 'Industry'} <span className="text-primary-500">*</span>
           </label>
           <input
             type="text"
@@ -100,12 +100,12 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
             onChange={(e) => updateField('industry', e.target.value)}
             placeholder={isRTL ? 'IT & Software' : 'IT & Software'}
             className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('industry') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              getFieldError('industry') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500`}
             dir={isRTL ? 'rtl' : 'ltr'}
           />
           {getFieldError('industry') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('industry')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('industry')}</p>
           )}
         </div>
       </div>
@@ -234,7 +234,7 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
       <div className="pt-4 border-t">
         <div className="mb-3">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نام شرکت' : 'Company Name'} <span className="text-red-500">*</span>
+            {isRTL ? 'نام شرکت' : 'Company Name'} <span className="text-primary-500">*</span>
           </label>
           <input
             type="text"
@@ -242,12 +242,12 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
             onChange={(e) => updateField('companyName', e.target.value)}
             placeholder={isRTL ? 'Tech Startup GmbH' : 'Tech Startup GmbH'}
             className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('companyName') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              getFieldError('companyName') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500`}
             dir={isRTL ? 'rtl' : 'ltr'}
           />
           {getFieldError('companyName') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('companyName')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('companyName')}</p>
           )}
         </div>
       </div>

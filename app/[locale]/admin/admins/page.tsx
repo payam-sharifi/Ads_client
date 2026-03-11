@@ -101,8 +101,8 @@ export default function AdminAdminsPage() {
   return (
     <RequireSuperAdmin
       fallback={
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">Access denied. Super Admin privileges required.</p>
+        <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+          <p className="text-primary-800">Access denied. Super Admin privileges required.</p>
         </div>
       }
     >
@@ -121,7 +121,7 @@ export default function AdminAdminsPage() {
         <button
           onClick={handleLogout}
           disabled={logoutMutation.isPending}
-          className="flex items-center gap-2 px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-3 py-2 text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -137,7 +137,7 @@ export default function AdminAdminsPage() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
         >
           + Create Admin
         </button>
@@ -232,7 +232,7 @@ export default function AdminAdminsPage() {
                   type="text"
                   value={newAdmin.name}
                   onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -241,7 +241,7 @@ export default function AdminAdminsPage() {
                   type="email"
                   value={newAdmin.email}
                   onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -250,7 +250,7 @@ export default function AdminAdminsPage() {
                   type="tel"
                   value={newAdmin.phone}
                   onChange={(e) => setNewAdmin({ ...newAdmin, phone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -259,7 +259,7 @@ export default function AdminAdminsPage() {
                   type="password"
                   value={newAdmin.password}
                   onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
             </div>
@@ -276,7 +276,7 @@ export default function AdminAdminsPage() {
               <button
                 onClick={handleCreateAdmin}
                 disabled={createAdminMutation.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
               >
                 {createAdminMutation.isPending ? 'Creating...' : 'Create Admin'}
               </button>

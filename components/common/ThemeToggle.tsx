@@ -44,7 +44,7 @@ export default function ThemeToggle({
     return (
       <button
         onClick={toggleTheme}
-        className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors ${className}`}
+        className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors ${className}`}
         aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
       >
         {theme === 'light' ? (

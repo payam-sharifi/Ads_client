@@ -750,8 +750,8 @@ export default function CategoryPage() {
                       className={`
                         w-full text-right px-4 py-3 rounded-lg border transition-all
                         ${isSelected
-                          ? 'bg-red-50 border-red-300 text-red-700 font-medium'
-                          : 'bg-white border-gray-200 text-gray-700 hover:border-red-300 hover:bg-gray-50'
+                          ? 'bg-primary-50 border-primary-300 text-primary-700 font-medium'
+                          : 'bg-white border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-gray-50'
                         }
                       `}
                       dir={isRTL ? 'rtl' : 'ltr'}
@@ -890,7 +890,7 @@ export default function CategoryPage() {
             </p>
             <Link
               href="/create-ad"
-              className="mt-4 inline-block px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              className="mt-4 inline-block px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
             >
               {locale === 'fa' ? 'ایجاد اولین آگهی' : 'Erste Anzeige erstellen'}
             </Link>

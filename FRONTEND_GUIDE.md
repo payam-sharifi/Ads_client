@@ -313,7 +313,7 @@ Admin Dashboard (/admin)
 - **Framework**: Tailwind CSS
 - **Design System**: Custom (divar.ir inspired)
 - **Colors**:
-  - Primary: Red (#DC2626 / red-600)
+  - Primary: Teal (#078C98 / primary-500)
   - Background: Gray-50
   - Text: Gray-900
   - Borders: Gray-200

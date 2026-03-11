@@ -55,7 +55,7 @@ export default function FilterBar({
                 value={filters[option.key] || ''}
                 onChange={(e) => onFilterChange(option.key, e.target.value)}
                 placeholder={option.placeholder}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                 dir={isRTL ? 'rtl' : 'ltr'}
               />
             )}
@@ -63,7 +63,7 @@ export default function FilterBar({
               <select
                 value={filters[option.key] || ''}
                 onChange={(e) => onFilterChange(option.key, e.target.value || undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                 dir={isRTL ? 'rtl' : 'ltr'}
               >
                 {option.options?.map((opt) => (
@@ -79,7 +79,7 @@ export default function FilterBar({
                 value={filters[option.key] || ''}
                 onChange={(e) => onFilterChange(option.key, e.target.value ? Number(e.target.value) : undefined)}
                 placeholder={option.placeholder}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                 dir="ltr"
               />
             )}
@@ -88,7 +88,7 @@ export default function FilterBar({
                 type="date"
                 value={filters[option.key] || ''}
                 onChange={(e) => onFilterChange(option.key, e.target.value || undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                 dir="ltr"
               />
             )}

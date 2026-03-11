@@ -45,8 +45,8 @@ export default function AdminMessagesPage() {
 
   if (!hasPermission('messages.view')) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-800">You do not have permission to view messages</p>
+      <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+        <p className="text-primary-800">You do not have permission to view messages</p>
       </div>
     );
   }
@@ -80,7 +80,7 @@ export default function AdminMessagesPage() {
                 onClick={() => setShowFilters(!showFilters)}
                 className={`p-2 rounded-lg transition-colors ${
                   hasActiveFilters
-                    ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                    ? 'bg-primary-100 text-primary-600 hover:bg-primary-200'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
                 title={locale === 'fa' ? 'فیلترها' : 'Filters'}
@@ -89,7 +89,7 @@ export default function AdminMessagesPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
                 {hasActiveFilters && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full"></span>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary-600 rounded-full"></span>
                 )}
               </button>
               {showFilters && (
@@ -128,7 +128,7 @@ export default function AdminMessagesPage() {
               value={senderName}
               onChange={(e) => setSenderName(e.target.value)}
                           placeholder={locale === 'fa' ? 'جستجو بر اساس نام فرستنده...' : 'Search by sender name...'}
-              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
           <div>
@@ -140,7 +140,7 @@ export default function AdminMessagesPage() {
               value={receiverName}
               onChange={(e) => setReceiverName(e.target.value)}
                           placeholder={locale === 'fa' ? 'جستجو بر اساس نام گیرنده...' : 'Search by receiver name...'}
-              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
           <div>
@@ -151,7 +151,7 @@ export default function AdminMessagesPage() {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
           <div>
@@ -162,7 +162,7 @@ export default function AdminMessagesPage() {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
                       <div className="flex gap-2 pt-2">
@@ -171,7 +171,7 @@ export default function AdminMessagesPage() {
                             handleFilter();
                             setShowFilters(false);
                           }}
-                          className="flex-1 px-3 sm:px-4 py-1.5 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs sm:text-sm"
+                          className="flex-1 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-xs sm:text-sm"
           >
                           {locale === 'fa' ? 'اعمال فیلترها' : 'Apply Filters'}
           </button>
@@ -205,8 +205,8 @@ export default function AdminMessagesPage() {
           {locale === 'fa' ? 'در حال بارگذاری پیام‌ها...' : 'Loading messages...'}
         </div>
       ) : error ? (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4" dir={isRTL ? 'rtl' : 'ltr'}>
-          <p className="text-sm text-red-800">
+        <div className="bg-primary-50 border border-primary-200 rounded-lg p-3 sm:p-4" dir={isRTL ? 'rtl' : 'ltr'}>
+          <p className="text-sm text-primary-800">
             {locale === 'fa' ? 'خطا در بارگذاری پیام‌ها' : 'Failed to load messages'}
           </p>
         </div>

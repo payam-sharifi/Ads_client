@@ -80,7 +80,7 @@ export default function BookmarkedAdsPage() {
                 <button
                   onClick={() => handleUnbookmark(ad.id)}
                   disabled={unbookmarkMutation.isPending}
-                  className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md hover:bg-red-50 text-red-600 transition-colors disabled:opacity-50"
+                  className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md hover:bg-primary-50 text-primary-600 transition-colors disabled:opacity-50"
                   title={isRTL ? 'حذف از نشان‌ها' : 'Remove from bookmarks'}
                 >
                   <svg className="w-5 h-5" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">

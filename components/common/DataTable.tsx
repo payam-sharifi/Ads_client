@@ -85,7 +85,7 @@ export default function DataTable<T extends { id: string }>({
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-8">
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
           <span className="ml-3 text-gray-600">Loading...</span>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function DataTable<T extends { id: string }>({
                   <div className="flex items-center gap-2">
                     <span>{column.label}</span>
                     {column.sortable && sortKey === column.key && (
-                      <span className="text-red-600">
+                      <span className="text-primary-600">
                         {sortDirection === 'asc' ? '↑' : '↓'}
                       </span>
                     )}
@@ -195,7 +195,7 @@ export default function DataTable<T extends { id: string }>({
                     onClick={() => onPageChange(pageNum)}
                     className={`px-4 py-2 text-sm font-medium rounded-lg ${
                       pagination.page === pageNum
-                        ? 'bg-red-600 text-white'
+                        ? 'bg-primary-600 text-white'
                         : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
                     }`}
                   >

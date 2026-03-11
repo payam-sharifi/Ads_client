@@ -48,7 +48,7 @@ export default function BottomNavigation() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
           {isAuthenticated && typeof unreadCount === 'number' && unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
+            <span className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-primary-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
@@ -153,7 +153,7 @@ export default function BottomNavigation() {
               flex flex-col items-center justify-center flex-1 h-full
               transition-colors duration-200
               ${item.active 
-                ? 'text-red-600' 
+                ? 'text-primary-600' 
                 : 'text-gray-600 hover:text-gray-900'
               }
             `}
@@ -168,7 +168,7 @@ export default function BottomNavigation() {
             <div className={`
               relative flex items-center justify-center
               ${item.highlight 
-                ? 'bg-red-600 text-white rounded-full p-1.5 -mt-0.5' 
+                ? 'bg-primary-600 text-white rounded-full p-1.5 -mt-0.5' 
                 : ''
               }
             `}>
@@ -178,7 +178,7 @@ export default function BottomNavigation() {
             </div>
             <span className={`
               text-[9px] leading-tight mt-0.5 text-center truncate w-full
-              ${item.highlight ? 'text-red-600 font-semibold' : ''}
+              ${item.highlight ? 'text-primary-600 font-semibold' : ''}
             `}>
               {item.label}
             </span>

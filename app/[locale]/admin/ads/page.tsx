@@ -241,9 +241,9 @@ export default function AdminAdsPage() {
         label: locale === 'fa' ? 'تایید شده' : 'Approved',
       },
       REJECTED: {
-        bg: 'bg-red-50',
-        text: 'text-red-800',
-        border: 'border-red-300',
+        bg: 'bg-primary-50',
+        text: 'text-primary-800',
+        border: 'border-primary-300',
         icon: (
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -360,7 +360,7 @@ export default function AdminAdsPage() {
                 onClick={() => setShowFilters(!showFilters)}
                 className={`p-2 rounded-lg transition-colors ${
                   hasActiveFilters
-                    ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                    ? 'bg-primary-100 text-primary-600 hover:bg-primary-200'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
                 title={locale === 'fa' ? 'فیلترها' : 'Filters'}
@@ -369,7 +369,7 @@ export default function AdminAdsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
                 {hasActiveFilters && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full"></span>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary-600 rounded-full"></span>
                 )}
               </button>
               {showFilters && (
@@ -417,7 +417,7 @@ export default function AdminAdsPage() {
                 setAdsFilter({ status: newStatus });
                 router.push(`/admin/ads?${params.toString()}`);
               }}
-                          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="">{locale === 'fa' ? 'همه وضعیت‌ها' : 'All Statuses'}</option>
               <option value="PENDING_APPROVAL">{locale === 'fa' ? 'منتظر تایید' : 'Pending Approval'}</option>
@@ -446,7 +446,7 @@ export default function AdminAdsPage() {
                 setAdsFilter({ categoryId: newCategoryId });
                 router.push(`/admin/ads?${params.toString()}`);
               }}
-                          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="">{locale === 'fa' ? 'همه دسته‌بندی‌ها' : 'All Categories'}</option>
               {categories?.map((cat) => (
@@ -474,7 +474,7 @@ export default function AdminAdsPage() {
                 setAdsFilter({ cityId: newCityId });
                 router.push(`/admin/ads?${params.toString()}`);
               }}
-                          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="">{locale === 'fa' ? 'همه شهرها' : 'All Cities'}</option>
               {cities?.map((city) => (
@@ -504,7 +504,7 @@ export default function AdminAdsPage() {
                 setAdsFilter({ search: newSearch });
                 router.push(`/admin/ads?${params.toString()}`);
               }}
-                          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               dir={isRTL ? 'rtl' : 'ltr'}
             />
           </div>
@@ -572,7 +572,7 @@ export default function AdminAdsPage() {
                       <td className="px-2 sm:px-6 py-3 sm:py-4 text-right">
                         <Link
                           href={`/ad/${ad.id}`}
-                          className="text-xs font-normal text-gray-900 hover:text-red-600"
+                          className="text-xs font-normal text-gray-900 hover:text-primary-600"
                           title={ad.title}
                         >
                           {truncateTitle(ad.title)}
@@ -672,7 +672,7 @@ export default function AdminAdsPage() {
                               setShowRejectModal(true);
                                         setOpenActionsMenu(null);
                             }}
-                                      className="w-full flex items-center gap-3 px-4 py-3 text-base text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                                      className="w-full flex items-center gap-3 px-4 py-3 text-base text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
                           >
                                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -746,7 +746,7 @@ export default function AdminAdsPage() {
                                           setOpenActionsMenu(null);
                                         }}
                             disabled={deleteMutation.isPending}
-                                        className="w-full flex items-center gap-3 px-4 py-3 text-base text-red-700 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full flex items-center gap-3 px-4 py-3 text-base text-primary-700 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                       >
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -804,7 +804,7 @@ export default function AdminAdsPage() {
                                       setShowRejectModal(true);
                                       setOpenActionsMenu(null);
                                     }}
-                                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-700 hover:bg-red-50 transition-colors"
+                                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 transition-colors"
                                   >
                                     <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -878,7 +878,7 @@ export default function AdminAdsPage() {
                                         setOpenActionsMenu(null);
                                       }}
                                       disabled={deleteMutation.isPending}
-                                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-700 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                       <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -945,7 +945,7 @@ export default function AdminAdsPage() {
               onChange={(e) => setRejectReason(e.target.value)}
               placeholder={locale === 'fa' ? 'دلیل رد را وارد کنید (حداقل 10 کاراکتر)...' : 'Enter rejection reason (minimum 10 characters)...'}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-4"
               dir={isRTL ? 'rtl' : 'ltr'}
             />
             <div className="flex gap-3 justify-end">
@@ -962,7 +962,7 @@ export default function AdminAdsPage() {
               <button
                 onClick={handleReject}
                 disabled={rejectMutation.isPending || !rejectReason.trim() || rejectReason.trim().length < 10}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {rejectMutation.isPending 
                   ? (locale === 'fa' ? 'در حال رد...' : 'Rejecting...')
@@ -987,7 +987,7 @@ export default function AdminAdsPage() {
               onChange={(e) => setMessageText(e.target.value)}
               placeholder="Enter your message to the ad owner..."
               rows={6}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-4"
             />
             <div className="flex gap-3 justify-end">
               <button
@@ -1003,7 +1003,7 @@ export default function AdminAdsPage() {
               <button
                 onClick={handleSendMessage}
                 disabled={sendMessageMutation.isPending || !messageText.trim()}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
               </button>

@@ -287,8 +287,8 @@ function HomePageContent() {
                   className={`
                     w-full text-right px-4 py-3 rounded-lg border transition-all
                     ${activeCityId === 'all'
-                      ? 'bg-red-50 border-red-300 text-red-700 font-medium'
-                      : 'bg-white border-gray-200 text-gray-700 hover:border-red-300 hover:bg-gray-50'
+                      ? 'bg-primary-50 border-primary-300 text-primary-700 font-medium'
+                      : 'bg-white border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-gray-50'
                     }
                   `}
                   dir={isRTL ? 'rtl' : 'ltr'}
@@ -307,8 +307,8 @@ function HomePageContent() {
                       className={`
                         w-full text-right px-4 py-3 rounded-lg border transition-all
                         ${isSelected
-                          ? 'bg-red-50 border-red-300 text-red-700 font-medium'
-                          : 'bg-white border-gray-200 text-gray-700 hover:border-red-300 hover:bg-gray-50'
+                          ? 'bg-primary-50 border-primary-300 text-primary-700 font-medium'
+                          : 'bg-white border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-gray-50'
                         }
                       `}
                       dir={isRTL ? 'rtl' : 'ltr'}
@@ -331,12 +331,12 @@ function HomePageContent() {
               <Link
                 key={category.id}
                 href={`/category/${category.id}${activeCityId && activeCityId !== 'all' ? `?cityId=${activeCityId}` : ''}`}
-                className="flex flex-col items-center justify-center bg-white rounded-lg border border-gray-200 p-1 hover:border-red-300 hover:shadow-md transition-all group"
+                className="flex flex-col items-center justify-center bg-white rounded-lg border border-gray-200 p-1 hover:border-primary-300 hover:shadow-md transition-all group"
               >
                 <div className="text-2xl md:text-4xl mb-2 group-hover:scale-110 transition-transform">
                   {category.icon || '📦'}
                 </div>
-                <span className="text-xs md:text-sm font-medium text-gray-700 text-center line-clamp-2 group-hover:text-red-600 transition-colors">
+                <span className="text-xs md:text-sm font-medium text-gray-700 text-center line-clamp-2 group-hover:text-primary-600 transition-colors">
                   {getLocalizedCategoryName(category.name, locale) || 'N/A'}
                 </span>
               </Link>
@@ -382,7 +382,7 @@ function HomePageContent() {
               <div ref={loadMoreRef} className="py-8 flex justify-center">
                 {isFetchingNextPage ? (
                   <div className="flex items-center gap-2 text-gray-500">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
                     <span>{t('common.loading')}</span>
                   </div>
                 ) : (

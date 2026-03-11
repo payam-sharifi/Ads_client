@@ -28,8 +28,8 @@ export default function LanguageSwitcher() {
           onClick={() => handleLocaleChange(loc)}
           className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
             locale === loc
-              ? "bg-red-600 text-white border border-red-600"
-              : "text-gray-600 hover:text-red-600 border border-gray-300 hover:border-red-600"
+              ? "bg-primary-600 text-white border border-primary-600"
+              : "text-gray-600 hover:text-primary-600 border border-gray-300 hover:border-primary-600"
           }`}
         >
           {localeLabels[loc] || loc.toUpperCase()}

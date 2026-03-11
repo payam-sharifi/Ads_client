@@ -35,7 +35,7 @@ export default function CitySelectionLanding() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-gray-50 pb-16 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-gray-50 pb-16 md:pb-0">
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-8">
@@ -81,8 +81,8 @@ export default function CitySelectionLanding() {
                     shadow-sm hover:shadow-md
                     transform hover:scale-105
                     ${isHovered 
-                      ? 'border-red-500 bg-red-50' 
-                      : 'border-gray-200 hover:border-red-300'
+                      ? 'border-primary-500 bg-primary-50' 
+                      : 'border-gray-200 hover:border-primary-300'
                     }
                   `}
                 >
@@ -97,7 +97,7 @@ export default function CitySelectionLanding() {
                   {/* City Name */}
                   <span className={`
                     text-xs font-semibold transition-colors duration-300 px-1 text-center
-                    ${isHovered ? 'text-red-600' : 'text-gray-700'}
+                    ${isHovered ? 'text-primary-600' : 'text-gray-700'}
                   `}>
                     {cityName}
                   </span>
@@ -105,7 +105,7 @@ export default function CitySelectionLanding() {
                   {/* Hover Effect Overlay */}
                   <div className={`
                     absolute inset-0 rounded-lg
-                    bg-gradient-to-br from-red-500/10 to-transparent
+                    bg-gradient-to-br from-primary-500/10 to-transparent
                     opacity-0 group-hover:opacity-100
                     transition-opacity duration-300
                   `} />

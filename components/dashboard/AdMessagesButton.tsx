@@ -22,7 +22,7 @@ export default function AdMessagesButton({ adId }: AdMessagesButtonProps) {
         size="sm"
         className={`w-full text-xs px-2 py-1 flex items-center justify-center gap-1 transition-all ${
           hasUnread
-            ? 'bg-red-50 border-red-300 text-red-700 hover:bg-red-100'
+            ? 'bg-primary-50 border-primary-300 text-primary-700 hover:bg-primary-100'
             : 'border-gray-300 text-gray-700 hover:bg-gray-50'
         }`}
       >
@@ -31,7 +31,7 @@ export default function AdMessagesButton({ adId }: AdMessagesButtonProps) {
         </svg>
         {isRTL ? 'پیام‌ها' : 'Messages'}
         {hasUnread && (
-          <span className="ml-1 bg-red-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center min-w-[16px]">
+          <span className="ml-1 bg-primary-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center min-w-[16px]">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}

@@ -26,7 +26,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       {/* Offer Type */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'نوع آگهی' : 'Offer Type'} <span className="text-red-500">*</span>
+          {isRTL ? 'نوع آگهی' : 'Offer Type'} <span className="text-primary-500">*</span>
         </label>
         <div className="flex gap-4">
           <label className="flex items-center cursor-pointer">
@@ -55,7 +55,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
           </label>
         </div>
         {getFieldError('offerType') && (
-          <p className="mt-1 text-sm text-red-600">{getFieldError('offerType')}</p>
+          <p className="mt-1 text-sm text-primary-600">{getFieldError('offerType')}</p>
         )}
       </div>
 
@@ -63,14 +63,14 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نوع ملک' : 'Property Type'} <span className="text-red-500">*</span>
+            {isRTL ? 'نوع ملک' : 'Property Type'} <span className="text-primary-500">*</span>
           </label>
           <select
             value={data.propertyType || ''}
             onChange={(e) => updateField('propertyType', e.target.value)}
             className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('propertyType') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20`}
+              getFieldError('propertyType') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500 relative z-20`}
             style={{ zIndex: 1000 }}
             dir={isRTL ? 'rtl' : 'ltr'}
             required
@@ -83,7 +83,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
             <option value={PropertyType.PARKING}>{isRTL ? 'پارکینگ' : 'Parking'}</option>
           </select>
           {getFieldError('propertyType') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('propertyType')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('propertyType')}</p>
           )}
         </div>
 
@@ -97,13 +97,13 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
             onChange={(e) => updateField('postalCode', e.target.value)}
             placeholder={isRTL ? '10115' : '10115'}
             className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('postalCode') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              getFieldError('postalCode') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500`}
             dir="ltr"
             minLength={5}
           />
           {getFieldError('postalCode') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('postalCode')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('postalCode')}</p>
           )}
         </div>
       </div>
@@ -127,7 +127,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       {data.offerType === RealEstateOfferType.SALE ? (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'قیمت فروش (€)' : 'Sale Price (€)'} <span className="text-red-500">*</span>
+            {isRTL ? 'قیمت فروش (€)' : 'Sale Price (€)'} <span className="text-primary-500">*</span>
           </label>
           <input
             type="number"
@@ -140,21 +140,21 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
             }}
             placeholder={isRTL ? '250000' : '250000'}
             className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('price') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              getFieldError('price') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500`}
             dir="ltr"
             min="0"
             step="1"
             required={data.offerType === RealEstateOfferType.SALE}
           />
           {getFieldError('price') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('price')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('price')}</p>
           )}
         </div>
       ) : data.offerType === RealEstateOfferType.RENT ? (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'اجاره پایه (€)' : 'Cold Rent (€)'} <span className="text-red-500">*</span>
+            {isRTL ? 'اجاره پایه (€)' : 'Cold Rent (€)'} <span className="text-primary-500">*</span>
           </label>
           <input
             type="number"
@@ -167,15 +167,15 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
             }}
             placeholder={isRTL ? '1200' : '1200'}
             className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('coldRent') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              getFieldError('coldRent') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500`}
             dir="ltr"
             min="0"
             step="1"
             required={data.offerType === RealEstateOfferType.RENT}
           />
           {getFieldError('coldRent') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('coldRent')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('coldRent')}</p>
           )}
         </div>
       ) : null}
@@ -217,7 +217,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'متراژ (m²)' : 'Living Area (m²)'} <span className="text-red-500">*</span>
+            {isRTL ? 'متراژ (m²)' : 'Living Area (m²)'} <span className="text-primary-500">*</span>
           </label>
           <input
             type="text"
@@ -240,19 +240,19 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
             }}
             placeholder={isRTL ? '80' : '80'}
             className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('livingArea') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              getFieldError('livingArea') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500`}
             dir="ltr"
             required
           />
           {getFieldError('livingArea') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('livingArea')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('livingArea')}</p>
           )}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'تعداد اتاق' : 'Rooms'} <span className="text-red-500">*</span>
+            {isRTL ? 'تعداد اتاق' : 'Rooms'} <span className="text-primary-500">*</span>
           </label>
           <input
             type="number"
@@ -260,14 +260,14 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
             onChange={(e) => updateField('rooms', parseInt(e.target.value) || 0)}
             placeholder={isRTL ? '3' : '3'}
             className={`w-full px-3 py-2 border rounded-lg ${
-              getFieldError('rooms') ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-red-500`}
+              getFieldError('rooms') ? 'border-primary-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-primary-500`}
             dir="ltr"
             min="1"
             required
           />
           {getFieldError('rooms') && (
-            <p className="mt-1 text-sm text-red-600">{getFieldError('rooms')}</p>
+            <p className="mt-1 text-sm text-primary-600">{getFieldError('rooms')}</p>
           )}
         </div>
       </div>

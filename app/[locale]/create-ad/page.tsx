@@ -432,13 +432,13 @@ export default function CreateAdPage() {
                     <div
                       className={`w-6 h-6 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-xs md:text-base transition-colors ${
                         currentStep >= step
-                          ? 'bg-red-600 text-white'
+                          ? 'bg-primary-600 text-white'
                           : 'bg-gray-200 text-gray-600'
-                      } ${isClickable ? 'hover:bg-red-700' : ''}`}
+                      } ${isClickable ? 'hover:bg-primary-700' : ''}`}
                     >
                       {step}
                     </div>
-                    <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${currentStep >= step ? 'text-red-600' : 'text-gray-600'} ${isClickable ? 'hover:text-red-700' : ''}`}>
+                    <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${currentStep >= step ? 'text-primary-600' : 'text-gray-600'} ${isClickable ? 'hover:text-primary-700' : ''}`}>
                       {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
                       {step === 2 && (categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) && (isRTL ? 'اطلاعات و تصاویر' : 'Info & Images')}
                       {step === 2 && (categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME) && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
@@ -447,7 +447,7 @@ export default function CreateAdPage() {
                   </div>
                   {(((categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) && step < 2) || ((categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME) && step < 3)) && (
                     <div 
-                      className={`flex-1 h-[2px] md:h-1.5 mx-1 md:mx-4 transition-colors ${currentStep > step ? 'bg-red-600' : 'bg-gray-500'} ${isClickable ? 'cursor-pointer hover:bg-red-700' : ''}`} 
+                      className={`flex-1 h-[2px] md:h-1.5 mx-1 md:mx-4 transition-colors ${currentStep > step ? 'bg-primary-600' : 'bg-gray-500'} ${isClickable ? 'cursor-pointer hover:bg-primary-700' : ''}`} 
                       style={{ minWidth: '16px' }}
                       onClick={() => isClickable && handleStepClick(step)}
                     />
@@ -471,7 +471,7 @@ export default function CreateAdPage() {
                   value={step1Data.categoryId}
                   onChange={(e) => handleStep1Change('categoryId', e.target.value)}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 relative z-20"
                   style={{ zIndex: 1000 }}
                 >
                   <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
@@ -492,7 +492,7 @@ export default function CreateAdPage() {
                   onChange={(e) => handleStep1Change('cityId', e.target.value)}
                   required={!step1Data.showInAllCities}
                   disabled={step1Data.showInAllCities}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 relative z-20 transition-colors ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 relative z-20 transition-colors ${
                     step1Data.showInAllCities 
                       ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed' 
                       : 'border-gray-300'
@@ -524,7 +524,7 @@ export default function CreateAdPage() {
                           cityId: checked ? '' : prev.cityId
                         }));
                       }}
-                      className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 transition-all checked:border-red-600 checked:bg-red-600 focus:outline-none"
+                      className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 transition-all checked:border-primary-600 checked:bg-primary-600 focus:outline-none"
                     />
                     <svg
                       className="pointer-events-none absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100"
@@ -539,7 +539,7 @@ export default function CreateAdPage() {
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                   </div>
-                  <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-primary-600 transition-colors">
                     {isRTL ? 'نمایش در کل شهرها' : 'Show in all cities'}
                   </span>
                 </label>
@@ -575,7 +575,7 @@ export default function CreateAdPage() {
                     onChange={(e) => handleStep2Change('title', e.target.value)}
                     required
                     placeholder={isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title'}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 
@@ -587,7 +587,7 @@ export default function CreateAdPage() {
                     required
                     rows={8}
                     placeholder={isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...'}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 
@@ -605,7 +605,7 @@ export default function CreateAdPage() {
                             handleStep2Change('price', undefined);
                           }
                         }}
-                        className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                        className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                       />
                       <span className="text-sm text-gray-700">
                         {isRTL ? 'قیمت توافقی' : 'Negotiable Price'}
@@ -614,7 +614,7 @@ export default function CreateAdPage() {
                     {!step2Data.isNegotiable && (
                       <div>
                         <label className="block text-sm font-medium mb-2">
-                          {isRTL ? 'قیمت (€)' : 'Price (€)'} <span className="text-red-500">*</span>
+                          {isRTL ? 'قیمت (€)' : 'Price (€)'} <span className="text-primary-500">*</span>
                         </label>
                         <input
                           type="number"
@@ -625,7 +625,7 @@ export default function CreateAdPage() {
                             handleStep2Change('price', numValue);
                           }}
                           placeholder={isRTL ? 'قیمت را وارد کنید' : 'Enter price'}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                           dir="ltr"
                           min="0"
                           step="1"
@@ -645,7 +645,7 @@ export default function CreateAdPage() {
                         type="checkbox"
                         checked={step2Data.showEmail}
                         onChange={(e) => handleStep2Change('showEmail', e.target.checked)}
-                        className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                        className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                       />
                       <span className="text-sm text-gray-700">
                         {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
@@ -656,7 +656,7 @@ export default function CreateAdPage() {
                         type="checkbox"
                         checked={step2Data.showPhone}
                         onChange={(e) => handleStep2Change('showPhone', e.target.checked)}
-                        className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                        className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                       />
                       <span className="text-sm text-gray-700">
                         {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
@@ -723,7 +723,7 @@ export default function CreateAdPage() {
                   imageFiles.length >= 3 
                     ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50' 
                     : isDragActive 
-                    ? 'border-red-500 bg-red-50' 
+                    ? 'border-primary-500 bg-primary-50' 
                     : 'border-gray-300 hover:border-gray-400 active:bg-gray-50'
                 }`}
                 style={{ WebkitTapHighlightColor: 'transparent', minHeight: '60px' }}
@@ -761,7 +761,7 @@ export default function CreateAdPage() {
                       <button
                         type="button"
                         onClick={() => removeImage(index)}
-                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm"
+                        className="absolute top-1 right-1 bg-primary-600 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm"
                       >
                         ×
                       </button>
@@ -797,7 +797,7 @@ export default function CreateAdPage() {
                         ? (isRTL ? 'مثال: خدمات تعمیرات ساختمان' : 'Example: Building repair services')
                         : (isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title')
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 
@@ -817,7 +817,7 @@ export default function CreateAdPage() {
                         ? (isRTL ? 'توضیحات خدمات: تجربه، تخصص، گواهینامه‌ها و...' : 'Service description: experience, expertise, certificates...')
                         : (isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...')
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
               </>
@@ -832,7 +832,7 @@ export default function CreateAdPage() {
                     type="checkbox"
                     checked={step2Data.showEmail}
                     onChange={(e) => handleStep2Change('showEmail', e.target.checked)}
-                    className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                    className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                   />
                   <span className="text-sm text-gray-700">
                     {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
@@ -843,7 +843,7 @@ export default function CreateAdPage() {
                     type="checkbox"
                     checked={step2Data.showPhone}
                     onChange={(e) => handleStep2Change('showPhone', e.target.checked)}
-                    className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                    className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                   />
                   <span className="text-sm text-gray-700">
                     {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}

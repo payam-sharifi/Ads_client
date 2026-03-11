@@ -181,12 +181,12 @@ export default function SignupPage() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                  errors.name ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                  errors.name ? 'border-primary-500' : 'border-gray-300'
                 }`}
               />
               {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                <p className="mt-1 text-sm text-primary-600">{errors.name}</p>
               )}
             </div>
 
@@ -197,13 +197,13 @@ export default function SignupPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                  errors.email ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                  errors.email ? 'border-primary-500' : 'border-gray-300'
                 }`}
                 dir="ltr"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                <p className="mt-1 text-sm text-primary-600">{errors.email}</p>
               )}
             </div>
           </div>
@@ -217,16 +217,16 @@ export default function SignupPage() {
                 value={phoneNumber}
                 onChange={handlePhoneNumberChange}
                 placeholder="123456789"
-                className={`flex-1 min-w-0 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                className={`flex-1 min-w-0 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                  errors.phone ? 'border-primary-500' : 'border-gray-300'
                 }`}
                 dir="ltr"
               />
               <select
                 value={selectedCountryCode}
                 onChange={handleCountryCodeChange}
-                className={`px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-[100px] md:w-auto md:min-w-[140px] flex-shrink-0 ${
-                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                className={`px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 w-[100px] md:w-auto md:min-w-[140px] flex-shrink-0 ${
+                  errors.phone ? 'border-primary-500' : 'border-gray-300'
                 }`}
                 dir="ltr"
               >
@@ -238,7 +238,7 @@ export default function SignupPage() {
               </select>
             </div>
             {errors.phone && (
-              <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+              <p className="mt-1 text-sm text-primary-600">{errors.phone}</p>
             )}
           </div>
 
@@ -250,13 +250,13 @@ export default function SignupPage() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                  errors.password ? 'border-primary-500' : 'border-gray-300'
                 }`}
                 dir="ltr"
               />
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                <p className="mt-1 text-sm text-primary-600">{errors.password}</p>
               )}
             </div>
 
@@ -267,13 +267,13 @@ export default function SignupPage() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                  errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                  errors.confirmPassword ? 'border-primary-500' : 'border-gray-300'
                 }`}
                 dir="ltr"
               />
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+                <p className="mt-1 text-sm text-primary-600">{errors.confirmPassword}</p>
               )}
             </div>
           </div>
@@ -287,7 +287,7 @@ export default function SignupPage() {
 
           <div className="text-center mt-4">
             <span className="text-gray-600">{t('auth.hasAccount')} </span>
-            <Link href="/login" className="text-red-600 hover:underline font-medium">
+            <Link href="/login" className="text-primary-600 hover:underline font-medium">
               {t('auth.login')}
             </Link>
           </div>

@@ -106,8 +106,8 @@ export default function UserDetailsPage() {
   if (!isSuperAdmin()) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">Only Super Admin can view user details</p>
+        <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+          <p className="text-primary-800">Only Super Admin can view user details</p>
         </div>
       </div>
     );
@@ -247,7 +247,7 @@ export default function UserDetailsPage() {
                 <label className="block text-sm font-medium text-gray-700">Status</label>
                 <div className="flex gap-2">
                   {user.isBlocked && (
-                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-primary-100 text-primary-800">
                       Blocked
                     </span>
                   )}
@@ -490,7 +490,7 @@ export default function UserDetailsPage() {
                       disabled={assignPermissionMutation.isPending || revokePermissionMutation.isPending}
                       className={`px-4 py-2 rounded-lg ${
                         hasPermission
-                          ? 'bg-red-600 text-white hover:bg-red-700'
+                          ? 'bg-primary-600 text-white hover:bg-primary-700'
                           : 'bg-green-600 text-white hover:bg-green-700'
                       } disabled:opacity-50`}
                     >

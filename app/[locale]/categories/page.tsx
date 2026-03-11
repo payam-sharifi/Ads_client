@@ -43,7 +43,7 @@ export default function CategoriesPage() {
     <Link
       key={category.id}
       href={`/category/${category.id}${selectedCityId && selectedCityId !== 'all' ? `?cityId=${selectedCityId}` : ''}`}
-      className={`block bg-white rounded-lg border border-gray-200 p-6 hover:border-red-500 hover:shadow-md transition-all ${
+      className={`block bg-white rounded-lg border border-gray-200 p-6 hover:border-primary-500 hover:shadow-md transition-all ${
         level > 0 ? 'ml-6' : ''
       }`}
     >

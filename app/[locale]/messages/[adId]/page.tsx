@@ -170,13 +170,13 @@ function AdMessagesPageContent() {
           onChange={(e) => setMessageText(e.target.value)}
           placeholder={isRTL ? 'پیام خود را بنویسید...' : 'Type your message...'}
           rows={3}
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-3 sm:mb-4"
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-3 sm:mb-4"
           dir={isRTL ? 'rtl' : 'ltr'}
         />
         <button
           type="submit"
           disabled={sendMessageMutation.isPending || !messageText.trim()}
-          className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
         >
           {sendMessageMutation.isPending 
             ? (isRTL ? 'در حال ارسال...' : 'Sending...') 
