@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useI18n } from '@/lib/contexts/I18nContext';
 
 export default function Footer() {
@@ -12,15 +12,13 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-sm font-bold text-gray-900 mb-3">{isRTL ? 'درباره ما' : 'Über uns'}</h3>
+            <h3 className="text-sm font-bold text-gray-900 mb-3">{t('footer.aboutUs')}</h3>
             <p className="text-xs text-gray-600 leading-relaxed">
-              {isRTL
-                ? 'پلتفرم رایگان برای خرید و فروش در آلمان'
-                : 'Kostenlose Plattform zum Kaufen und Verkaufen in Deutschland'}
+              {t('footer.aboutDescription')}
             </p>
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900 mb-3">{isRTL ? 'لینک‌های مفید' : 'Nützliche Links'}</h3>
+            <h3 className="text-sm font-bold text-gray-900 mb-3">{t('footer.usefulLinks')}</h3>
             <ul className="space-y-2 text-xs text-gray-600">
               <li>
                 <Link href="/" className="hover:text-red-600 transition-colors">
@@ -35,38 +33,38 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900 mb-3">{isRTL ? 'پشتیبانی' : 'Support'}</h3>
+            <h3 className="text-sm font-bold text-gray-900 mb-3">{t('footer.support')}</h3>
             <ul className="space-y-2 text-xs text-gray-600">
               <li>
                 <Link href="/contact" className="hover:text-red-600 transition-colors">
-                  {isRTL ? 'تماس با ما' : 'Kontakt'}
+                  {t('footer.contact')}
                 </Link>
               </li>
               <li>
                 <Link href="/help" className="hover:text-red-600 transition-colors">
-                  {isRTL ? 'راهنما' : 'Hilfe'}
+                  {t('footer.help')}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900 mb-3">{isRTL ? 'قوانین' : 'Rechtliches'}</h3>
+            <h3 className="text-sm font-bold text-gray-900 mb-3">{t('footer.legal')}</h3>
             <ul className="space-y-2 text-xs text-gray-600">
               <li>
                 <Link href="/terms" className="hover:text-red-600 transition-colors">
-                  {isRTL ? 'شرایط استفاده' : 'Nutzungsbedingungen'}
+                  {t('footer.terms')}
                 </Link>
               </li>
               <li>
                 <Link href="/privacy" className="hover:text-red-600 transition-colors">
-                  {isRTL ? 'حریم خصوصی' : 'Datenschutz'}
+                  {t('footer.privacy')}
                 </Link>
               </li>
             </ul>
           </div>
         </div>
         <div className="border-t border-gray-200 mt-8 pt-6 text-center">
-          <p className="text-xs text-gray-500">© 2024 {isRTL ? 'آگهی‌ها' : 'Anzeigen'}. {isRTL ? 'همه حقوق محفوظ است' : 'Alle Rechte vorbehalten'}</p>
+          <p className="text-xs text-gray-500">© 2024 JarBezan!. {t('footer.copyright')}</p>
         </div>
       </div>
     </footer>

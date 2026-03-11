@@ -1,8 +1,8 @@
 'use client';
 
 import React, { Suspense, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useInfiniteAds } from '@/lib/hooks/useAds';
@@ -13,9 +13,10 @@ import { toast } from 'react-toastify';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
 import CitySelectionLanding from '@/components/landing/CitySelectionLanding';
 import BottomNavigation from '@/components/layout/BottomNavigation';
+import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 
 function HomePageContent() {
-  const { t, locale, setLocale, isRTL } = useI18n();
+  const { t, locale, isRTL } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchQuery = searchParams?.get('search') || '';
@@ -210,7 +211,7 @@ function HomePageContent() {
               name="search"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder={isRTL ? 'جستجو در همه آگهی‌ها' : 'Suche in allen Anzeigen'}
+              placeholder={t('home.searchInAllAds')}
               className="flex-1 bg-transparent text-gray-700 text-xs outline-none placeholder-gray-500 min-w-0"
               dir={isRTL ? 'rtl' : 'ltr'}
               style={{ fontSize: '12px' }}
@@ -244,21 +245,15 @@ function HomePageContent() {
               </svg>
               <span className="text-xs font-medium truncate max-w-[60px] sm:max-w-none" style={{ fontSize: '11px' }}>
                 {activeCityId === 'all' 
-                  ? (isRTL ? 'همه شهرها' : 'Alle Städte')
-                  : (selectedCityName || (isRTL ? 'انتخاب شهر' : 'Stadt wählen'))
+                  ? t('home.allCities')
+                  : (selectedCityName || t('home.selectCity'))
                 }
               </span>
             </button>
             {/* Separator */}
             <div className="h-3 w-px bg-gray-300 flex-shrink-0" />
-            {/* Language Toggle */}
-            <button
-              type="button"
-              onClick={() => setLocale(locale === 'fa' ? 'de' : 'fa')}
-              className="px-2 py-1 text-xs font-medium text-gray-600 hover:text-red-600 border border-gray-300 rounded hover:border-red-600 transition-colors flex-shrink-0"
-            >
-              {locale === 'fa' ? 'DE' : 'FA'}
-            </button>
+            {/* Language Switcher */}
+            <LanguageSwitcher />
           </form>
         </div>
       </div>
@@ -273,7 +268,7 @@ function HomePageContent() {
           <div className={`fixed ${isRTL ? 'left-0' : 'right-0'} top-0 bottom-0 w-80 bg-white z-50 md:hidden overflow-y-auto shadow-xl`}>
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
               <h2 className="text-lg font-bold text-gray-900">
-                {isRTL ? 'انتخاب شهر' : 'Stadt wählen'}
+                {t('home.selectCity')}
               </h2>
               <button
                 onClick={() => setShowCitySelector(false)}
@@ -298,7 +293,7 @@ function HomePageContent() {
                   `}
                   dir={isRTL ? 'rtl' : 'ltr'}
                 >
-                  {isRTL ? 'همه شهرها' : 'Alle Städte'}
+                  {t('home.allCities')}
                 </button>
                 
                 {/* Cities List */}
@@ -351,7 +346,7 @@ function HomePageContent() {
 
         {/* Page Title */}
         <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
-          {isRTL ? 'انواع آگهی‌ها و نیازمندی‌ها' : 'Alle Anzeigen und Bedarfe'}
+          {t('home.adsAndNeeds')}
         </h2>
 
         {/* Ads List */}
@@ -388,7 +383,7 @@ function HomePageContent() {
                 {isFetchingNextPage ? (
                   <div className="flex items-center gap-2 text-gray-500">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
-                    <span>{isRTL ? 'در حال بارگذاری...' : 'Lädt...'}</span>
+                    <span>{t('common.loading')}</span>
                   </div>
                 ) : (
                   <div className="h-8" /> // Spacer for intersection observer

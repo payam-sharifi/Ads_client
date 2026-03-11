@@ -11,6 +11,7 @@ import AdCard from '@/components/common/AdCard';
 import FilterBar, { FilterOption } from '@/components/common/FilterBar';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
+import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import { MainCategoryType } from '@/lib/types/category.types';
 
 /**
@@ -28,7 +29,7 @@ export default function CategoryPage() {
   const categoryId = params?.id as string;
   const cityIdFromUrl = searchParams?.get('cityId') || '';
   const pageFromUrl = searchParams?.get('page') || '1';
-  const { locale, setLocale, isRTL, t } = useI18n();
+  const { locale, isRTL, t } = useI18n();
   const { selectedCityId, setSelectedCity } = useCityStore();
   
   // Initialize cityId from URL or store
@@ -709,15 +710,9 @@ export default function CategoryPage() {
                 {selectedCityName || (isRTL ? 'انتخاب شهر' : 'Stadt wählen')}
               </span>
             </button>
-            {/* Language Select - Mobile */}
+            {/* Language Switcher - Mobile */}
             <div className="h-3 w-px bg-gray-300 flex-shrink-0" />
-            <button
-              type="button"
-              onClick={() => setLocale(locale === 'fa' ? 'de' : 'fa')}
-              className="px-2 py-1 text-xs font-medium text-gray-600 hover:text-red-600 border border-gray-300 rounded hover:border-red-600 transition-colors flex-shrink-0"
-            >
-              {locale === 'fa' ? 'DE' : 'FA'}
-            </button>
+            <LanguageSwitcher />
           </form>
         </div>
       </div>

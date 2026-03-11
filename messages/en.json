@@ -1,0 +1,194 @@
+{
+  "common": {
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "close": "Close"
+  },
+  "nav": {
+    "home": "Home",
+    "categories": "Categories",
+    "myAds": "My Ads",
+    "createAd": "Create Ad",
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "dashboard": "Dashboard"
+  },
+  "home": {
+    "title": "Free Classifieds",
+    "subtitle": "Buy and Sell in Germany",
+    "searchPlaceholder": "Search ads...",
+    "recentAds": "Recent Ads",
+    "viewAll": "View All",
+    "noAds": "No ads found",
+    "searchInAllAds": "Search in all ads",
+    "allCities": "All Cities",
+    "selectCity": "Select City",
+    "allCategories": "All Categories",
+    "adsAndNeeds": "All ads and needs"
+  },
+  "category": {
+    "filters": "Filters",
+    "subcategory": "Subcategory",
+    "city": "City",
+    "price": "Price",
+    "minPrice": "Min Price",
+    "maxPrice": "Max Price",
+    "date": "Date",
+    "status": "Status",
+    "active": "Active",
+    "pending": "Pending",
+    "sold": "Sold",
+    "results": "Results"
+  },
+  "ad": {
+    "title": "Title",
+    "description": "Description",
+    "price": "Price",
+    "category": "Category",
+    "city": "City",
+    "status": "Status",
+    "images": "Images",
+    "seller": "Seller",
+    "contact": "Contact",
+    "message": "Send Message",
+    "report": "Report Ad",
+    "createdAt": "Created",
+    "views": "Views",
+    "edit": "Edit Ad",
+    "delete": "Delete Ad",
+    "confirmDelete": "Are you sure you want to delete this ad?"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Name",
+    "phone": "Phone",
+    "forgotPassword": "Forgot Password?",
+    "resetPassword": "Reset Password",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already registered?",
+    "loginSuccess": "Successfully logged in",
+    "signupSuccess": "Registration successful",
+    "loginError": "Invalid email or password",
+    "signupError": "Registration error"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "myAds": "My Ads",
+    "createNew": "Create New Ad",
+    "noAds": "You haven't created any ads yet",
+    "premium": "Premium",
+    "payment": "Payment",
+    "myArea": "My Area",
+    "bookmarked": "Bookmarked"
+  },
+  "admin": {
+    "managePermissions": "Manage Permissions",
+    "adminPanel": "Admin Panel",
+    "users": "Users",
+    "reports": "Reports",
+    "messages": "Messages",
+    "categories": "Categories",
+    "cities": "Cities",
+    "admins": "Admins"
+  },
+  "createAd": {
+    "title": "Create New Ad",
+    "editTitle": "Edit Ad",
+    "form": {
+      "title": "Ad Title",
+      "titlePlaceholder": "Enter ad title",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter full ad description",
+      "price": "Price (EUR)",
+      "pricePlaceholder": "0",
+      "category": "Category",
+      "subcategory": "Subcategory",
+      "city": "City",
+      "images": "Images",
+      "uploadImages": "Upload Images",
+      "status": "Status",
+      "submit": "Submit Ad",
+      "update": "Update Ad"
+    },
+    "success": "Ad created successfully",
+    "updateSuccess": "Ad updated successfully",
+    "error": "Error creating ad"
+  },
+  "messages": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email",
+    "invalidPhone": "Invalid phone number",
+    "passwordMismatch": "Passwords do not match",
+    "minLength": "At least {min} characters",
+    "maxLength": "At most {max} characters"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email",
+    "invalidPhone": "Invalid phone number",
+    "passwordMismatch": "Passwords do not match",
+    "minLength": "At least {min} characters",
+    "maxLength": "At most {max} characters"
+  },
+  "permissions": {
+    "users": {
+      "view": "View Users",
+      "manage": "Manage Users"
+    },
+    "messages": {
+      "view": "View Messages",
+      "manage": "Manage Messages"
+    },
+    "reports": {
+      "view": "View Reports",
+      "manage": "Manage Reports"
+    },
+    "categories": {
+      "manage": "Manage Categories"
+    },
+    "cities": {
+      "manage": "Manage Cities"
+    },
+    "admins": {
+      "manage": "Manage Admins"
+    },
+    "ads": {
+      "approve": "Approve Ads",
+      "reject": "Reject Ads"
+    }
+  },
+  "footer": {
+    "aboutUs": "About Us",
+    "aboutDescription": "Free platform for buying and selling in Germany",
+    "usefulLinks": "Useful Links",
+    "support": "Support",
+    "contact": "Contact",
+    "help": "Help",
+    "legal": "Legal",
+    "terms": "Terms of Use",
+    "privacy": "Privacy Policy",
+    "copyright": "All rights reserved",
+    "postAd": "Post Ad"
+  },
+  "chat": {
+    "title": "Chat"
+  }
+}

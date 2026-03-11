@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useI18n } from '@/lib/contexts/I18nContext';
 
 interface BackButtonProps {

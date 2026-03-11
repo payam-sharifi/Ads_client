@@ -1,0 +1,194 @@
+{
+  "common": {
+    "search": "جستجو",
+    "filter": "فیلتر",
+    "clear": "پاک کردن",
+    "submit": "ارسال",
+    "cancel": "لغو",
+    "edit": "ویرایش",
+    "delete": "حذف",
+    "save": "ذخیره",
+    "back": "بازگشت",
+    "next": "بعدی",
+    "previous": "قبلی",
+    "loading": "در حال بارگذاری...",
+    "error": "خطا",
+    "success": "موفقیت",
+    "close": "بستن"
+  },
+  "nav": {
+    "home": "خانه",
+    "categories": "دسته‌بندی‌ها",
+    "myAds": "آگهی‌های من",
+    "createAd": "ایجاد آگهی",
+    "login": "ورود",
+    "signup": "ثبت‌نام",
+    "logout": "خروج",
+    "dashboard": "داشبورد"
+  },
+  "home": {
+    "title": "آگهی‌های رایگان",
+    "subtitle": "خرید و فروش در آلمان",
+    "searchPlaceholder": "جستجوی آگهی...",
+    "recentAds": "آگهی‌های اخیر",
+    "viewAll": "مشاهده همه",
+    "noAds": "آگهی‌ای یافت نشد",
+    "searchInAllAds": "جستجو در همه آگهی‌ها",
+    "allCities": "همه شهرها",
+    "selectCity": "انتخاب شهر",
+    "allCategories": "همه دسته‌بندی‌ها",
+    "adsAndNeeds": "انواع آگهی‌ها و نیازمندی‌ها"
+  },
+  "category": {
+    "filters": "فیلترها",
+    "subcategory": "زیردسته",
+    "city": "شهر",
+    "price": "قیمت",
+    "minPrice": "حداقل قیمت",
+    "maxPrice": "حداکثر قیمت",
+    "date": "تاریخ",
+    "status": "وضعیت",
+    "active": "فعال",
+    "pending": "در انتظار",
+    "sold": "فروخته شده",
+    "results": "نتیجه"
+  },
+  "ad": {
+    "title": "عنوان",
+    "description": "توضیحات",
+    "price": "قیمت",
+    "category": "دسته‌بندی",
+    "city": "شهر",
+    "status": "وضعیت",
+    "images": "تصاویر",
+    "seller": "فروشنده",
+    "contact": "تماس",
+    "message": "ارسال پیام",
+    "report": "گزارش آگهی",
+    "createdAt": "تاریخ ایجاد",
+    "views": "بازدید",
+    "edit": "ویرایش آگهی",
+    "delete": "حذف آگهی",
+    "confirmDelete": "آیا از حذف این آگهی مطمئن هستید؟"
+  },
+  "auth": {
+    "login": "ورود",
+    "signup": "ثبت‌نام",
+    "logout": "خروج",
+    "email": "ایمیل",
+    "password": "رمز عبور",
+    "confirmPassword": "تأیید رمز عبور",
+    "name": "نام",
+    "phone": "تلفن",
+    "forgotPassword": "رمز عبور را فراموش کرده‌اید؟",
+    "resetPassword": "بازیابی رمز عبور",
+    "noAccount": "حساب کاربری ندارید؟",
+    "hasAccount": "قبلاً ثبت‌نام کرده‌اید؟",
+    "loginSuccess": "با موفقیت وارد شدید",
+    "signupSuccess": "ثبت‌نام با موفقیت انجام شد",
+    "loginError": "ایمیل یا رمز عبور اشتباه است",
+    "signupError": "خطا در ثبت‌نام"
+  },
+  "dashboard": {
+    "title": "داشبورد",
+    "myAds": "آگهی‌های من",
+    "createNew": "ایجاد آگهی جدید",
+    "noAds": "شما هنوز آگهی‌ای ایجاد نکرده‌اید",
+    "premium": "پرمیوم",
+    "payment": "پرداخت",
+    "myArea": "Ads من",
+    "bookmarked": "ذخیره شده"
+  },
+  "admin": {
+    "managePermissions": "مدیریت دسترسی‌ها",
+    "adminPanel": "پنل مدیریت",
+    "users": "کاربران",
+    "reports": "گزارش‌ها",
+    "messages": "پیام‌ها",
+    "categories": "دسته‌بندی‌ها",
+    "cities": "شهرها",
+    "admins": "ادمین‌ها"
+  },
+  "createAd": {
+    "title": "ایجاد آگهی جدید",
+    "editTitle": "ویرایش آگهی",
+    "form": {
+      "title": "عنوان آگهی",
+      "titlePlaceholder": "عنوان آگهی را وارد کنید",
+      "description": "توضیحات",
+      "descriptionPlaceholder": "توضیحات کامل آگهی را وارد کنید",
+      "price": "قیمت (یورو)",
+      "pricePlaceholder": "0",
+      "category": "دسته‌بندی",
+      "subcategory": "زیردسته",
+      "city": "شهر",
+      "images": "تصاویر",
+      "uploadImages": "آپلود تصاویر",
+      "status": "وضعیت",
+      "submit": "ارسال آگهی",
+      "update": "به‌روزرسانی آگهی"
+    },
+    "success": "آگهی با موفقیت ایجاد شد",
+    "updateSuccess": "آگهی با موفقیت به‌روزرسانی شد",
+    "error": "خطا در ایجاد آگهی"
+  },
+  "messages": {
+    "required": "این فیلد الزامی است",
+    "invalidEmail": "ایمیل معتبر نیست",
+    "invalidPhone": "شماره تلفن معتبر نیست",
+    "passwordMismatch": "رمزهای عبور مطابقت ندارند",
+    "minLength": "حداقل {min} کاراکتر",
+    "maxLength": "حداکثر {max} کاراکتر"
+  },
+  "validation": {
+    "required": "این فیلد الزامی است",
+    "invalidEmail": "ایمیل معتبر نیست",
+    "invalidPhone": "شماره تلفن معتبر نیست",
+    "passwordMismatch": "رمزهای عبور مطابقت ندارند",
+    "minLength": "حداقل {min} کاراکتر",
+    "maxLength": "حداکثر {max} کاراکتر"
+  },
+  "permissions": {
+    "users": {
+      "view": "مشاهده کاربران",
+      "manage": "مدیریت کاربران"
+    },
+    "messages": {
+      "view": "مشاهده پیام‌ها",
+      "manage": "مدیریت پیام‌ها"
+    },
+    "reports": {
+      "view": "مشاهده گزارش‌ها",
+      "manage": "مدیریت گزارش‌ها"
+    },
+    "categories": {
+      "manage": "مدیریت دسته‌بندی‌ها"
+    },
+    "cities": {
+      "manage": "مدیریت شهرها"
+    },
+    "admins": {
+      "manage": "مدیریت ادمین‌ها"
+    },
+    "ads": {
+      "approve": "تأیید آگهی‌ها",
+      "reject": "رد آگهی‌ها"
+    }
+  },
+  "footer": {
+    "aboutUs": "درباره ما",
+    "aboutDescription": "پلتفرم رایگان برای خرید و فروش در آلمان",
+    "usefulLinks": "لینک‌های مفید",
+    "support": "پشتیبانی",
+    "contact": "تماس با ما",
+    "help": "راهنما",
+    "legal": "قوانین",
+    "terms": "شرایط استفاده",
+    "privacy": "حریم خصوصی",
+    "copyright": "همه حقوق محفوظ است",
+    "postAd": "ثبت آگهی"
+  },
+  "chat": {
+    "title": "چت و تماس"
+  }
+}

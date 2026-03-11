@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
 import withPWAInit from "@ducanh2912/next-pwa";
+
+const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -14,13 +17,40 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  async redirects() {
+  async headers() {
     return [
       {
-        source: '/support',
-        destination: '/contact',
-        permanent: true,
+        source: '/:locale(en|de|fa)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+          {
+            key: 'Vary',
+            value: 'Accept-Encoding',
+          },
+        ],
       },
+      {
+        source: '/:locale(en|de|fa)/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+          {
+            key: 'Vary',
+            value: 'Accept-Encoding',
+          },
+        ],
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      { source: '/support', destination: '/contact', permanent: true },
+      { source: '/:locale/support', destination: '/:locale/contact', permanent: true },
     ];
   },
   images: {
@@ -70,4 +100,4 @@ const nextConfig: NextConfig = {
   turbopack: {},
 };
 
-export default withPWA(nextConfig);
+export default withNextIntl(withPWA(nextConfig));

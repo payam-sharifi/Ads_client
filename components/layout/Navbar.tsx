@@ -1,21 +1,21 @@
 'use client';
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import Link from 'next/link';
+import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { useLogout } from '@/lib/hooks/useAuth';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useCities } from '@/lib/hooks/useCities';
 import { useUnreadMessagesCount } from '@/lib/hooks/useMessages';
 import { getLocalizedCategoryName, getLocalizedName } from '@/lib/utils/localizedNames';
 import BackButton from '@/components/common/BackButton';
-import { usePathname } from 'next/navigation';
 import { useCityStore } from '@/lib/stores/cityStore';
+import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 
 function NavbarContent() {
-  const { locale, setLocale, t, isRTL } = useI18n();
+  const { locale, t, isRTL } = useI18n();
   const { isAuthenticated, user } = useAuthStore();
   const logoutMutation = useLogout();
   const router = useRouter();
@@ -159,10 +159,6 @@ function NavbarContent() {
       params.set('search', trimmedInput);
       router.push(`/?${params.toString()}`);
     }
-  };
-
-  const toggleLocale = () => {
-    setLocale(locale === 'fa' ? 'de' : 'fa');
   };
 
   return (
@@ -412,13 +408,10 @@ function NavbarContent() {
               <span className="hidden sm:inline">{isRTL ? 'ثبت آگهی' : 'Anzeige aufgeben'}</span>
             </Link>
 
-            {/* Language Toggle - Hidden on mobile */}
-            <button
-              onClick={toggleLocale}
-              className="hidden md:block px-2 py-1 text-xs font-medium text-gray-600 hover:text-red-600 border border-gray-300 rounded hover:border-red-600 transition-colors"
-            >
-              {locale === 'fa' ? 'DE' : 'FA'}
-            </button>
+            {/* Language Switcher - Hidden on mobile */}
+            <div className="hidden md:block">
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
       </div>

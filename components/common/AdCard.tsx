@@ -53,54 +53,57 @@ export default function AdCard({
     if (diffHours < 24) return isRTL ? `${diffHours} ساعت پیش` : `vor ${diffHours} Std`;
     if (diffDays === 1) return isRTL ? 'دیروز' : 'Gestern';
     if (diffDays < 7) return isRTL ? `${diffDays} روز پیش` : `vor ${diffDays} Tagen`;
-    return date.toLocaleDateString(locale === 'fa' ? 'fa-IR' : 'de-DE', {
+    return date.toLocaleDateString(locale === 'fa' ? 'fa-IR' : locale === 'de' ? 'de-DE' : 'en-GB', {
       month: 'short',
       day: 'numeric',
     });
   };
 
+  const localeKey = locale as 'fa' | 'de' | 'en';
+  const getLocaleText = (obj: { fa?: string; de?: string; en?: string }) =>
+    obj[localeKey] || obj.de || obj.fa || '';
+
   const getConditionText = () => {
     if (!ad.condition) return null;
-    const conditions: Record<string, { fa: string; de: string }> = {
-      NEW: { fa: 'نو', de: 'Neu' },
-      LIKE_NEW: { fa: 'در حد نو', de: 'Wie neu' },
-      USED: { fa: 'کارکرده', de: 'Gebraucht' },
+    const conditions: Record<string, { fa: string; de: string; en: string }> = {
+      NEW: { fa: 'نو', de: 'Neu', en: 'New' },
+      LIKE_NEW: { fa: 'در حد نو', de: 'Wie neu', en: 'Like New' },
+      USED: { fa: 'کارکرده', de: 'Gebraucht', en: 'Used' },
     };
-    return conditions[ad.condition]?.[locale] || null;
+    return getLocaleText(conditions[ad.condition] || {}) || null;
   };
 
   const getRealEstateOfferTypeText = () => {
     if (ad.category?.categoryType !== 'real_estate' || !ad.metadata?.offerType) return null;
     
-    const offerTypes: Record<string, { fa: string; de: string }> = {
-      rent: { fa: 'اجاره', de: 'Miete' },
-      sale: { fa: 'فروش', de: 'Verkauf' },
+    const offerTypes: Record<string, { fa: string; de: string; en: string }> = {
+      rent: { fa: 'اجاره', de: 'Miete', en: 'Rent' },
+      sale: { fa: 'فروش', de: 'Verkauf', en: 'Sale' },
     };
     
-    return offerTypes[ad.metadata.offerType]?.[locale] || null;
+    return getLocaleText(offerTypes[ad.metadata.offerType] || {}) || null;
   };
 
   const getStatusBadge = () => {
     if (!ad.status) return null;
     
-    // Only show badge for specific statuses
     const statusConfig: Record<string, { 
-      text: { fa: string; de: string }; 
+      text: { fa: string; de: string; en: string }; 
       bgColor: string; 
       textColor: string;
     }> = {
       APPROVED: {
-        text: { fa: 'منتشر شده', de: 'Veröffentlicht' },
+        text: { fa: 'منتشر شده', de: 'Veröffentlicht', en: 'Published' },
         bgColor: 'bg-green-600',
         textColor: 'text-white',
       },
       REJECTED: {
-        text: { fa: 'رد شده', de: 'Abgelehnt' },
+        text: { fa: 'رد شده', de: 'Abgelehnt', en: 'Rejected' },
         bgColor: 'bg-red-600',
         textColor: 'text-white',
       },
       PENDING_APPROVAL: {
-        text: { fa: 'در صف انتشار', de: 'Wartet auf Freigabe' },
+        text: { fa: 'در صف انتشار', de: 'Wartet auf Freigabe', en: 'Pending Approval' },
         bgColor: 'bg-yellow-500',
         textColor: 'text-white',
       },
@@ -121,12 +124,12 @@ export default function AdCard({
           transformOrigin: 'top left',
         }}
       >
-        {config.text[locale] || config.text.de}
+        {getLocaleText(config.text)}
       </div>
     );
   };
 
-  const cityName = getLocalizedName(ad.city?.name, locale) || (isRTL ? 'همه شهرها' : 'Alle Städte');
+  const cityName = getLocalizedName(ad.city?.name, locale) || t('home.allCities');
   const categoryName = getLocalizedCategoryName(ad.category?.name, locale);
   const firstImage = getFirstImageUrl(ad.images);
   

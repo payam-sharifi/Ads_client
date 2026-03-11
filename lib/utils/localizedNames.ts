@@ -1,4 +1,4 @@
-import { Locale } from '@/lib/i18n';
+import type { Locale } from '@/lib/utils/locale';
 import { PropertyType, ServiceCategory } from '@/lib/types/category.types';
 
 /**
@@ -27,12 +27,11 @@ export function getLocalizedName(
   // Priority: current locale -> fallback languages
   if (locale === 'fa') {
     return name.fa || name.de || name.en || '';
-  } else if (locale === 'de') {
-    return name.de || name.fa || name.en || '';
-  } else {
-    // English
-    return name.en || name.de || name.fa || '';
   }
+  if (locale === 'de') {
+    return name.de || name.fa || name.en || '';
+  }
+  return name.en || name.de || name.fa || '';
 }
 
 /**
@@ -47,10 +46,8 @@ export function getLocalizedCategoryName(
   
   if (locale === 'fa') {
     return name.fa || name.de || '';
-  } else {
-    // German or English - use German
-    return name.de || name.fa || '';
   }
+  return name.de || name.fa || '';
 }
 
 /**
