@@ -21,10 +21,10 @@ export default function ContactPage() {
     // Simulate API call
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success(isRTL ? 'پیام شما با موفقیت ارسال شد' : 'Ihre Nachricht wurde erfolgreich gesendet');
+      toast.success(t('contact.messageSentSuccessfully'));
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
-      toast.error(isRTL ? 'خطا در ارسال پیام' : 'Fehler beim Senden der Nachricht');
+      toast.error(t('contact.errorSendingMessage'));
     } finally {
       setLoading(false);
     }
@@ -38,19 +38,17 @@ export default function ContactPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-        {isRTL ? 'تماس با ما' : 'Kontaktieren Sie uns'}
+        {t('contact.contactUsTitle')}
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Contact info */}
         <div className={isRTL ? 'order-2 md:order-1' : ''}>
           <h2 className="text-xl font-bold text-gray-800 mb-4">
-            {isRTL ? 'اطلاعات تماس' : 'Kontaktinformationen'}
+            {t('contact.contactInfo')}
           </h2>
           <p className="text-gray-600 mb-6">
-            {isRTL 
-              ? 'اگر سوالی دارید یا به کمک نیاز دارید، با ما تماس بگیرید.' 
-              : 'Wenn Sie Fragen haben oder Hilfe benötigen, kontaktieren Sie uns bitte.'}
+            {t('contact.contactUsMessage')}
           </p>
           
           <div className="space-y-4">
@@ -61,7 +59,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div>
-                <p className="font-bold text-gray-800">{isRTL ? 'ایمیل' : 'E-Mail'}</p>
+                <p className="font-bold text-gray-800">{t('contact.email')}</p>
                 <p className="text-gray-600">support@appventuregmbh.com</p>
               </div>
             </div>
@@ -74,7 +72,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div>
-                <p className="font-bold text-gray-800">{isRTL ? 'آدرس' : 'Adresse'}</p>
+                <p className="font-bold text-gray-800">{t('contact.address')}</p>
                 <p className="text-gray-600">AppVenture GmbH, Berlin, Germany</p>
               </div>
             </div>
@@ -87,7 +85,7 @@ export default function ContactPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {isRTL ? 'نام' : 'Name'}
+                  {t('auth.name')}
                 </label>
                 <input
                   type="text"
@@ -96,13 +94,13 @@ export default function ContactPage() {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
-                  placeholder={isRTL ? 'نام خود را وارد کنید' : 'Geben Sie Ihren Namen ein'}
+                  placeholder={t('contact.namePlaceholder')}
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {isRTL ? 'ایمیل' : 'E-Mail'}
+                  {t('contact.email')}
                 </label>
                 <input
                   type="email"
@@ -117,7 +115,7 @@ export default function ContactPage() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {isRTL ? 'موضوع' : 'Betreff'}
+                  {t('contact.subject')}
                 </label>
                 <input
                   type="text"
@@ -126,13 +124,13 @@ export default function ContactPage() {
                   value={formData.subject}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
-                  placeholder={isRTL ? 'موضوع پیام' : 'Betreff der Nachricht'}
+                  placeholder={t('contact.subjectPlaceholder')}
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {isRTL ? 'پیام' : 'Nachricht'}
+                  {t('contact.message')}
                 </label>
                 <textarea
                   name="message"
@@ -141,7 +139,7 @@ export default function ContactPage() {
                   value={formData.message}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all resize-none"
-                  placeholder={isRTL ? 'پیام خود را بنویسید' : 'Schreiben Sie Ihre Nachricht'}
+                  placeholder={t('contact.messagePlaceholder')}
                 />
               </div>
               
@@ -153,12 +151,12 @@ export default function ContactPage() {
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    {isRTL ? 'در حال ارسال...' : 'Wird gesendet...'}
+                    {t('common.sending')}
                   </>
                 ) : (
-                  isRTL ? 'ارسال پیام' : 'Nachricht senden'
+                  t('contact.sendMessage')
                 )}
-              </button>
+              </button> 
             </div>
           </form>
         </div>

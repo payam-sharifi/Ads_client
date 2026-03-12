@@ -676,7 +676,7 @@ export default function CategoryPage() {
             <input
               type="text"
               name="search"
-              placeholder={isRTL ? 'جستجو در همه آگهی‌ها' : 'Suche in allen Anzeigen'}
+              placeholder={t('category.searchInAllAds')}
               defaultValue={filters.search}
               className="flex-1 bg-transparent text-gray-700 text-xs outline-none placeholder:text-[10px] placeholder-gray-500 min-w-0"
               dir="rtl"
@@ -726,7 +726,7 @@ export default function CategoryPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span className="text-xs font-medium truncate max-w-[60px] sm:max-w-none" style={{ fontSize: '11px' }}>
-                {selectedCityName || (isRTL ? 'انتخاب شهر' : 'Stadt wählen')}
+                {selectedCityName || t('category.selectCity')}
               </span>
             </button>
             {/* Language Switcher - Mobile */}
@@ -746,7 +746,7 @@ export default function CategoryPage() {
           <div className={`fixed ${isRTL ? 'left-0' : 'right-0'} top-0 bottom-0 w-80 bg-white z-50 md:hidden overflow-y-auto shadow-xl`}>
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
               <h2 className="text-lg font-bold text-gray-900">
-                {isRTL ? 'انتخاب شهر' : 'Stadt wählen'}
+                {t('category.selectCity')}
               </h2>
               <button
                 onClick={() => setShowCitySelector(false)}
@@ -814,7 +814,7 @@ export default function CategoryPage() {
                   className="block w-full text-right px-4 py-3 rounded-lg border bg-white border-gray-200 text-gray-700 hover:border-primary-300 hover:bg-gray-50 font-medium"
                   dir={isRTL ? 'rtl' : 'ltr'}
                 >
-                  {locale === 'fa' ? 'همه دسته‌بندی‌ها' : 'Alle Kategorien'}
+                  {t('category.allCategories')}
                 </Link>
                 {categoriesLoading ? (
                   <div className="px-4 py-2 text-sm text-gray-500">{t('common.loading')}</div>
@@ -869,14 +869,14 @@ export default function CategoryPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
               <span className="text-xs font-medium hidden sm:inline">
-                {isRTL ? 'فیلتر' : 'Filter'}
+                {t('category.filter')}
               </span>
             </button>
           </div>
           {category.children && category.children.length > 0 && (
             <div className="mt-2 pt-2 border-t border-gray-200">
               <h3 className="text-xs font-semibold text-gray-700 mb-1.5" dir={isRTL ? 'rtl' : 'ltr'}>
-                {locale === 'fa' ? 'زیردسته‌بندی‌ها' : 'Unterkategorien'}
+                {t('category.subcategories')}
               </h3>
               <div className="flex flex-wrap gap-1.5">
                 {category.children.map((child) => (
@@ -907,7 +907,7 @@ export default function CategoryPage() {
             `}>
               <div className="p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
                 <h2 className="text-lg font-bold text-gray-900">
-                  {isRTL ? 'فیلترها' : 'Filter'}
+                  {t('category.filters')}
                 </h2>
                 <button
                   onClick={handleCloseFilterDrawer}
@@ -935,7 +935,7 @@ export default function CategoryPage() {
         {/* Results */}
         <div className="mb-4 md:mb-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900" dir={isRTL ? 'rtl' : 'ltr'}>
-            {adsLoading ? t('common.loading') : `${pagination?.total || 0} ${locale === 'fa' ? 'آگهی یافت شد' : 'Anzeigen gefunden'}`}
+            {adsLoading ? t('common.loading') : `${pagination?.total || 0} ${t('category.adsFound')}`}
           </h2>
         </div>
 
@@ -957,13 +957,13 @@ export default function CategoryPage() {
         ) : ads.length === 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <p className="text-gray-500 text-lg" dir={isRTL ? 'rtl' : 'ltr'}>
-              {locale === 'fa' ? 'هیچ آگهی‌ای در این دسته‌بندی یافت نشد' : 'Keine Anzeigen in dieser Kategorie gefunden'}
+              {t('category.noAdsFound')}
             </p>
             <Link
               href="/create-ad"
               className="mt-4 inline-block px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
             >
-              {locale === 'fa' ? 'ایجاد اولین آگهی' : 'Erste Anzeige erstellen'}
+              {t('category.createFirstAd')}
             </Link>
           </div>
         ) : (
@@ -987,10 +987,10 @@ export default function CategoryPage() {
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                   dir={isRTL ? 'rtl' : 'ltr'}
                 >
-                  {locale === 'fa' ? 'قبلی' : 'Zurück'}
+                  {t('category.previous')}
                 </button>
                 <span className="px-4 py-2 text-sm text-gray-700" dir={isRTL ? 'rtl' : 'ltr'}>
-                  {locale === 'fa' ? `صفحه ${pagination.page} از ${pagination.totalPages}` : `Seite ${pagination.page} von ${pagination.totalPages}`}
+                  {t('admin.page')} {pagination.page} {t('admin.of')} {pagination.totalPages}
                 </span>
                 <button
                   onClick={() => {
@@ -1002,7 +1002,7 @@ export default function CategoryPage() {
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                   dir={isRTL ? 'rtl' : 'ltr'}
                 >
-                  {locale === 'fa' ? 'بعدی' : 'Weiter'}
+                  {t('category.next')}
                 </button>
               </div>
             )}

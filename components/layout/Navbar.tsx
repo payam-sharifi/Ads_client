@@ -238,7 +238,7 @@ function NavbarContent() {
                           setShowCities(false);
                         }}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        dir="rtl"
+                        dir={isRTL ? 'rtl' : 'ltr'}
                       >
                         {getLocalizedName(city.name, locale)}
                       </Link>
@@ -300,7 +300,7 @@ function NavbarContent() {
           <form onSubmit={handleSearch} className="flex-1 max-w-2xl mx-4 hidden md:block">
             <div className="relative flex items-center">
               <span className="absolute right-4 text-sm text-gray-500 pointer-events-none z-10">
-                {isRTL ? 'جستجو' : 'Search'}
+                {t('nav.search')}
               </span>
               <input
                 type="text"
@@ -333,7 +333,7 @@ function NavbarContent() {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    <span className="hidden lg:inline">{isRTL ? 'پنل مدیریت' : 'Admin Panel'}</span>
+                    <span className="hidden lg:inline">{t('nav.admin')}</span>
                   </Link>
                 )}
                 <Link 
@@ -359,7 +359,7 @@ function NavbarContent() {
                       </span>
                     )}
                   </div>
-                  <span className="hidden lg:inline">{isRTL ? 'چت و تماس' : 'Chat'}</span>
+                  <span className="hidden lg:inline">{t('nav.chat')}</span>
                 </Link>
                 <Link 
                   href="/support" 
@@ -368,7 +368,7 @@ function NavbarContent() {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span className="hidden lg:inline">{isRTL ? 'پشتیبانی' : 'Support'}</span>
+                  <span className="hidden lg:inline">{t('nav.support')}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -377,7 +377,7 @@ function NavbarContent() {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
-                  <span className="hidden lg:inline">{isRTL ? 'خروج' : 'Logout'}</span>
+                  <span className="hidden lg:inline">{t('nav.logout')}</span>
                 </button>
               </>
             ) : (
@@ -402,7 +402,7 @@ function NavbarContent() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              <span className="hidden sm:inline">{isRTL ? 'ثبت آگهی' : 'Anzeige aufgeben'}</span>
+              <span className="hidden sm:inline">{t('footer.postAd')}</span>
             </Link>
 
             {/* Language Switcher - Hidden on mobile */}

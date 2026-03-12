@@ -72,7 +72,7 @@ export default function AdDetailPage() {
   };
 
   const formatPrice = (price: number) => {
-    if (price === 0) return isRTL ? 'رایگان' : 'Kostenlos';
+    if (price === 0) return t('common.free');
     return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(price);
   };
 
@@ -172,7 +172,7 @@ export default function AdDetailPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                       <span dir={isRTL ? 'rtl' : 'ltr'}>
-                        {getLocalizedName(ad.city?.name, locale) || (isRTL ? 'همه شهرها' : 'Alle Städte')}
+                        {getLocalizedName(ad.city?.name, locale) || (t('nav.allCities'))}
                       </span>
                     </span>
                     <span>•</span>
@@ -195,7 +195,7 @@ export default function AdDetailPage() {
                 <div className="border-t border-gray-200 pt-6">
                   <div className="text-2xl font-bold text-primary-600">
                     {ad.metadata?.isNegotiable 
-                      ? (isRTL ? 'قیمت توافقی' : 'Negotiable Price')
+                      ? t('common.negotiable')
                       : formatPrice(ad.price)
                     }
                   </div>
@@ -211,7 +211,7 @@ export default function AdDetailPage() {
               {ad.metadata && Object.keys(ad.metadata).length > 0 && (
                 <div className="border-t border-gray-200 pt-6 mt-6">
                   <h2 className="text-xl font-bold mb-4 text-gray-900">
-                    {isRTL ? 'جزئیات' : 'Details'}
+                    {t('ad.details')}
                   </h2>
                   
                   {/* Real Estate Details */}
@@ -219,10 +219,10 @@ export default function AdDetailPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <span className="text-sm text-gray-500 block mb-1">
-                          {isRTL ? 'نوع معامله' : 'Transaction Type'}
+                          {t('ad.transactionType')}
                         </span>
                         <span className="font-medium text-gray-900">
-                          {ad.metadata.type === 'rent' ? (isRTL ? 'اجاره' : 'Rent') : (isRTL ? 'فروش' : 'Sale')}
+                          {ad.metadata.type === 'rent' ? t('ad.rent') : t('ad.sale')}
                         </span>
                       </div>
                       
@@ -231,7 +231,7 @@ export default function AdDetailPage() {
                           {ad.metadata.rentPrice && (
                             <div>
                               <span className="text-sm text-gray-500 block mb-1">
-                                {isRTL ? 'اجاره ماهانه' : 'Monthly Rent'}
+                                {t('ad.monthlyRent')}
                               </span>
                               <span className="font-medium text-gray-900" dir="ltr">
                                 {formatPrice(Number(ad.metadata.rentPrice))}
@@ -241,7 +241,7 @@ export default function AdDetailPage() {
                           {ad.metadata.deposit && (
                             <div>
                               <span className="text-sm text-gray-500 block mb-1">
-                                {isRTL ? 'رهن' : 'Deposit'}
+                                {t('ad.deposit')}
                               </span>
                               <span className="font-medium text-gray-900" dir="ltr">
                                 {formatPrice(Number(ad.metadata.deposit))}
@@ -254,7 +254,7 @@ export default function AdDetailPage() {
                       {ad.metadata.type === 'sale' && ad.metadata.salePrice && (
                         <div>
                           <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'قیمت فروش' : 'Sale Price'}
+                            {t('ad.salePrice')}
                           </span>
                           <span className="font-medium text-gray-900" dir="ltr">
                             {formatPrice(Number(ad.metadata.salePrice))}
@@ -265,7 +265,7 @@ export default function AdDetailPage() {
                       {ad.metadata.area && (
                         <div>
                           <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'متراژ' : 'Area'}
+                            {t('ad.area')}
                           </span>
                           <span className="font-medium text-gray-900" dir="ltr">
                             {ad.metadata.area} m²
@@ -276,7 +276,7 @@ export default function AdDetailPage() {
                       {ad.metadata.floor !== undefined && ad.metadata.floor !== null && ad.metadata.floor !== '' && (
                         <div>
                           <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'طبقه' : 'Floor'}
+                            {t('ad.floor')}
                           </span>
                           <span className="font-medium text-gray-900" dir="ltr">
                             {ad.metadata.floor}
@@ -287,7 +287,7 @@ export default function AdDetailPage() {
                       {ad.metadata.yearBuilt && (
                         <div>
                           <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'سال ساخت' : 'Year Built'}
+                            {t('ad.yearBuilt')}
                           </span>
                           <span className="font-medium text-gray-900" dir="ltr">
                             {ad.metadata.yearBuilt}
@@ -298,15 +298,15 @@ export default function AdDetailPage() {
                       {ad.metadata.heating && (
                         <div>
                           <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'گرمایش' : 'Heating'}
+                            {t('ad.heating')}
                           </span>
                           <span className="font-medium text-gray-900">
-                            {ad.metadata.heating === 'central' ? (isRTL ? 'مرکزی' : 'Central') :
-                             ad.metadata.heating === 'gas' ? (isRTL ? 'گاز' : 'Gas') :
-                             ad.metadata.heating === 'electric' ? (isRTL ? 'برق' : 'Electric') :
-                             ad.metadata.heating === 'oil' ? (isRTL ? 'نفت' : 'Oil') :
-                             ad.metadata.heating === 'wood' ? (isRTL ? 'چوب' : 'Wood') :
-                             ad.metadata.heating === 'solar' ? (isRTL ? 'خورشیدی' : 'Solar') :
+                            {ad.metadata.heating === 'central' ? t('ad.central') :
+                             ad.metadata.heating === 'gas' ? t('ad.gas') :
+                             ad.metadata.heating === 'electric' ? t('ad.electric') :
+                             ad.metadata.heating === 'oil' ? t('ad.oil') :
+                             ad.metadata.heating === 'wood' ? t('ad.wood') :
+                             ad.metadata.heating === 'solar' ? t('ad.solar') :
                              ad.metadata.heating}
                           </span>
                         </div>
@@ -315,12 +315,12 @@ export default function AdDetailPage() {
                       {ad.metadata.renovated !== undefined && ad.metadata.renovated !== null && ad.metadata.renovated !== '' && (
                         <div>
                           <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'بازسازی شده' : 'Renovated'}
+                            {t('ad.renovated')}
                           </span>
                           <span className="font-medium text-gray-900">
                             {ad.metadata.renovated === true || ad.metadata.renovated === 'true' 
-                              ? (isRTL ? 'بله' : 'Yes') 
-                              : (isRTL ? 'خیر' : 'No')}
+                              ? t('ad.yes') 
+                              : t('ad.no')}
                           </span>
                         </div>
                       )}
@@ -328,10 +328,10 @@ export default function AdDetailPage() {
                       {ad.metadata.additionalCosts && (
                         <div>
                           <span className="text-sm text-gray-500 block mb-1">
-                            {isRTL ? 'هزینه‌های جانبی' : 'Additional Costs'}
+                            {t('ad.additionalCosts')}
                           </span>
                           <span className="font-medium text-gray-900" dir="ltr">
-                            {formatPrice(Number(ad.metadata.additionalCosts))} / {isRTL ? 'ماه' : 'month'}
+                            {formatPrice(Number(ad.metadata.additionalCosts))} / {t('ad.month')}
                           </span>
                         </div>
                       )}
@@ -375,14 +375,14 @@ export default function AdDetailPage() {
                     if (isBookmarked) {
                       try {
                         await unbookmarkMutation.mutateAsync(adId);
-                        toast.success(isRTL ? 'از نشان‌ها حذف شد' : 'Removed from bookmarks');
+                        toast.success(t('ad.removedFromBookmarks'));
                       } catch (error: any) {
                         toast.error(error?.response?.data?.message || 'Failed to remove bookmark');
                       }
                     } else {
                       try {
                         await bookmarkMutation.mutateAsync(adId);
-                        toast.success(isRTL ? 'به نشان‌ها اضافه شد' : 'Added to bookmarks');
+                        toast.success(t('ad.addedToBookmarks'));
                       } catch (error: any) {
                         toast.error(error?.response?.data?.message || 'Failed to bookmark');
                       }
@@ -399,7 +399,7 @@ export default function AdDetailPage() {
                     <svg className="w-5 h-5" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                     </svg>
-                    {isBookmarked ? (isRTL ? 'ذخیره شده' : 'Gespeichert') : (isRTL ? 'ذخیره' : 'Speichern')}
+                    {isBookmarked ? t('ad.bookmarked') : t('ad.save')}
                   </span>
                 </button>
               </div>
@@ -447,7 +447,7 @@ export default function AdDetailPage() {
                           className="w-full"
                           onClick={() => setShowMessageForm(true)}
                         >
-                          Quick Message
+                          {t('ad.quickMessage')}
                         </Button>
                       </>
                     ) : (
@@ -455,7 +455,7 @@ export default function AdDetailPage() {
                         <textarea
                           value={message}
                           onChange={(e) => setMessage(e.target.value)}
-                          placeholder={isRTL ? 'پیام خود را بنویسید...' : 'Schreiben Sie Ihre Nachricht...'}
+                          placeholder={t('ad.writeYourMessage')}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
                           rows={4}
                         />

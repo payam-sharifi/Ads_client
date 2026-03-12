@@ -34,10 +34,10 @@ export default function BookmarkedAdsPage() {
   const handleUnbookmark = async (adId: string) => {
     try {
       await unbookmarkMutation.mutateAsync(adId);
-      toast.success(isRTL ? 'از نشان‌ها حذف شد' : 'Removed from bookmarks');
+      toast.success(t('dashboard.removedFromBookmarks'));
       refetch();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || (isRTL ? 'خطا در حذف نشان' : 'Failed to remove bookmark'));
+      toast.error(error?.response?.data?.message || t('dashboard.errorRemoveBookmark'));
     }
   };
 
@@ -47,10 +47,10 @@ export default function BookmarkedAdsPage() {
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8 pb-20 md:pb-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">{isRTL ? 'آگهی‌های نشان شده' : 'Bookmarked Ads'}</h1>
+        <h1 className="text-3xl font-bold">{t('dashboard.bookmarkedAds')}</h1>
         <Link href="/dashboard">
           <Button variant="outline" size="sm">
-            {isRTL ? 'بازگشت به داشبورد' : 'Back to Dashboard'}
+            {t('common.backToDashboard')}
           </Button>
         </Link>
       </div>
@@ -62,9 +62,9 @@ export default function BookmarkedAdsPage() {
           <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
           </svg>
-          <p className="text-gray-500 mb-4">{isRTL ? 'هیچ آگهی نشان شده‌ای ندارید' : 'You have no bookmarked ads'}</p>
+          <p className="text-gray-500 mb-4">{t('dashboard.noBookmarkedAds')}</p>
           <Link href="/">
-            <Button>{isRTL ? 'جستجوی آگهی‌ها' : 'Browse Ads'}</Button>
+            <Button>{t('common.browseAds')}</Button>
           </Link>
         </div>
       ) : (
@@ -81,7 +81,7 @@ export default function BookmarkedAdsPage() {
                   onClick={() => handleUnbookmark(ad.id)}
                   disabled={unbookmarkMutation.isPending}
                   className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md hover:bg-primary-50 text-primary-600 transition-colors disabled:opacity-50"
-                  title={isRTL ? 'حذف از نشان‌ها' : 'Remove from bookmarks'}
+                  title={t('dashboard.removeFromBookmarks')}
                 >
                   <svg className="w-5 h-5" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
@@ -99,17 +99,17 @@ export default function BookmarkedAdsPage() {
                 disabled={page === 1}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isRTL ? 'قبلی' : 'Previous'}
+                {t('common.previous')}
               </button>
               <span className="px-4 py-2 text-sm text-gray-700">
-                {isRTL ? `صفحه ${page} از ${pagination.totalPages}` : `Page ${page} of ${pagination.totalPages}`}
+                {`${t('admin.page')} ${page} ${t('admin.of')} ${pagination.totalPages}`}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
                 disabled={page === pagination.totalPages}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isRTL ? 'بعدی' : 'Next'}
+                {t('common.next')}
               </button>
             </div>
           )}

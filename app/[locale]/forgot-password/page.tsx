@@ -21,10 +21,8 @@ export default function ForgotPasswordPage() {
     setTimeout(() => {
       setAlert({
         type: 'success',
-        message: isRTL
-          ? 'لینک بازیابی رمز عبور به ایمیل شما ارسال شد'
-          : 'Passwort-Zurücksetzungslink wurde an Ihre E-Mail gesendet',
-      });
+          message: t('auth.passwordResetLinkSent')
+        });
       setLoading(false);
     }, 1000);
   };
@@ -55,7 +53,7 @@ export default function ForgotPasswordPage() {
             />
             <p className="text-sm text-gray-600 mt-2">
               {isRTL
-                ? 'لینک بازیابی رمز عبور به این ایمیل ارسال خواهد شد'
+                ? t('auth.passwordResetLinkSent')
                 : 'Der Passwort-Zurücksetzungslink wird an diese E-Mail gesendet'}
             </p>
           </div>

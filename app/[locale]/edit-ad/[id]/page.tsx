@@ -89,7 +89,7 @@ export default function EditAdPage() {
     if (ad) {
       // Check if user owns this ad
       if (ad.userId !== user?.id) {
-        toast.error(isRTL ? 'شما فقط می‌توانید آگهی‌های خود را ویرایش کنید' : 'You can only edit your own ads');
+        toast.error(t('dashboard.youCanOnlyEditYourOwnAds'));
         router.push('/dashboard');
         return;
       }
@@ -129,7 +129,7 @@ export default function EditAdPage() {
       const totalExisting = existingImages?.length || 0;
       const total = totalExisting + prev.length + acceptedFiles.length;
       if (total > 3) {
-        toast.error(isRTL ? 'شما می‌توانید حداکثر 3 عکس برای آگهی داشته باشید' : 'You can have a maximum of 3 images for an ad');
+        toast.error(t('dashboard.youCanOnlyHave3Images'));
         const remaining = 3 - totalExisting - prev.length;
         return remaining > 0 ? [...prev, ...acceptedFiles.slice(0, remaining)] : prev;
       }
@@ -150,13 +150,13 @@ export default function EditAdPage() {
   };
 
   const handleDeleteImage = async (imageId: string) => {
-    if (!confirm('Are you sure you want to delete this image?')) return;
+    if (!confirm(t('dashboard.areYouSureYouWantToDeleteThisImage'))) return;
     try {
       // API: DELETE /api/images/:id
       await deleteImageMutation.mutateAsync(imageId);
       toast.success('Image deleted');
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to delete image');
+      toast.error(error?.response?.data?.message || t('dashboard.failedToDeleteImage'));
     }
   };
 
@@ -190,11 +190,11 @@ export default function EditAdPage() {
 
   const validateStep1 = () => {
     if (!step1Data.categoryId) {
-      toast.error(isRTL ? 'لطفا دسته‌بندی را انتخاب کنید' : 'Please select a category');
+      toast.error(t('dashboard.pleaseSelectACategory'));
       return false;
     }
     if (!step1Data.showInAllCities && !step1Data.cityId) {
-      toast.error(isRTL ? 'لطفا شهر را انتخاب کنید' : 'Please select a city');
+      toast.error(t('dashboard.pleaseSelectACity'));
       return false;
     }
     return true;
@@ -236,7 +236,7 @@ export default function EditAdPage() {
     setStep2Errors(errorMap);
 
     if (errors.length > 0) {
-      toast.error(isRTL ? 'لطفا فیلدهای الزامی را تکمیل کنید' : 'Please fill in all required fields');
+      toast.error(t('dashboard.pleaseFillInAllRequiredFields'));
       return false;
     }
 
@@ -251,11 +251,11 @@ export default function EditAdPage() {
     }
     
     if (!step3Data.title.trim() || step3Data.title.trim().length < 3) {
-      toast.error(isRTL ? 'عنوان باید حداقل 3 کاراکتر باشد' : 'Title must be at least 3 characters');
+      toast.error(t('dashboard.titleMustBeAtLeast3Characters'));
       return false;
     }
     if (!step3Data.description.trim() || step3Data.description.trim().length < 10) {
-      toast.error(isRTL ? 'توضیحات باید حداقل 10 کاراکتر باشد' : 'Description must be at least 10 characters');
+      toast.error(t('dashboard.descriptionMustBeAtLeast10Characters'));
       return false;
     }
     return true;
@@ -296,7 +296,7 @@ export default function EditAdPage() {
     // Validate total images count (existing + new) doesn't exceed 3
     const totalImages = (existingImages?.length || 0) + newImageFiles.length;
     if (totalImages > 3) {
-      toast.error(isRTL ? 'شما می‌توانید حداکثر 3 عکس برای آگهی داشته باشید' : 'You can have a maximum of 3 images for an ad');
+      toast.error(t('dashboard.youCanOnlyHave3Images'));
       return;
     }
     
@@ -356,13 +356,13 @@ export default function EditAdPage() {
         await Promise.all(uploadPromises);
       }
 
-      toast.success(isRTL ? 'آگهی با موفقیت به‌روزرسانی شد!' : 'Ad updated successfully!');
+      toast.success(t('dashboard.adUpdatedSuccessfully'));
       setTimeout(() => {
         router.push('/dashboard');
       }, 1500);
     } catch (error: any) {
       console.error('Update ad error:', error);
-      let errorMessage = isRTL ? 'خطا در به‌روزرسانی آگهی' : 'Failed to update ad';
+      let errorMessage = t('dashboard.failedToUpdateAd');
       
       if (error?.response?.data) {
         const errorData = error.response.data;
@@ -400,7 +400,7 @@ export default function EditAdPage() {
   return (
     <div className="w-full min-h-screen overflow-visible">
       <div className="container mx-auto px-4 py-8 max-w-xl pb-40 md:pb-8 overflow-visible">
-        <h1 className="text-3xl font-bold mb-8">{isRTL ? 'ویرایش آگهی' : 'Edit Ad'}</h1>
+        <h1 className="text-3xl font-bold mb-8">{t('dashboard.editAd')}</h1>
 
         {/* Progress Steps */}
         <div className="mb-8">
@@ -425,9 +425,9 @@ export default function EditAdPage() {
                       {step}
                     </div>
                     <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${currentStep >= step ? 'text-primary-600' : 'text-gray-600'} ${isClickable ? 'hover:text-primary-700' : ''}`}>
-                      {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
-                      {step === 2 && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
-                      {step === 3 && (isRTL ? 'عنوان' : 'Title')}
+                      {step === 1 && (t('dashboard.categoryAndCity'))}
+                      {step === 2 && (t('dashboard.detailsAndImages'))}
+                      {step === 3 && (t('ad.title'))}
                     </span>
                   </div>
                   {step < 3 && (
@@ -447,11 +447,11 @@ export default function EditAdPage() {
           {/* Step 1: Category & City */}
           {currentStep === 1 && (
             <div className="space-y-6 overflow-visible">
-              <h2 className="text-2xl font-bold mb-4">{isRTL ? 'انتخاب دسته‌بندی و شهر' : 'Select Category & City'}</h2>
+              <h2 className="text-2xl font-bold mb-4">{t('dashboard.selectCategoryAndCity')}</h2>
               
               <div className="space-y-4">
                 <div className="relative z-10 w-full md:w-1/2">
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'دسته‌بندی' : 'Category'}</label>
+                  <label className="block text-sm font-medium mb-2">{t('common.category')}</label>
                   <select
                     value={step1Data.categoryId}
                     onChange={(e) => handleStep1Change('categoryId', e.target.value)}
@@ -459,7 +459,7 @@ export default function EditAdPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 relative z-20"
                     style={{ zIndex: 1000 }}
                   >
-                    <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                    <option value="">{t('common.select')}</option>
                     {categories?.filter(cat => !cat.parentId && cat.categoryType).map((cat) => (
                       <option key={cat.id} value={cat.id}>
                         {getLocalizedCategoryName(cat.name, locale)}
@@ -470,7 +470,7 @@ export default function EditAdPage() {
 
                 <div className="relative z-10 w-full md:w-1/2">
                   <label className={`block text-sm font-medium mb-2 ${step1Data.showInAllCities ? 'text-gray-400' : ''}`}>
-                    {isRTL ? 'شهر' : 'City'}
+                    {t('common.city')}
                   </label>
                   <select
                     value={step1Data.cityId}
@@ -484,7 +484,7 @@ export default function EditAdPage() {
                     }`}
                     style={{ zIndex: 1000 }}
                   >
-                    <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                    <option value="">{t('common.select')}</option>
                     {filteredCities.map((city) => (
                       <option key={city.id} value={city.id}>
                         {getLocalizedName(city.name, locale)}
@@ -525,7 +525,7 @@ export default function EditAdPage() {
                       </svg>
                     </div>
                     <span className="text-sm font-medium text-gray-700 group-hover:text-primary-600 transition-colors">
-                      {isRTL ? 'نمایش در کل شهرها' : 'Show in all cities'}
+                      {t('dashboard.showInAllCities')}
                     </span>
                   </label>
                 </div>
@@ -536,7 +536,7 @@ export default function EditAdPage() {
           {/* Step 2: Category-specific Details & Images */}
           {currentStep === 2 && (
             <div className="space-y-6 w-full">
-              <h2 className="text-2xl font-bold mb-4">{isRTL ? 'جزئیات و تصاویر' : 'Details & Images'}</h2>
+              <h2 className="text-2xl font-bold mb-4">{t('dashboard.detailsAndImages')}</h2>
               
               {/* Category-specific Forms */}
               {categoryType && (
@@ -575,7 +575,7 @@ export default function EditAdPage() {
               {/* Existing Images */}
               {existingImages && existingImages.length > 0 && (
                 <div className="border-t border-gray-300 pt-6">
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'عکس‌های موجود' : 'Current Images'}</label>
+                  <label className="block text-sm font-medium mb-2">{t('dashboard.currentImages')}</label>
                   <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
                     {existingImages.map((img) => (
                       <div key={img.id} className="relative group">
@@ -605,9 +605,9 @@ export default function EditAdPage() {
               {/* Image Upload */}
               <div className="border-t border-gray-300 pt-6">
                 <label className="block text-sm font-medium mb-2">
-                  {isRTL ? 'تصاویر' : 'Images'} 
+                  {t('common.images')} 
                   <span className="text-gray-500 text-xs ml-2">
-                    ({isRTL ? 'حداکثر 3 عکس' : 'Max 3 images'}: {(existingImages?.length || 0) + newImageFiles.length}/3)
+                    ({t('dashboard.max3Images')}: {(existingImages?.length || 0) + newImageFiles.length}/3)
                   </span>
                 </label>
                 <div
@@ -640,10 +640,11 @@ export default function EditAdPage() {
                   />
                   <p className="text-gray-600 pointer-events-none text-sm">
                     {(existingImages?.length || 0) + newImageFiles.length >= 3
-                      ? (isRTL ? 'حداکثر 3 عکس آپلود شده است' : 'Maximum 3 images uploaded')
+                      ? (t('dashboard.maximum3ImagesUploaded'))
                       : isDragActive
-                      ? (isRTL ? 'تصاویر را اینجا رها کنید' : 'Drop images here')
-                      : (isRTL ? 'تصاویر را بکشید و رها کنید یا کلیک کنید' : 'Drag and drop images or click to select')}
+                      ? (t('createAd.dropImagesHere'))
+                      : (t('createAd.dragAndDropImagesOrClickToSelect'))
+                      }
                   </p>
                 </div>
 
@@ -677,13 +678,13 @@ export default function EditAdPage() {
           {/* Step 3: Basic Info */}
           {currentStep === 3 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold mb-4">{isRTL ? 'عنوان' : 'Title'}</h2>
+              <h2 className="text-2xl font-bold mb-4">{t('ad.title')}</h2>
               
               {/* Title and Description - Hidden for Jobs and Misc */}
               {categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
+                    <label className="block text-sm font-medium mb-2">{t('ad.adTitle')}</label>
                     <input
                       type="text"
                       value={step3Data.title}
@@ -691,19 +692,19 @@ export default function EditAdPage() {
                       required
                       placeholder={
                         categoryType === MainCategoryType.REAL_ESTATE
-                          ? (isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center')
+                          ? (t('createAd.exampleApartment'))
                           : categoryType === MainCategoryType.VEHICLES
-                          ? (isRTL ? 'مثال: BMW 320d، دوچرخه برقی، موتورسیکلت و...' : 'Example: BMW 320d, Electric bike, Motorcycle, etc.')
+                          ? (t('createAd.exampleVehicle'))
                           : categoryType === MainCategoryType.SERVICES
-                          ? (isRTL ? 'مثال: خدمات تعمیرات ساختمان' : 'Example: Building repair services')
-                          : (isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title')
+                          ? (t('createAd.exampleService'))
+                          : (t('createAd.enterAdTitle'))
                       }
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">{isRTL ? 'توضیحات' : 'Description'}</label>
+                    <label className="block text-sm font-medium mb-2">{t('ad.description')}</label>
                     <textarea
                       value={step3Data.description}
                       onChange={(e) => handleStep3Change('description', e.target.value)}
@@ -711,12 +712,12 @@ export default function EditAdPage() {
                       rows={8}
                       placeholder={
                         categoryType === MainCategoryType.REAL_ESTATE
-                          ? (isRTL ? 'توضیحات کامل ملک: متراژ، موقعیت، امکانات و...' : 'Full property description: area, location, features...')
+                          ? (t('createAd.fullPropertyDescription'))
                           : categoryType === MainCategoryType.VEHICLES
-                          ? (isRTL ? 'توضیحات وسیله نقلیه: وضعیت، کارکرد، ویژگی‌ها، امکانات و...' : 'Vehicle description: condition, mileage, features, equipment...')
+                          ? (t('createAd.fullVehicleDescription'))
                           : categoryType === MainCategoryType.SERVICES
-                          ? (isRTL ? 'توضیحات خدمات: تجربه، تخصص، گواهینامه‌ها و...' : 'Service description: experience, expertise, certificates...')
-                          : (isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...')
+                          ? (t('createAd.fullServiceDescription'))
+                          : (t('createAd.writeDetailedDescriptionHere'))
                       }
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
@@ -726,7 +727,7 @@ export default function EditAdPage() {
 
               {/* Privacy Settings */}
               <div className="border-t border-gray-200 pt-6 mt-6">
-                <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تنظیمات حریم خصوصی' : 'Privacy Settings'}</h3>
+                <h3 className="text-lg font-semibold mb-4">{t('dashboard.privacySettings')}</h3>
                 <div className="space-y-3">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
@@ -736,7 +737,7 @@ export default function EditAdPage() {
                       className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <span className="text-sm text-gray-700">
-                      {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
+                      {t('dashboard.showMyEmailPublicly')}
                     </span>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer">
@@ -747,7 +748,7 @@ export default function EditAdPage() {
                       className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <span className="text-sm text-gray-700">
-                      {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
+                      {t('dashboard.showMyPhonePublicly')}
                     </span>
                   </label>
                 </div>
@@ -760,22 +761,22 @@ export default function EditAdPage() {
             <div>
               {currentStep > 1 && (
                 <Button type="button" variant="outline" onClick={handleBack}>
-                  {isRTL ? 'قبلی' : 'Back'}
+                  {t('common.back')}
                 </Button>
               )}
             </div>
             <div className="flex gap-4">
               {currentStep < 3 ? (
                 <Button type="button" onClick={handleNext} className="flex-1">
-                  {isRTL ? 'بعدی' : 'Next'}
+                  {t('common.next')}
                 </Button>
               ) : currentStep === 3 ? (
                 <Button type="submit" className="flex-1" disabled={updateAdMutation.isPending}>
-                  {updateAdMutation.isPending ? (isRTL ? 'در حال به‌روزرسانی...' : 'Updating...') : (isRTL ? 'به‌روزرسانی آگهی' : 'Update Ad')}
+                  {updateAdMutation.isPending ? (t('dashboard.updating')) : (t('dashboard.updateAd'))}
                 </Button>
               ) : null}
               <Button type="button" variant="outline" onClick={() => router.back()}>
-                {isRTL ? 'لغو' : 'Cancel'}
+                {t('common.cancel')}
               </Button>
             </div>
           </div>

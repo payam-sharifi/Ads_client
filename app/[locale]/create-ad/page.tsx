@@ -103,7 +103,7 @@ export default function CreateAdPage() {
     setImageFiles((prev) => {
       const total = prev.length + acceptedFiles.length;
       if (total > 3) {
-        toast.error(isRTL ? 'شما می‌توانید حداکثر 3 عکس آپلود کنید' : 'You can upload a maximum of 3 images');
+        toast.error(t('createAd.maxImagesError'));
         const remaining = 3 - prev.length;
         return remaining > 0 ? [...prev, ...acceptedFiles.slice(0, remaining)] : prev;
       }
@@ -159,11 +159,11 @@ export default function CreateAdPage() {
 
   const validateStep1 = () => {
     if (!step1Data.categoryId) {
-      toast.error(isRTL ? 'لطفا دسته‌بندی را انتخاب کنید' : 'Please select a category');
+      toast.error(t('createAd.categoryRequired'));
       return false;
     }
     if (!step1Data.showInAllCities && !step1Data.cityId) {
-      toast.error(isRTL ? 'لطفا شهر را انتخاب کنید' : 'Please select a city');
+      toast.error(t('createAd.cityRequired'));
       return false;
     }
     // Save city to store
@@ -181,16 +181,16 @@ export default function CreateAdPage() {
     // For Misc category, validate title and description in step 2
     if (categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) {
       if (!step2Data.title.trim() || step2Data.title.trim().length < 3) {
-        toast.error(isRTL ? 'عنوان باید حداقل 3 کاراکتر باشد' : 'Title must be at least 3 characters');
+        toast.error(t('createAd.titleRequired'));
         return false;
       }
       if (!step2Data.description.trim() || step2Data.description.trim().length < 10) {
-        toast.error(isRTL ? 'توضیحات باید حداقل 10 کاراکتر باشد' : 'Description must be at least 10 characters');
+        toast.error(t('createAd.descriptionRequired'));
         return false;
       }
       // Validate price if not negotiable
       if (!step2Data.isNegotiable && (!step2Data.price || step2Data.price <= 0)) {
-        toast.error(isRTL ? 'لطفا قیمت را وارد کنید' : 'Please enter a price');
+        toast.error(t('createAd.priceRequired'));
         return false;
       }
       return true;
@@ -228,7 +228,7 @@ export default function CreateAdPage() {
     setStep3Errors(errorMap);
 
     if (errors.length > 0) {
-      toast.error(isRTL ? 'لطفا فیلدهای الزامی را تکمیل کنید' : 'Please fill in all required fields');
+      toast.error(t('createAd.allFieldsRequired'));
       return false;
     }
 
@@ -243,11 +243,11 @@ export default function CreateAdPage() {
     }
     
     if (!step2Data.title.trim() || step2Data.title.trim().length < 3) {
-      toast.error(isRTL ? 'عنوان باید حداقل 3 کاراکتر باشد' : 'Title must be at least 3 characters');
+      toast.error(t('createAd.titleRequired'));
       return false;
     }
     if (!step2Data.description.trim() || step2Data.description.trim().length < 10) {
-      toast.error(isRTL ? 'توضیحات باید حداقل 10 کاراکتر باشد' : 'Description must be at least 10 characters');
+      toast.error(t('createAd.descriptionRequired'));
       return false;
     }
     return true;
@@ -300,12 +300,12 @@ export default function CreateAdPage() {
     // Validate images based on category
     const requiresImages = categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME;
     if (requiresImages && imageFiles.length === 0) {
-      toast.error(isRTL ? 'حداقل یک تصویر الزامی است' : 'At least one image is required');
+      toast.error(t('createAd.imageRequired'));
       return;
     }
 
     if (imageFiles.length > 3) {
-      toast.error(isRTL ? 'شما می‌توانید حداکثر 3 عکس آپلود کنید' : 'You can upload a maximum of 3 images');
+      toast.error(t('createAd.maxImagesError'));
       return;
     }
     
@@ -380,13 +380,13 @@ export default function CreateAdPage() {
         }
       }
 
-      toast.success(isRTL ? 'آگهی با موفقیت ایجاد شد! پس از بررسی منتشر خواهد شد.' : 'Ad created successfully! It will be reviewed before being published.');
+      toast.success(t('createAd.successAds'));
       setTimeout(() => {
         router.push('/dashboard');
       }, 1500);
     } catch (error: any) {
       console.error('Create ad error:', error);
-      let errorMessage = isRTL ? 'خطا در ایجاد آگهی' : 'Failed to create ad';
+      let errorMessage = t('createAd.error');
       
       if (error?.response?.data) {
         const errorData = error.response.data;
@@ -414,7 +414,7 @@ export default function CreateAdPage() {
   return (
     <div className="w-full min-h-screen overflow-visible">
       <div className="container mx-auto px-4 py-8 max-w-xl pb-40 md:pb-8 overflow-visible">
-        <h1 className="text-3xl font-bold mb-8">{isRTL ? 'ثبت آگهی جدید' : 'Create New Ad'}</h1>
+        <h1 className="text-3xl font-bold mb-8">{t('createAd.title')}</h1>
 
         {/* Progress Steps */}
         <div className="mb-8">
@@ -439,10 +439,10 @@ export default function CreateAdPage() {
                       {step}
                     </div>
                     <span className={`ml-1 md:ml-2 text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${currentStep >= step ? 'text-primary-600' : 'text-gray-600'} ${isClickable ? 'hover:text-primary-700' : ''}`}>
-                      {step === 1 && (isRTL ? 'دسته‌بندی و شهر' : 'Category & City')}
-                      {step === 2 && (categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) && (isRTL ? 'اطلاعات و تصاویر' : 'Info & Images')}
-                      {step === 2 && (categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME) && (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')}
-                      {step === 3 && (isRTL ? 'اطلاعات پایه' : 'Basic Info')}
+                      {step === 1 && (t('createAd.categoryAndCity'))}
+                      {step === 2 && (categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) && (t('createAd.infoAndImages'))}
+                      {step === 2 && (categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME) && (t('createAd.detailsAndImages'))}
+                      {step === 3 && (t('createAd.basicInfo'))}
                     </span>
                   </div>
                   {(((categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) && step < 2) || ((categoryType !== MainCategoryType.MISC && categoryType !== MainCategoryType.PERSONAL_HOME) && step < 3)) && (
@@ -474,7 +474,7 @@ export default function CreateAdPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 relative z-20"
                   style={{ zIndex: 1000 }}
                 >
-                  <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                  <option value="">{t('common.select')}</option>
                   {categories?.filter(cat => !cat.parentId && cat.categoryType).map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {getLocalizedCategoryName(cat.name, locale)}
@@ -485,7 +485,7 @@ export default function CreateAdPage() {
 
               <div className="relative z-10 w-full md:w-1/2">
                 <label className={`block text-sm font-medium mb-2 ${step1Data.showInAllCities ? 'text-gray-400' : ''}`}>
-                  {isRTL ? 'شهر' : 'City'}
+                  {t('common.city')}
                 </label>
                 <select
                   value={step1Data.cityId}
@@ -499,7 +499,7 @@ export default function CreateAdPage() {
                   }`}
                   style={{ zIndex: 1000 }}
                 >
-                  <option value="">{isRTL ? 'انتخاب کنید' : 'Please select'}</option>
+                  <option value="">{ t('common.select')}</option>
                   {filteredCities.map((city) => (
                     <option key={city.id} value={city.id}>
                       {getLocalizedName(city.name, locale)}
@@ -540,7 +540,7 @@ export default function CreateAdPage() {
                     </svg>
                   </div>
                   <span className="text-sm font-medium text-gray-700 group-hover:text-primary-600 transition-colors">
-                    {isRTL ? 'نمایش در کل شهرها' : 'Show in all cities'}
+                    {t('createAd.showInAllCities')}
                   </span>
                 </label>
               </div>
@@ -548,7 +548,7 @@ export default function CreateAdPage() {
 
             {selectedCityId && (
               <p className="text-sm text-gray-500 mt-1">
-                {isRTL ? 'شهر انتخاب شده از صفحه اصلی' : 'City selected from homepage'}
+                {t('createAd.citySelectedFromHomepage')}
               </p>
             )}
           </div>
@@ -559,8 +559,8 @@ export default function CreateAdPage() {
           <div className="space-y-6 w-full">
             <h2 className="text-2xl font-bold mb-4">
               {(categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) 
-                ? (isRTL ? 'اطلاعات و تصاویر' : 'Info & Images')
-                : (isRTL ? 'جزئیات و تصاویر' : 'Details & Images')
+                ? (t('createAd.infoAndImages'))
+                : (t('createAd.detailsAndImages'))
               }
             </h2>
             
@@ -568,32 +568,32 @@ export default function CreateAdPage() {
             {(categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME) && (
               <>
                 <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
+                  <label className="block text-sm font-medium mb-2">{t('createAd.title')}</label>
                   <input
                     type="text"
                     value={step2Data.title}
                     onChange={(e) => handleStep2Change('title', e.target.value)}
                     required
-                    placeholder={isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title'}
+                    placeholder={t('createAd.adTitlePlaceholder')}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'توضیحات' : 'Description'}</label>
+                  <label className="block text-sm font-medium mb-2">{t('createAd.description')}</label>
                   <textarea
                     value={step2Data.description}
                     onChange={(e) => handleStep2Change('description', e.target.value)}
                     required
                     rows={8}
-                    placeholder={isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...'}
+                    placeholder={t('createAd.descriptionPlaceholder')}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 
                 {/* Price Field for MISC */}
                 <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-lg font-semibold mb-4">{isRTL ? 'قیمت' : 'Price'}</h3>
+                  <h3 className="text-lg font-semibold mb-4">{t('createAd.price')}</h3>
                   <div className="space-y-4">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -608,13 +608,13 @@ export default function CreateAdPage() {
                         className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                       />
                       <span className="text-sm text-gray-700">
-                        {isRTL ? 'قیمت توافقی' : 'Negotiable Price'}
+                        {t('createAd.negotiablePrice')}
                       </span>
                     </label>
                     {!step2Data.isNegotiable && (
                       <div>
                         <label className="block text-sm font-medium mb-2">
-                          {isRTL ? 'قیمت (€)' : 'Price (€)'} <span className="text-primary-500">*</span>
+                          {t('createAd.price')} <span className="text-primary-500">*</span>
                         </label>
                         <input
                           type="number"
@@ -624,7 +624,7 @@ export default function CreateAdPage() {
                             const numValue = value === '' ? undefined : Math.round(parseFloat(value) || 0);
                             handleStep2Change('price', numValue);
                           }}
-                          placeholder={isRTL ? 'قیمت را وارد کنید' : 'Enter price'}
+                          placeholder={t('createAd.pricePlaceholder')}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                           dir="ltr"
                           min="0"
@@ -638,7 +638,7 @@ export default function CreateAdPage() {
 
                 {/* Privacy Settings for MISC */}
                 <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تنظیمات حریم خصوصی' : 'Privacy Settings'}</h3>
+                  <h3 className="text-lg font-semibold mb-4">{t('createAd.privacySettings')}</h3>
                   <div className="space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -648,7 +648,7 @@ export default function CreateAdPage() {
                         className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                       />
                       <span className="text-sm text-gray-700">
-                        {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
+                        {t('createAd.showMyEmailPublicly')}
                       </span>
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
@@ -659,7 +659,7 @@ export default function CreateAdPage() {
                         className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                       />
                       <span className="text-sm text-gray-700">
-                        {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
+                        {t('createAd.showMyPhonePublicly')}
                       </span>
                     </label>
                   </div>
@@ -704,9 +704,9 @@ export default function CreateAdPage() {
             {/* Image Upload */}
             <div className={`border-t border-gray-300 pt-6 ${categoryType === MainCategoryType.MISC || categoryType === MainCategoryType.PERSONAL_HOME ? '' : 'mt-6'}`}>
               <label className="block text-sm font-medium mb-2">
-                {isRTL ? 'تصاویر' : 'Images'} 
+                {t('createAd.images')} 
                 <span className="text-gray-500 text-xs ml-2">
-                  ({isRTL ? 'حداکثر 3 عکس' : 'Max 3 images'}: {imageFiles.length}/3)
+                  ({t('createAd.maxImages')}: {imageFiles.length}/3)
                 </span>
               </label>
               <div
@@ -739,10 +739,11 @@ export default function CreateAdPage() {
                 />
                 <p className="text-gray-600 pointer-events-none text-sm">
                   {imageFiles.length >= 3
-                    ? (isRTL ? 'حداکثر 3 عکس آپلود شده است' : 'Maximum 3 images uploaded')
+                    ? (t('createAd.maxImagesUploaded'))
                     : isDragActive
-                    ? (isRTL ? 'تصاویر را اینجا رها کنید' : 'Drop images here')
-                    : (isRTL ? 'تصاویر را بکشید و رها کنید یا کلیک کنید' : 'Drag and drop images or click to select')}
+                    ? (t('createAd.dropImagesHere'))
+                    : (t('createAd.dragAndDropImagesOrClickToSelect'))
+                  }
                 </p>
               </div>
 
@@ -776,13 +777,13 @@ export default function CreateAdPage() {
         {/* Step 3: Basic Info */}
         {currentStep === 3 && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-4">{isRTL ? 'عنوان' : 'Title'}</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('createAd.onlyadTitle')}</h2>
             
             {/* Title and Description - Hidden for Jobs and Misc (will be in Step 2 for Jobs, not needed for Misc) */}
             {categoryType !== MainCategoryType.JOBS && categoryType !== MainCategoryType.MISC && (
               <>
                 <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'عنوان آگهی' : 'Ad Title'}</label>
+                  <label className="block text-sm font-medium mb-2">{t('createAd.adTitle')}</label>
                   <input
                     type="text"
                     value={step2Data.title}
@@ -790,19 +791,19 @@ export default function CreateAdPage() {
                     required
                     placeholder={
                       categoryType === MainCategoryType.REAL_ESTATE
-                        ? (isRTL ? 'مثال: آپارتمان 3 خوابه در مرکز شهر' : 'Example: 3-bedroom apartment in city center')
+                        ? (t('createAd.exampleApartment'))
                         : categoryType === MainCategoryType.VEHICLES
-                        ? (isRTL ? 'مثال: BMW 320d، دوچرخه برقی، موتورسیکلت و...' : 'Example: BMW 320d, Electric bike, Motorcycle, etc.')
+                        ? (t('createAd.exampleVehicle'))
                         : categoryType === MainCategoryType.SERVICES
-                        ? (isRTL ? 'مثال: خدمات تعمیرات ساختمان' : 'Example: Building repair services')
-                        : (isRTL ? 'عنوان آگهی را وارد کنید' : 'Enter ad title')
+                        ? (t('createAd.exampleService'))
+                        : (t('createAd.enterAdTitle'))
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">{isRTL ? 'توضیحات' : 'Description'}</label>
+                  <label className="block text-sm font-medium mb-2">{t('createAd.description')}</label>
                   <textarea
                     value={step2Data.description}
                     onChange={(e) => handleStep2Change('description', e.target.value)}
@@ -810,12 +811,12 @@ export default function CreateAdPage() {
                     rows={8}
                     placeholder={
                       categoryType === MainCategoryType.REAL_ESTATE
-                        ? (isRTL ? 'توضیحات کامل ملک: متراژ، موقعیت، امکانات و...' : 'Full property description: area, location, features...')
+                        ? (t('createAd.fullDescription'))
                         : categoryType === MainCategoryType.VEHICLES
-                        ? (isRTL ? 'توضیحات وسیله نقلیه: وضعیت، کارکرد، ویژگی‌ها، امکانات و...' : 'Vehicle description: condition, mileage, features, equipment...')
+                        ? (t('createAd.fullVehicleDescription'))
                         : categoryType === MainCategoryType.SERVICES
-                        ? (isRTL ? 'توضیحات خدمات: تجربه، تخصص، گواهینامه‌ها و...' : 'Service description: experience, expertise, certificates...')
-                        : (isRTL ? 'توضیحات کامل آگهی را اینجا بنویسید...' : 'Write detailed description here...')
+                        ? (t('createAd.fullServiceDescription'))
+                        : (t('createAd.fullDescription'))
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
@@ -825,7 +826,7 @@ export default function CreateAdPage() {
 
             {/* Privacy Settings */}
             <div className="border-t border-gray-200 pt-6 mt-6">
-              <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تنظیمات حریم خصوصی' : 'Privacy Settings'}</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('createAd.privacySettings')}</h3>
               <div className="space-y-3">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
@@ -835,7 +836,7 @@ export default function CreateAdPage() {
                     className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                   />
                   <span className="text-sm text-gray-700">
-                    {isRTL ? 'نمایش عمومی ایمیل من' : 'Show my email publicly'}
+                    {t('createAd.showEmailPublicly')}
                   </span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer">
@@ -846,7 +847,7 @@ export default function CreateAdPage() {
                     className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                   />
                   <span className="text-sm text-gray-700">
-                    {isRTL ? 'نمایش عمومی شماره موبایل من' : 'Show my phone number publicly'}
+                    {t('createAd.showPhonePublicly')}
                   </span>
                 </label>
               </div>
@@ -859,7 +860,7 @@ export default function CreateAdPage() {
           <div>
             {currentStep > 1 && (
               <Button type="button" variant="outline" onClick={handleBack}>
-                {isRTL ? 'قبلی' : 'Back'}
+                {t('common.back')}
               </Button>
             )}
           </div>
@@ -868,27 +869,27 @@ export default function CreateAdPage() {
               // For MISC and PERSONAL_HOME, step 2 is the final step
               currentStep === 2 ? (
                 <Button type="submit" className="flex-1" disabled={createAdMutation.isPending}>
-                  {createAdMutation.isPending ? (isRTL ? 'در حال ایجاد...' : 'Creating...') : (isRTL ? 'ثبت آگهی' : 'Create Ad')}
+                  {createAdMutation.isPending ?  t('createAd.creating') :  t('createAd.submitAd')}
                 </Button>
               ) : (
                 <Button type="button" onClick={handleNext} className="flex-1">
-                  {isRTL ? 'بعدی' : 'Next'}
+                  {t('common.next')}
                 </Button>
               )
             ) : (
               // For other categories, use the original 3-step flow
               currentStep < 3 ? (
                 <Button type="button" onClick={handleNext} className="flex-1">
-                  {isRTL ? 'بعدی' : 'Next'}
+                  {t('common.next')}
                 </Button>
               ) : currentStep === 3 ? (
                 <Button type="submit" className="flex-1" disabled={createAdMutation.isPending}>
-                  {createAdMutation.isPending ? (isRTL ? 'در حال ایجاد...' : 'Creating...') : (isRTL ? 'ثبت آگهی' : 'Create Ad')}
+                  {createAdMutation.isPending ? t('createAd.creating') : t('createAd.submitAd')}
                 </Button>
               ) : null
             )}
             <Button type="button" variant="outline" onClick={() => router.back()}>
-              {isRTL ? 'لغو' : 'Cancel'}
+              {t('common.cancel')}
             </Button>
           </div>
         </div>

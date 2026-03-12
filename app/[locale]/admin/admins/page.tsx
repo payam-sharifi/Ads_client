@@ -78,14 +78,14 @@ export default function AdminAdminsPage() {
       if (hasPerm) {
         // Revoke permission (remove it)
         await revokePermissionMutation.mutateAsync({ adminId, permissionId });
-        toast.success(isRTL ? 'دسترسی حذف شد' : 'Permission revoked');
+        toast.success(t('admin.permissionRevoked'));
       } else {
         // Assign permission (add it)
         await assignPermissionMutation.mutateAsync({ adminId, permissionId });
-        toast.success(isRTL ? 'دسترسی اضافه شد' : 'Permission assigned');
+        toast.success(t('admin.permissionAssigned'));
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || (isRTL ? 'خطا در به‌روزرسانی دسترسی' : 'Failed to update permission'));
+      toast.error(error?.response?.data?.message || t('admin.failedToUpdatePermission'));
     }
   };
 
@@ -94,7 +94,7 @@ export default function AdminAdminsPage() {
       await logoutMutation.mutateAsync();
       router.push('/login');
     } catch (error) {
-      toast.error(locale === 'fa' ? 'خروج ناموفق بود' : 'Failed to logout');
+      toast.error(t('admin.failedToLogout'));
     }
   };
 
@@ -116,7 +116,7 @@ export default function AdminAdminsPage() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <span>{isRTL ? 'بازگشت' : 'Back'}</span>
+          <span>{t('admin.back')}</span>
         </button>
         <button
           onClick={handleLogout}
@@ -126,7 +126,7 @@ export default function AdminAdminsPage() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          <span>{isRTL ? 'خروج' : 'Logout'}</span>
+          <span>{t('admin.logout')}</span>
         </button>
       </div>
 
@@ -187,8 +187,8 @@ export default function AdminAdminsPage() {
             <div className="mt-6 flex items-center justify-between border-t border-gray-200 pt-4" dir={isRTL ? 'rtl' : 'ltr'}>
               <div className="text-sm text-gray-700">
                 {locale === 'fa' 
-                  ? `نمایش ${(page - 1) * limit + 1} تا ${Math.min(page * limit, adminUsers.length)} از ${adminUsers.length} مدیر`
-                  : `Showing ${(page - 1) * limit + 1} to ${Math.min(page * limit, adminUsers.length)} of ${adminUsers.length} admins`}
+                  ? `${t('admin.showing')} ${(page - 1) * limit + 1} ${t('admin.to')} ${Math.min(page * limit, adminUsers.length)} ${t('admin.of')} ${adminUsers.length} ${t('admin.admins')}`
+                  : `${t('admin.showing')} ${(page - 1) * limit + 1} ${t('admin.to')} ${Math.min(page * limit, adminUsers.length)} ${t('admin.of')} ${adminUsers.length} ${t('admin.admins')}`}
               </div>
               <div className="flex gap-2">
                 <button
@@ -199,10 +199,10 @@ export default function AdminAdminsPage() {
                   disabled={page === 1}
                   className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  {locale === 'fa' ? 'قبلی' : 'Previous'}
+                  {t('admin.previous')}
                 </button>
                 <span className="px-4 py-2 text-sm text-gray-700">
-                  {locale === 'fa' ? `صفحه ${page} از ${totalAdminUsers}` : `Page ${page} of ${totalAdminUsers}`}
+                  `${t('admin.page')} ${page} ${t('admin.of')} ${totalAdminUsers}`
                 </span>
                 <button
                   onClick={() => {
@@ -212,7 +212,7 @@ export default function AdminAdminsPage() {
                   disabled={page >= totalAdminUsers}
                   className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  {locale === 'fa' ? 'بعدی' : 'Next'}
+                  {t('admin.next')}
                 </button>
               </div>
             </div>
@@ -409,7 +409,7 @@ function PermissionsModal({
         <div className="flex-1 overflow-y-auto pr-1">
           {isLoading ? (
             <div className="text-center py-4 text-gray-500 text-sm">
-              {isRTL ? 'در حال بارگذاری...' : 'Loading...'}
+             {t('admin.loading')}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">

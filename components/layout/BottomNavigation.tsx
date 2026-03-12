@@ -9,7 +9,7 @@ import { useCityStore } from '@/lib/stores/cityStore';
 
 export default function BottomNavigation() {
   const pathname = usePathname();
-  const { isRTL } = useI18n();
+  const {  t } = useI18n();
   const { isAuthenticated, user } = useAuthStore();
   const { selectedCityId } = useCityStore();
   // Only fetch unread count when authenticated - hook already handles this
@@ -35,7 +35,7 @@ export default function BottomNavigation() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       ),
-      label: isRTL ? 'آگهی‌ها' : 'Anzeigen',
+      label: t('nav.Ads'),
       active: pathname === '/',
     },
     {
@@ -53,7 +53,7 @@ export default function BottomNavigation() {
           )}
         </div>
       ),
-      label: isRTL ? 'چت و تماس' : 'Chat & Kontakt',
+      label: t('nav.chat'),
       active: pathname?.startsWith('/messages'),
     },
   ];
@@ -69,7 +69,7 @@ export default function BottomNavigation() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
       ),
-      label: isRTL ? 'پنل مدیریت' : 'Admin',
+      label: t('nav.admin'),
       active: pathname === '/admin' || (pathname?.startsWith('/admin') && pathname !== '/admin/ads'),
       highlight: true,
     });
@@ -81,7 +81,7 @@ export default function BottomNavigation() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h10m-7 4h7M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
-      label: isRTL ? 'آگهی‌ها' : 'Ads',
+      label: t('nav.Ads'),
       active: pathname?.startsWith('/admin/ads'),
     });
   } else {
@@ -94,7 +94,7 @@ export default function BottomNavigation() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
       ),
-      label: isRTL ? 'ثبت آگهی' : 'Anzeige aufgeben',
+      label: t('footer.postAd'),
       active: pathname === '/create-ad',
       highlight: true,
     });
@@ -106,7 +106,7 @@ export default function BottomNavigation() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
         </svg>
       ),
-      label: isRTL ? 'نشان‌ها' : 'Gespeichert',
+      label: t('footer.bookmarked'),
       active: pathname === '/dashboard/bookmarked',
     });
   }
@@ -120,7 +120,7 @@ export default function BottomNavigation() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       ),
-    label: isRTL ? 'Ads من' : 'Mein Ads',
+    label: t('nav.myAds'),
     active: pathname === '/dashboard' || pathname?.startsWith('/dashboard'),
   });
 

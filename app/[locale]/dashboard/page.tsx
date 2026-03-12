@@ -241,7 +241,7 @@ export default function DashboardPage() {
         <div className="flex gap-2">
           <Link href="/profile">
             <Button variant="outline" size="sm" className="hidden md:flex">
-              {isRTL ? 'پروفایل' : 'Profile'}
+              {t('dashboard.profile')}
             </Button>
           </Link>
           <Link href="/create-ad">
@@ -252,7 +252,7 @@ export default function DashboardPage() {
 
       <div className="mb-4 flex justify-between items-center">
         <p className="text-gray-600">
-          {isRTL ? 'خوش آمدید' : 'Willkommen'}, {user.name}!
+          {t('common.welcome')}, {user.name}!
         </p>
         {/* Mobile: Profile link and Logout button */}
         <div className="md:hidden flex items-center gap-3">
@@ -261,7 +261,7 @@ export default function DashboardPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              <span className="text-sm">{isRTL ? 'پروفایل' : 'Profile'}</span>
+              <span className="text-sm">{t('dashboard.profile')}</span>
             </button>
           </Link>
           <button
@@ -270,7 +270,7 @@ export default function DashboardPage() {
                 await logoutMutation.mutateAsync();
                 router.push('/login');
               } catch (error) {
-                toast.error(locale === 'fa' ? 'خروج ناموفق بود' : 'Failed to logout');
+                toast.error(t('common.errorLogout'));
               }
             }}
             disabled={logoutMutation.isPending}
@@ -279,7 +279,7 @@ export default function DashboardPage() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            <span className="text-sm">{isRTL ? 'خروج' : 'Logout'}</span>
+            <span className="text-sm">{t('common.logout')}</span>
           </button>
         </div>
       </div>
