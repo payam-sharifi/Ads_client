@@ -35,8 +35,8 @@ export function getLocalizedName(
 }
 
 /**
- * Get localized name for categories (fa/de only, no en)
- * Used when English is not supported
+ * Get localized name for categories
+ * Returns the name in the specified locale (fa, de, en) with fallback to other languages
  */
 export function getLocalizedCategoryName(
   name: MultilingualName | undefined | null,
@@ -45,9 +45,12 @@ export function getLocalizedCategoryName(
   if (!name) return '';
   
   if (locale === 'fa') {
-    return name.fa || name.de || '';
+    return name.fa || name.de || name.en || '';
   }
-  return name.de || name.fa || '';
+  if (locale === 'de') {
+    return name.de || name.fa || name.en || '';
+  }
+  return name.en || name.de || name.fa || '';
 }
 
 /**
