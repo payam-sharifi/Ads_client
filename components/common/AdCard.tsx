@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { Ad } from '@/lib/hooks/useAds';

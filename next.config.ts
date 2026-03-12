@@ -11,7 +11,7 @@ const withPWA = withPWAInit({
   workboxOptions: {
     skipWaiting: true,
   },
-  cacheOnFrontEndNav: true,
+  cacheOnFrontEndNav: false,
   aggressiveFrontEndNavCaching: false,
   reloadOnOnline: true,
 });

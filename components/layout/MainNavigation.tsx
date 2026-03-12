@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { useLogout } from '@/lib/hooks/useAuth';

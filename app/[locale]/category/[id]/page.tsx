@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { useParams, useSearchParams } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useCategory, useCategories } from '@/lib/hooks/useCategories';
 import { useAds } from '@/lib/hooks/useAds';
 import { useCities } from '@/lib/hooks/useCities';

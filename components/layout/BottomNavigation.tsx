@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { useUnreadMessagesCount } from '@/lib/hooks/useMessages';
