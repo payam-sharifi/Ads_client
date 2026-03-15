@@ -669,8 +669,20 @@ export default function CategoryPage() {
             className="flex items-center gap-1 bg-gray-50 rounded-lg border border-gray-300 px-2 py-1.5 min-w-0"
             dir="rtl"
           >
-            {/* Language Switcher */}
-            <LanguageSwitcher />
+            {/* City Selector Button */}
+            <button
+              type="button"
+              onClick={() => setShowCitySelector(true)}
+              className="flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors flex-shrink-0 min-w-0"
+            >
+              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span className="text-xs font-medium truncate max-w-[60px] sm:max-w-none" style={{ fontSize: '11px' }}>
+                {selectedCityName || t('category.selectCity')}
+              </span>
+            </button>
             {/* Separator */}
             <div className="h-3 w-px bg-gray-300 flex-shrink-0" />
             {/* Search Input */}
@@ -694,20 +706,8 @@ export default function CategoryPage() {
             </button>
             {/* Separator */}
             <div className="h-3 w-px bg-gray-300 flex-shrink-0" />
-            {/* City Selector Button */}
-            <button
-              type="button"
-              onClick={() => setShowCitySelector(true)}
-              className="flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors flex-shrink-0 min-w-0"
-            >
-              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span className="text-xs font-medium truncate max-w-[60px] sm:max-w-none" style={{ fontSize: '11px' }}>
-                {selectedCityName || t('category.selectCity')}
-              </span>
-            </button>
+            {/* Language Switcher */}
+            <LanguageSwitcher />
           </form>
         </div>
       </div>
