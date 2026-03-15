@@ -31,7 +31,7 @@ export default function AdCard({
   const { t, locale, isRTL } = useI18n();
 
   const formatPrice = (price: number) => {
-    if (price === 0) return isRTL ? 'رایگان' : 'Kostenlos';
+    if (price === 0) return t('common.free');
     // Format with Persian/Arabic numerals for Persian
     if (locale === 'fa') {
       const formatted = new Intl.NumberFormat('fa-IR').format(price);
@@ -48,11 +48,11 @@ export default function AdCard({
     const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffMinutes < 1) return isRTL ? 'لحظاتی پیش' : 'Gerade eben';
-    if (diffMinutes < 60) return isRTL ? `${diffMinutes} دقیقه پیش` : `vor ${diffMinutes} Min`;
-    if (diffHours < 24) return isRTL ? `${diffHours} ساعت پیش` : `vor ${diffHours} Std`;
-    if (diffDays === 1) return isRTL ? 'دیروز' : 'Gestern';
-    if (diffDays < 7) return isRTL ? `${diffDays} روز پیش` : `vor ${diffDays} Tagen`;
+    if (diffMinutes < 1) return t('common.justNow');
+    if (diffMinutes < 60) return `${diffMinutes} ${t('common.minutesAgo')}`;
+    if (diffHours < 24) return `${diffHours} ${t('common.hoursAgo')}`;
+    if (diffDays === 1) return t('common.yesterday');
+    if (diffDays < 7) return `${diffDays} ${t('common.daysAgo')}`;
     return date.toLocaleDateString(locale === 'fa' ? 'fa-IR' : locale === 'de' ? 'de-DE' : 'en-GB', {
       month: 'short',
       day: 'numeric',
@@ -546,7 +546,7 @@ export default function AdCard({
           <div className={variant === 'compact' ? 'mt-auto' : 'mt-auto'}>
             <div className="text-primary-600 font-bold text-xs mb-1">
               {ad.metadata?.isNegotiable 
-                ? (isRTL ? 'قیمت توافقی' : 'Negotiable')
+                ? (t('common.negotiable'))
                 : formatPrice(ad.price)
               }
             </div>

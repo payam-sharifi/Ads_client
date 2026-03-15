@@ -36,7 +36,7 @@ export default function ImageUpload({
   disabled = false,
   accept = { 'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp'] },
 }: ImageUploadProps) {
-  const { isRTL } = useI18n();
+  const { isRTL ,t} = useI18n();
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -71,9 +71,9 @@ export default function ImageUpload({
   return (
     <div className="space-y-4">
       <label className="block text-sm font-medium mb-2">
-        {isRTL ? 'تصاویر' : 'Images'}{' '}
+        {t('ad.images')}{' '}
         <span className="text-gray-500 text-xs ml-2">
-          ({isRTL ? `حداکثر ${maxFiles} عکس` : `Max ${maxFiles} images`}: {files.length}/{maxFiles})
+          ({t('createAd.maxImages')}: {files.length}/{maxFiles})
         </span>
       </label>
       <div
@@ -114,11 +114,12 @@ export default function ImageUpload({
         />
         <p className="text-gray-600 pointer-events-none text-sm">
           {files.length >= maxFiles
-            ? (isRTL ? `حداکثر ${maxFiles} عکس آپلود شده است` : `Maximum ${maxFiles} images uploaded`)
+            ? t('createAd.maxImagesUploaded')
             : isDragActive
-              ? (isRTL ? 'تصاویر را اینجا رها کنید' : 'Drop images here')
-              : (isRTL ? 'تصاویر را بکشید و رها کنید یا کلیک کنید' : 'Drag and drop images or click to select')}
-        </p>
+              ? (t('createAd.dropImagesHere'))
+              : (t('createAd.dragAndDropImagesOrClickToSelect'))
+            }
+          </p>
       </div>
 
       {files.length > 0 && (
@@ -138,7 +139,7 @@ export default function ImageUpload({
                 type="button"
                 onClick={() => removeImage(index)}
                 className="absolute top-1 right-1 bg-primary-600 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm hover:bg-primary-700"
-                aria-label={isRTL ? 'حذف تصویر' : 'Remove image'}
+                aria-label={t('createAd.removeImage')}
               >
                 ×
               </button>

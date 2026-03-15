@@ -19,7 +19,7 @@ function AdMessagesPageContent() {
   const adId = params?.adId as string;
   const filterUserId = searchParams?.get('userId');
   const { isAuthenticated, user } = useAuthStore();
-  const { locale, isRTL } = useI18n();
+  const { locale, isRTL ,t} = useI18n();
   const { data: ad } = useAd(adId);
   const { data: messages, isLoading, refetch } = useAdMessages(adId);
   const sendMessageMutation = useSendMessage();
@@ -71,7 +71,7 @@ function AdMessagesPageContent() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!messageText.trim()) {
-      toast.warning(isRTL ? 'لطفاً پیام خود را وارد کنید' : 'Please enter a message');
+      toast.warning(t('common.pleaseEnterAMessage'));
       return;
     }
 
@@ -81,7 +81,7 @@ function AdMessagesPageContent() {
         messageText: messageText.trim(),
       });
       setMessageText('');
-      toast.success(isRTL ? 'پیام ارسال شد' : 'Message sent');
+      toast.success(t('common.messageSent'));
       refetch();
       // Scroll to bottom after sending message
       setTimeout(() => {
@@ -90,7 +90,7 @@ function AdMessagesPageContent() {
         }
       }, 100);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || (isRTL ? 'خطا در ارسال پیام' : 'Failed to send message'));
+      toast.error(error?.response?.data?.message || t('common.failedToSendMessage'));
     }
   };
 
@@ -102,31 +102,32 @@ function AdMessagesPageContent() {
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 flex flex-col h-[calc(100vh-2rem)]" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="mb-4 sm:mb-6 flex-shrink-0">
         <button onClick={() => router.back()} className="text-blue-600 hover:text-blue-800 mb-3 sm:mb-4 text-sm sm:text-base">
-          {isRTL ? '← بازگشت' : '← Back'}
+          {t('common.back')}
         </button>
         {ad && (
           <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mb-3 sm:mb-4">
             <h2 className="text-base sm:text-lg md:text-xl font-bold mb-1 sm:mb-2">{ad.title}</h2>
             <p className="text-gray-600 text-xs sm:text-sm line-clamp-2">{ad.description}</p>
             <Link href={`/ad/${adId}`} className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm mt-1 sm:mt-2 inline-block">
-              {isRTL ? '← مشاهده آگهی' : 'View Ad →'}
+              {t('common.viewAd')}
             </Link>
           </div>
         )}
       </div>
 
       <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 flex-shrink-0">
-        {isRTL ? 'پیام‌های مربوط به این آگهی' : 'Messages about this ad'}
+        {t('common.messagesAboutThisAd')}
       </h1>
 
       {isLoading ? (
         <div className="text-center py-6 sm:py-8 text-sm">
-          {isRTL ? 'در حال بارگذاری پیام‌ها...' : 'Loading messages...'}
+          {t('common.loading')}
         </div>
       ) : !messages || messages.length === 0 ? (
         <div className="text-center py-8 sm:py-12 bg-white rounded-lg shadow-md">
           <p className="text-sm text-gray-500 mb-3 sm:mb-4">
-            {isRTL ? 'هنوز پیامی وجود ندارد. گفتگو را شروع کنید!' : 'No messages yet. Start the conversation!'}
+            {t('common.noMessagesYet')}
+            {t('common.startTheConversation')}
           </p>
         </div>
       ) : (
@@ -168,7 +169,7 @@ function AdMessagesPageContent() {
         <textarea
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
-          placeholder={isRTL ? 'پیام خود را بنویسید...' : 'Type your message...'}
+          placeholder={t('common.typeYourMessage')}
           rows={3}
           className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-3 sm:mb-4"
           dir={isRTL ? 'rtl' : 'ltr'}
@@ -179,8 +180,9 @@ function AdMessagesPageContent() {
           className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
         >
           {sendMessageMutation.isPending 
-            ? (isRTL ? 'در حال ارسال...' : 'Sending...') 
-            : (isRTL ? 'ارسال پیام' : 'Send Message')}
+            ? (t('common.sending')) 
+            : (t('common.sendMessage'))
+          }
         </button>
       </form>
     </div>

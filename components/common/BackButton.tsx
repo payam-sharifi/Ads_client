@@ -11,7 +11,7 @@ interface BackButtonProps {
 
 export default function BackButton({ className = '', variant = 'default' }: BackButtonProps) {
   const router = useRouter();
-  const { isRTL } = useI18n();
+  const { t, isRTL } = useI18n();
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -29,7 +29,7 @@ export default function BackButton({ className = '', variant = 'default' }: Back
       <button
         onClick={handleBack}
         className={`flex items-center justify-center w-10 h-10 rounded-full text-gray-600 hover:text-primary-600 hover:bg-gray-100 transition-colors ${className}`}
-        aria-label={isRTL ? 'بازگشت' : 'Zurück'}
+        aria-label={t('common.back')}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d={arrowPath} />
@@ -46,7 +46,7 @@ export default function BackButton({ className = '', variant = 'default' }: Back
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={arrowPath} />
       </svg>
-      <span className="text-sm font-medium">{isRTL ? 'بازگشت' : 'Zurück'}</span>
+      <span className="text-sm font-medium">{t('common.back')}</span>
     </button>
   );
 }

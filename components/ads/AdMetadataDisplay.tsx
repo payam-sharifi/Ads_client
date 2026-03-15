@@ -11,7 +11,7 @@ interface AdMetadataDisplayProps {
 }
 
 export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
-  const { locale, isRTL } = useI18n();
+  const { locale, isRTL,t } = useI18n();
   const metadata = ad.metadata || {};
   const categoryType = ad.category?.categoryType as MainCategoryType | undefined;
 
@@ -27,17 +27,17 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.offerType && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'نوع آگهی' : 'Offer Type'}
+              {t('ad.offerType')}
             </span>
             <span className="font-medium text-gray-900">
-              {realEstate.offerType === 'sale' ? (isRTL ? 'فروش' : 'Sale') : (isRTL ? 'اجاره' : 'Rent')}
+              {realEstate.offerType === 'sale' ? t('ad.offerTypeSale') : t('ad.offerTypeRent')}
             </span>
           </div>
         )}
         {realEstate.propertyType && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'نوع ملک' : 'Property Type'}
+              {t('ad.propertyType')}
             </span>
             <span className="font-medium text-gray-900">
               {getLocalizedPropertyType(realEstate.propertyType, locale)}
@@ -47,7 +47,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.postalCode && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'کد پستی' : 'Postal Code'}
+              {t('ad.postalCode')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.postalCode}</span>
           </div>
@@ -55,7 +55,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.district && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'محله' : 'District'}
+             {t('ad.district')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.district}</span>
           </div>
@@ -63,7 +63,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.price && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'قیمت فروش' : 'Sale Price'}
+              {t('ad.price')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.price.toLocaleString()} €</span>
           </div>
@@ -71,7 +71,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.coldRent && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'اجاره پایه' : 'Cold Rent'}
+              {t('ad.coldRent')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.coldRent.toLocaleString()} €</span>
           </div>
@@ -79,7 +79,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.additionalCosts && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'هزینه اضافی' : 'Additional Costs'}
+              {t('ad.additionalCosts')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.additionalCosts.toLocaleString()} €</span>
           </div>
@@ -87,7 +87,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.deposit && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'ودیعه' : 'Deposit'}
+              {t('ad.deposit')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.deposit.toLocaleString()} €</span>
           </div>
@@ -95,7 +95,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.livingArea && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'متراژ' : 'Living Area'}
+              {t('ad.livingArea')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.livingArea} m²</span>
           </div>
@@ -103,7 +103,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.rooms && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'تعداد اتاق' : 'Rooms'}
+              {t('ad.rooms')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.rooms}</span>
           </div>
@@ -111,7 +111,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.floor !== undefined && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'طبقه' : 'Floor'}
+              {t('ad.floor')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.floor}</span>
           </div>
@@ -119,7 +119,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.totalFloors && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'تعداد طبقات' : 'Total Floors'}
+              {t('ad.totalFloors')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.totalFloors}</span>
           </div>
@@ -127,7 +127,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.yearBuilt && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'سال ساخت' : 'Year Built'}
+              {t('ad.yearBuilt')}
             </span>
             <span className="font-medium text-gray-900">{realEstate.yearBuilt}</span>
           </div>
@@ -135,7 +135,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {realEstate.availableFrom && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'موجود از' : 'Available From'}
+              {t('ad.availableFrom')}
             </span>
             <span className="font-medium text-gray-900">
               {new Date(realEstate.availableFrom).toLocaleDateString(locale === 'fa' ? 'fa-IR' : 'de-DE')}
@@ -144,32 +144,32 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         )}
         <div className="sm:col-span-2">
           <span className="text-sm text-gray-500 block mb-2">
-            {isRTL ? 'ویژگی‌ها' : 'Features'}
+            {t('ad.features')}
           </span>
           <div className="flex flex-wrap gap-2">
             {realEstate.furnished && (
               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
-                {isRTL ? 'مبله' : 'Furnished'}
+                {t('ad.furnished')}
               </span>
             )}
             {realEstate.balcony && (
               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
-                {isRTL ? 'بالکن' : 'Balcony'}
+                {t('ad.balcony')}
               </span>
             )}
             {realEstate.elevator && (
               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
-                {isRTL ? 'آسانسور' : 'Elevator'}
+                {t('ad.elevator')}
               </span>
             )}
             {realEstate.parkingIncluded && (
               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
-                {isRTL ? 'پارکینگ' : 'Parking'}
+                {t('ad.parking')}
               </span>
             )}
             {realEstate.cellar && (
               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
-                {isRTL ? 'انباری' : 'Cellar'}
+                {t('ad.cellar')}
               </span>
             )}
           </div>
@@ -186,7 +186,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.vehicleType && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'نوع خودرو' : 'Vehicle Type'}
+              {t('ad.vehicleType')}
             </span>
             <span className="font-medium text-gray-900 capitalize">
               {vehicle.vehicleType}
@@ -196,7 +196,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.brand && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'برند' : 'Brand'}
+              {t('ad.brand')}
             </span>
             <span className="font-medium text-gray-900">{vehicle.brand}</span>
           </div>
@@ -204,7 +204,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.model && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'مدل' : 'Model'}
+              {t('ad.model')}
             </span>
             <span className="font-medium text-gray-900">{vehicle.model}</span>
           </div>
@@ -212,7 +212,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.year && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'سال' : 'Year'}
+              {t('ad.year')}
             </span>
             <span className="font-medium text-gray-900">{vehicle.year}</span>
           </div>
@@ -220,7 +220,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.mileage && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'کارکرد' : 'Mileage'}
+              {t('ad.mileage')}
             </span>
             <span className="font-medium text-gray-900">
               {vehicle.mileage.toLocaleString()} km
@@ -230,7 +230,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.fuelType && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'نوع سوخت' : 'Fuel Type'}
+              {t('ad.fuelType')}
             </span>
             <span className="font-medium text-gray-900 capitalize">
               {vehicle.fuelType}
@@ -240,11 +240,11 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.transmission && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'گیربکس' : 'Transmission'}
+              {t('ad.transmission')}
             </span>
             <span className="font-medium text-gray-900">
-              {vehicle.transmission === 'manual' ? (isRTL ? 'دستی' : 'Manual') :
-               vehicle.transmission === 'automatic' ? (isRTL ? 'اتوماتیک' : 'Automatic') :
+              {vehicle.transmission === 'manual' ? t('ad.manual') :
+               vehicle.transmission === 'automatic' ? t('ad.automatic') :
                vehicle.transmission}
             </span>
           </div>
@@ -252,7 +252,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.powerHP && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'قدرت' : 'Power'}
+              {t('ad.power')}
             </span>
             <span className="font-medium text-gray-900">{vehicle.powerHP} HP</span>
           </div>
@@ -260,21 +260,21 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.condition && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'وضعیت' : 'Condition'}
+              {t('ad.condition')}
             </span>
             <span className="font-medium text-gray-900 capitalize">
-              {vehicle.condition === 'new' ? (isRTL ? 'نو' : 'New') : (isRTL ? 'کارکرده' : 'Used')}
+              {vehicle.condition === 'new' ? t('ad.new') : t('ad.used')}
             </span>
           </div>
         )}
         {vehicle.damageStatus && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'وضعیت تصادف' : 'Damage Status'}
+              {t('ad.damageStatus')}
             </span>
             <span className="font-medium text-gray-900">
-              {vehicle.damageStatus === 'none' ? (isRTL ? 'بدون تصادف' : 'No Damage') :
-               vehicle.damageStatus === 'accident' ? (isRTL ? 'تصادف داشته' : 'Accident') :
+              {vehicle.damageStatus === 'none' ? t('ad.noDamage') :
+               vehicle.damageStatus === 'accident' ? t('ad.accident') :
                vehicle.damageStatus}
             </span>
           </div>
@@ -282,7 +282,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.inspectionValidUntil && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'معاینه فنی تا' : 'Inspection Valid Until'}
+              {t('ad.inspectionValidUntil')}
             </span>
             <span className="font-medium text-gray-900">
               {new Date(vehicle.inspectionValidUntil).toLocaleDateString(locale === 'fa' ? 'fa-IR' : 'de-DE')}
@@ -292,7 +292,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {vehicle.postalCode && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'کد پستی' : 'Postal Code'}
+              {t('ad.postalCode')}
             </span>
             <span className="font-medium text-gray-900">{vehicle.postalCode}</span>
           </div>
@@ -309,7 +309,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {service.serviceCategory && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'دسته خدمات' : 'Service Category'}
+              {t('ad.serviceCategory')}
             </span>
             <span className="font-medium text-gray-900 capitalize">
               {getLocalizedServiceCategory(service.serviceCategory, locale)}
@@ -319,7 +319,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {service.pricingType && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'نوع قیمت‌گذاری' : 'Pricing Type'}
+              {t('ad.pricingType')}
             </span>
             <span className="font-medium text-gray-900 capitalize">
               {service.pricingType}
@@ -329,7 +329,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {service.price && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {service.pricingType === 'hourly' ? (isRTL ? 'قیمت ساعتی' : 'Price per Hour') : (isRTL ? 'قیمت' : 'Price')}
+              {service.pricingType === 'hourly' ? t('ad.pricePerHour') : t('ad.price')}
             </span>
             <span className="font-medium text-gray-900">{service.price.toLocaleString()} €</span>
           </div>
@@ -337,7 +337,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {service.serviceRadius && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'محدوده یا منطقه' : 'Area or District'}
+              {t('ad.areaOrDistrict')}
             </span>
             <span className="font-medium text-gray-900">{service.serviceRadius}</span>
           </div>
@@ -345,7 +345,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {service.experienceYears && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'سال‌های تجربه' : 'Years of Experience'}
+              {t('ad.yearsOfExperience')}
             </span>
             <span className="font-medium text-gray-900">{service.experienceYears}</span>
           </div>
@@ -353,7 +353,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {service.certificates && (
           <div className="sm:col-span-2">
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'گواهینامه‌ها' : 'Certificates'}
+              {t('ad.certificates')}
             </span>
             <span className="font-medium text-gray-900">{service.certificates}</span>
           </div>
@@ -370,7 +370,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {job.jobType && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'نوع شغل' : 'Job Type'}
+              {t('ad.jobType')}
             </span>
             <span className="font-medium text-gray-900 capitalize">
               {job.jobType.replace('-', ' ')}
@@ -380,7 +380,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {job.industry && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'صنعت' : 'Industry'}
+              {t('ad.industry')}
             </span>
             <span className="font-medium text-gray-900">{job.industry}</span>
           </div>
@@ -388,7 +388,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {job.experienceLevel && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'سطح تجربه' : 'Experience Level'}
+              {t('ad.experienceLevel')}
             </span>
             <span className="font-medium text-gray-900 capitalize">
               {job.experienceLevel}
@@ -398,7 +398,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {job.educationRequired && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'تحصیلات مورد نیاز' : 'Education Required'}
+              {t('ad.educationRequired')}
             </span>
             <span className="font-medium text-gray-900">{job.educationRequired}</span>
           </div>
@@ -406,7 +406,7 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {job.languageRequired && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'زبان مورد نیاز' : 'Language Required'}
+              {t('ad.languageRequired')}
             </span>
             <span className="font-medium text-gray-900">{job.languageRequired}</span>
           </div>
@@ -414,32 +414,32 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
         {job.remotePossible !== undefined && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'کار از راه دور' : 'Remote Work'}
+              {t('ad.remoteWork')}
             </span>
             <span className="font-medium text-gray-900">
-              {job.remotePossible ? (isRTL ? 'بله' : 'Yes') : (isRTL ? 'خیر' : 'No')}
+              {job.remotePossible ? t('ad.yes') : t('ad.no')}
             </span>
           </div>
         )}
         {(job.salaryFrom || job.salaryTo) && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'حقوق' : 'Salary'}
+              {t('ad.salary')}
             </span>
             <span className="font-medium text-gray-900">
               {job.salaryFrom && job.salaryTo
                 ? `${job.salaryFrom.toLocaleString()} - ${job.salaryTo.toLocaleString()} €`
                 : job.salaryFrom
-                ? `${isRTL ? 'از' : 'From'} ${job.salaryFrom.toLocaleString()} €`
-                : `${isRTL ? 'تا' : 'Up to'} ${job.salaryTo?.toLocaleString()} €`}
-              {job.salaryType && ` ${job.salaryType === 'hourly' ? (isRTL ? '/ساعت' : '/hour') : (isRTL ? '/ماه' : '/month')}`}
+                ? `${t('ad.from')} ${job.salaryFrom.toLocaleString()} €`
+                : `${t('ad.upTo')} ${job.salaryTo?.toLocaleString()} €`}
+              {job.salaryType && ` ${job.salaryType === 'hourly' ? t('ad.hourly') : t('ad.monthly')}`}
             </span>
           </div>
         )}
         {job.companyName && (
           <div>
             <span className="text-sm text-gray-500 block mb-1">
-              {isRTL ? 'نام شرکت' : 'Company Name'}
+              {t('ad.companyName')}
             </span>
             <span className="font-medium text-gray-900">{job.companyName}</span>
           </div>

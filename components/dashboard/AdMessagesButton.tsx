@@ -11,7 +11,7 @@ interface AdMessagesButtonProps {
 }
 
 export default function AdMessagesButton({ adId }: AdMessagesButtonProps) {
-  const { isRTL } = useI18n();
+  const { t, isRTL } = useI18n();
   const { data: unreadCount = 0 } = useUnreadMessagesCountForAd(adId);
   const hasUnread = unreadCount > 0;
 
@@ -29,7 +29,7 @@ export default function AdMessagesButton({ adId }: AdMessagesButtonProps) {
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
         </svg>
-        {isRTL ? 'پیام‌ها' : 'Messages'}
+        {t('common.messages')}
         {hasUnread && (
           <span className="ml-1 bg-primary-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center min-w-[16px]">
             {unreadCount > 9 ? '9+' : unreadCount}

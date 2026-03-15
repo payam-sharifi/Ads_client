@@ -11,7 +11,7 @@ interface RealEstateFormProps {
 }
 
 export default function RealEstateForm({ data, onChange, errors = {} }: RealEstateFormProps) {
-  const { locale, isRTL } = useI18n();
+  const { locale, isRTL ,t} = useI18n();
 
   const updateField = (field: keyof RealEstateMetadata, value: any) => {
     onChange({ ...data, [field]: value });
@@ -26,7 +26,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       {/* Offer Type */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'نوع آگهی' : 'Offer Type'} <span className="text-primary-500">*</span>
+          {t('ad.offerType')} <span className="text-primary-500">*</span>
         </label>
         <div className="flex gap-4">
           <label className="flex items-center cursor-pointer">
@@ -39,7 +39,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
               className={isRTL ? 'ml-3' : 'mr-3'}
               required
             />
-            <span>{isRTL ? 'اجاره' : 'Rent'}</span>
+            <span>{t('ad.rent')}</span>
           </label>
           <label className="flex items-center cursor-pointer">
             <input
@@ -51,7 +51,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
               className={isRTL ? 'ml-3' : 'mr-3'}
               required
             />
-            <span>{isRTL ? 'فروش' : 'Sale'}</span>
+            <span>{t('ad.sale')}</span>
           </label>
         </div>
         {getFieldError('offerType') && (
@@ -63,7 +63,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نوع ملک' : 'Property Type'} <span className="text-primary-500">*</span>
+            {t('ad.propertyType')} <span className="text-primary-500">*</span>
           </label>
           <select
             value={data.propertyType || ''}
@@ -75,12 +75,12 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
             dir={isRTL ? 'rtl' : 'ltr'}
             required
           >
-            <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
-            <option value={PropertyType.APARTMENT}>{isRTL ? 'آپارتمان' : 'Apartment'}</option>
-            <option value={PropertyType.HOUSE}>{isRTL ? 'خانه' : 'House'}</option>
-            <option value={PropertyType.COMMERCIAL}>{isRTL ? 'تجاری' : 'Commercial'}</option>
-            <option value={PropertyType.LAND}>{isRTL ? 'زمین' : 'Land'}</option>
-            <option value={PropertyType.PARKING}>{isRTL ? 'پارکینگ' : 'Parking'}</option>
+            <option value="">{t('common.select')}...</option>
+            <option value={PropertyType.APARTMENT}>{t('ad.apartment')}</option>
+            <option value={PropertyType.HOUSE}>{t('ad.house')}</option>
+            <option value={PropertyType.COMMERCIAL}>{t('ad.commercial')}</option>
+            <option value={PropertyType.LAND}>{t('ad.land')}</option>
+            <option value={PropertyType.PARKING}>{t('ad.parking')}</option>
           </select>
           {getFieldError('propertyType') && (
             <p className="mt-1 text-sm text-primary-600">{getFieldError('propertyType')}</p>
@@ -89,7 +89,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'کد پستی' : 'Postal Code'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.postalCode')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="text"
@@ -111,13 +111,13 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       {/* District */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'محله' : 'District'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          {t('ad.district')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
         </label>
         <input
           type="text"
           value={data.district || ''}
           onChange={(e) => updateField('district', e.target.value)}
-          placeholder={isRTL ? 'مثال: میته' : 'e.g. Mitte'}
+          placeholder={t('ad.example') + ': ' + t('ad.mitte')}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg"
           dir={isRTL ? 'rtl' : 'ltr'}
         />
@@ -127,7 +127,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       {data.offerType === RealEstateOfferType.SALE ? (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'قیمت فروش (€)' : 'Sale Price (€)'} <span className="text-primary-500">*</span>
+            {t('ad.salePrice')} (€) <span className="text-primary-500">*</span>
           </label>
           <input
             type="number"
@@ -154,7 +154,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       ) : data.offerType === RealEstateOfferType.RENT ? (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'اجاره پایه (€)' : 'Cold Rent (€)'} <span className="text-primary-500">*</span>
+            {t('ad.coldRent')} (€) <span className="text-primary-500">*</span>
           </label>
           <input
             type="number"
@@ -184,7 +184,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'هزینه اضافی (€)' : 'Additional Costs (€)'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.additionalCosts')} (€) <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="number"
@@ -199,7 +199,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'ودیعه (€)' : 'Deposit (€)'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.deposit')} (€) <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="number"
@@ -217,7 +217,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'متراژ (m²)' : 'Living Area (m²)'} <span className="text-primary-500">*</span>
+            {t('ad.livingArea')} (m²) <span className="text-primary-500">*</span>
           </label>
           <input
             type="text"
@@ -252,7 +252,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'تعداد اتاق' : 'Rooms'} <span className="text-primary-500">*</span>
+            {t('ad.rooms')} <span className="text-primary-500">*</span>
           </label>
           <input
             type="number"
@@ -276,7 +276,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
         {/* Floor */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'طبقه' : 'Floor'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.floor')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="number"
@@ -291,7 +291,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
         {/* Total Floors */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'تعداد طبقات' : 'Total Floors'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.totalFloors')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="number"
@@ -308,7 +308,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'سال ساخت' : 'Year Built'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.yearBuilt')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="number"
@@ -324,7 +324,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'موجود از' : 'Available From'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.availableFrom')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="date"
@@ -339,15 +339,15 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
       {/* Features */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'ویژگی‌ها' : 'Features'}
+          {t('ad.features')}
         </label>
         <div className="space-y-2">
           {[
-            { key: 'furnished' as const, label: isRTL ? 'مبله' : 'Furnished' },
-            { key: 'balcony' as const, label: isRTL ? 'بالکن' : 'Balcony' },
-            { key: 'elevator' as const, label: isRTL ? 'آسانسور' : 'Elevator' },
-            { key: 'parkingIncluded' as const, label: isRTL ? 'پارکینگ' : 'Parking Included' },
-            { key: 'cellar' as const, label: isRTL ? 'انباری' : 'Cellar' },
+            { key: 'furnished' as const, label: t('ad.furnished') },
+            { key: 'balcony' as const, label: t('ad.balcony') },
+            { key: 'elevator' as const, label: t('ad.elevator') },
+            { key: 'parkingIncluded' as const, label: t('ad.parkingIncluded') },
+            { key: 'cellar' as const, label: t('ad.cellar') },
           ].map(({ key, label }) => (
             <label key={key} className="flex items-center">
               <input

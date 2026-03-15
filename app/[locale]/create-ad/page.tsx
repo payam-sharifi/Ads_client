@@ -462,11 +462,11 @@ export default function CreateAdPage() {
           {/* Step 1: Category & City */}
         {currentStep === 1 && (
           <div className="space-y-6 overflow-visible">
-            <h2 className="text-2xl font-bold mb-4">{isRTL ? 'انتخاب دسته‌بندی و شهر' : 'Select Category & City'}</h2>
+            <h2 className="text-2xl font-bold mb-4"> {t('dashboard.selectCategoryAndCity')}</h2>
             
             <div className="space-y-4">
               <div className="relative z-10 w-full md:w-1/2">
-                <label className="block text-sm font-medium mb-2">{isRTL ? 'دسته‌بندی' : 'Category'}</label>
+                <label className="block text-sm font-medium mb-2">{t('common.category')}</label>
                 <select
                   value={step1Data.categoryId}
                   onChange={(e) => handleStep1Change('categoryId', e.target.value)}

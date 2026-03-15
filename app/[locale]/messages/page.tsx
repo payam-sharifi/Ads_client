@@ -22,7 +22,7 @@ type SortOption = 'newest' | 'oldest' | 'unread';
 export default function MessagesPage() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuthStore();
-  const { locale, isRTL } = useI18n();
+  const { locale, isRTL ,t} = useI18n();
   const { data: conversations, isLoading } = useConversations();
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -89,7 +89,7 @@ export default function MessagesPage() {
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="flex justify-between items-center mb-4 sm:mb-6">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
-          {isRTL ? 'چت و تماس' : 'Chat & Contact'}
+          {t('nav.chat')}
         </h1>
         
         {/* Sort Filter Dropdown */}
@@ -121,7 +121,7 @@ export default function MessagesPage() {
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'newest' ? 'bg-primary-50 text-primary-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
                 >
-                  {isRTL ? 'جدیدترین' : 'Newest'}
+                  {t('common.newest')}
                 </button>
                 <button
                   onClick={() => {
@@ -130,7 +130,7 @@ export default function MessagesPage() {
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'oldest' ? 'bg-primary-50 text-primary-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
                 >
-                  {isRTL ? 'قدیمی‌ترین' : 'Oldest'}
+                  {t('common.oldest')}
                 </button>
                 <button
                   onClick={() => {
@@ -139,7 +139,7 @@ export default function MessagesPage() {
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === 'unread' ? 'bg-primary-50 text-primary-600' : ''} ${isRTL ? 'text-right' : 'text-left'}`}
                 >
-                  {isRTL ? 'خوانده نشده' : 'Unread'}
+                  {t('common.unread')}
                 </button>
               </div>
             </>
@@ -149,12 +149,12 @@ export default function MessagesPage() {
 
       {isLoading ? (
         <div className="text-center py-6 sm:py-8 text-sm">
-          {isRTL ? 'در حال بارگذاری...' : 'Loading...'}
+          {t('common.loading')}
         </div>
       ) : !conversations || conversations.length === 0 ? (
         <div className="text-center py-8 sm:py-12 bg-white rounded-lg shadow-md">
           <p className="text-sm text-gray-500">
-            {isRTL ? 'هنوز پیامی وجود ندارد.' : 'No messages yet.'}
+            {t('common.noMessagesYet')}
           </p>
         </div>
       ) : (

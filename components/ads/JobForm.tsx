@@ -11,7 +11,7 @@ interface JobFormProps {
 }
 
 export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
-  const { locale, isRTL } = useI18n();
+  const { locale, isRTL ,t} = useI18n();
 
   const updateField = (field: keyof JobMetadata, value: any) => {
     onChange({ ...data, [field]: value });
@@ -26,13 +26,13 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
       {/* Job Title */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'عنوان شغل' : 'Job Title'} <span className="text-primary-500">*</span>
+          {t('ad.jobTitle')} <span className="text-primary-500">*</span>
         </label>
         <input
           type="text"
           value={data.jobTitle || ''}
           onChange={(e) => updateField('jobTitle', e.target.value)}
-          placeholder={isRTL ? 'توسعه‌دهنده Full Stack' : 'Full Stack Developer'}
+          placeholder={t('ad.fullStackDeveloper')}
           className={`w-full px-3 py-2 border rounded-lg ${
             getFieldError('jobTitle') ? 'border-primary-500' : 'border-gray-300'
           } focus:outline-none focus:ring-2 focus:ring-primary-500`}
@@ -46,12 +46,12 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
       {/* Job Description */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'توضیحات شغل' : 'Job Description'} <span className="text-primary-500">*</span>
+          {t('ad.jobDescription')} <span className="text-primary-500">*</span>
         </label>
         <textarea
           value={data.jobDescription || ''}
           onChange={(e) => updateField('jobDescription', e.target.value)}
-          placeholder={isRTL ? 'ما در حال جستجوی...' : 'We are looking for...'}
+          placeholder={t('ad.weAreLookingFor')}
           className={`w-full px-3 py-2 border rounded-lg ${
             getFieldError('jobDescription') ? 'border-primary-500' : 'border-gray-300'
           } focus:outline-none focus:ring-2 focus:ring-primary-500`}
@@ -67,7 +67,7 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
       <div className="grid grid-cols-2 gap-4">
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نوع شغل' : 'Job Type'} <span className="text-primary-500">*</span>
+            {t('ad.jobType')} <span className="text-primary-500">*</span>
           </label>
           <div className="relative" style={{ zIndex: 1000 }}>
             <select
@@ -78,12 +78,12 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
               } focus:outline-none focus:ring-2 focus:ring-primary-500`}
               dir={isRTL ? 'rtl' : 'ltr'}
             >
-            <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
-            <option value={JobType.FULL_TIME}>{isRTL ? 'تمام وقت' : 'Full-time'}</option>
-            <option value={JobType.PART_TIME}>{isRTL ? 'پاره وقت' : 'Part-time'}</option>
-            <option value={JobType.MINI_JOB}>{isRTL ? 'مینی جاب' : 'Mini-job'}</option>
-            <option value={JobType.FREELANCE}>{isRTL ? 'فریلنسر' : 'Freelance'}</option>
-            <option value={JobType.INTERNSHIP}>{isRTL ? 'کارآموزی' : 'Internship'}</option>
+            <option value="">{t('common.select')}...</option>
+            <option value={JobType.FULL_TIME}>{t('ad.fullTime')}</option>
+            <option value={JobType.PART_TIME}>{t('ad.partTime')}</option>
+            <option value={JobType.MINI_JOB}>{t('ad.miniJob')}</option>
+            <option value={JobType.FREELANCE}>{t('ad.freelance')}</option>
+            <option value={JobType.INTERNSHIP}>{t('ad.internship')}</option>
           </select>
           </div>
         {getFieldError('jobType') && (
@@ -92,7 +92,7 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'صنعت' : 'Industry'} <span className="text-primary-500">*</span>
+            {t('ad.industry')} <span className="text-primary-500">*</span>
           </label>
           <input
             type="text"
@@ -114,7 +114,7 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'سطح تجربه' : 'Experience Level'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.experienceLevel')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <div className="relative" style={{ zIndex: 1000 }}>
             <select
@@ -123,10 +123,10 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
               dir={isRTL ? 'rtl' : 'ltr'}
             >
-            <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
-            <option value={ExperienceLevel.JUNIOR}>{isRTL ? 'جونیور' : 'Junior'}</option>
-            <option value={ExperienceLevel.MID}>{isRTL ? 'میانه' : 'Mid-level'}</option>
-            <option value={ExperienceLevel.SENIOR}>{isRTL ? 'سنیور' : 'Senior'}</option>
+            <option value="">{t('common.select')}...</option>
+            <option value={ExperienceLevel.JUNIOR}>{t('ad.junior')}</option>
+            <option value={ExperienceLevel.MID}>{t('ad.mid')}</option>
+            <option value={ExperienceLevel.SENIOR}>{t('ad.senior')}</option>
             </select>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'تحصیلات مورد نیاز' : 'Education Required'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.educationRequired')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="text"
@@ -150,7 +150,7 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'زبان مورد نیاز' : 'Language Required'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.languageRequired')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="text"
@@ -172,18 +172,18 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
             onChange={(e) => updateField('remotePossible', e.target.checked)}
             className="mr-2"
           />
-          {isRTL ? 'امکان کار از راه دور' : 'Remote work possible'}
+          {t('ad.remoteWork')}
         </label>
       </div>
 
       {/* Salary */}
       <div className="pt-4 border-t">
-        <h3 className="text-lg font-medium text-gray-900 mb-3">{isRTL ? 'حقوق' : 'Salary'}</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-3">{t('ad.salary')}</h3>
         
         <div className="grid grid-cols-2 gap-4 mb-3">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {isRTL ? 'از (€)' : 'From (€)'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+              {t('ad.from')} (€) <span className="text-gray-400 text-xs">({t('common.optional')})</span>
             </label>
             <input
               type="number"
@@ -197,7 +197,7 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {isRTL ? 'تا (€)' : 'To (€)'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+              {t('admin.to')} (€) <span className="text-gray-400 text-xs">({t('common.optional')})</span>
             </label>
             <input
               type="number"
@@ -213,7 +213,7 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
 
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نوع حقوق' : 'Salary Type'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.salaryType')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <div className="relative" style={{ zIndex: 1000 }}>
             <select
@@ -222,9 +222,9 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
               dir={isRTL ? 'rtl' : 'ltr'}
             >
-            <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
-            <option value={SalaryType.HOURLY}>{isRTL ? 'ساعتی' : 'Hourly'}</option>
-            <option value={SalaryType.MONTHLY}>{isRTL ? 'ماهانه' : 'Monthly'}</option>
+            <option value="">{t('common.select')}...</option>
+            <option value={SalaryType.HOURLY}>{t('ad.hourly')}</option>
+            <option value={SalaryType.MONTHLY}>{t('ad.monthly')}</option>
           </select>
           </div>
         </div>
@@ -234,7 +234,7 @@ export default function JobForm({ data, onChange, errors = {} }: JobFormProps) {
       <div className="pt-4 border-t">
         <div className="mb-3">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نام شرکت' : 'Company Name'} <span className="text-primary-500">*</span>
+            {t('ad.companyName')} <span className="text-primary-500">*</span>
           </label>
           <input
             type="text"

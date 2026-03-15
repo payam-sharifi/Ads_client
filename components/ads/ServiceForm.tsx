@@ -11,7 +11,7 @@ interface ServiceFormProps {
 }
 
 export default function ServiceForm({ data, onChange, errors = {} }: ServiceFormProps) {
-  const { locale, isRTL } = useI18n();
+  const { locale, isRTL ,t} = useI18n();
 
   const updateField = (field: keyof ServiceMetadata, value: any) => {
     onChange({ ...data, [field]: value });
@@ -36,7 +36,7 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
         {/* Service Category */}
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'دسته خدمات' : 'Service Category'} <span className="text-primary-500">*</span>
+            {t('ad.serviceCategory')} <span className="text-primary-500">*</span>
           </label>
           <div className="relative" style={{ zIndex: 1000 }}>
             <select
@@ -47,7 +47,7 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
             } focus:outline-none focus:ring-2 focus:ring-primary-500`}
               dir={isRTL ? 'rtl' : 'ltr'}
             >
-            <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
+            <option value="">{t('common.select')}...</option>
             {Object.entries(serviceCategoryLabels).map(([value, labels]) => (
               <option key={value} value={value}>
                 {isRTL ? labels.fa : labels.de}
@@ -63,7 +63,7 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
         {/* Pricing Type */}
         <div className="relative z-10">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'نوع قیمت‌گذاری' : 'Pricing Type'} <span className="text-primary-500">*</span>
+            {t('ad.pricingType')} <span className="text-primary-500">*</span>
           </label>
           <select
             value={data.pricingType || ''}
@@ -79,10 +79,10 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
             style={{ zIndex: 1000 }}
             dir={isRTL ? 'rtl' : 'ltr'}
           >
-            <option value="">{isRTL ? 'انتخاب کنید' : 'Select...'}</option>
-            <option value={PricingType.FIXED}>{isRTL ? 'قیمت ثابت' : 'Fixed Price'}</option>
-            <option value={PricingType.HOURLY}>{isRTL ? 'ساعتی' : 'Hourly'}</option>
-            <option value={PricingType.NEGOTIABLE}>{isRTL ? 'قابل مذاکره' : 'Negotiable'}</option>
+            <option value="">{t('common.select')}...</option>
+            <option value={PricingType.FIXED}>{t('ad.fixedPrice')}</option>
+            <option value={PricingType.HOURLY}>{t('ad.hourly')}</option>
+            <option value={PricingType.NEGOTIABLE}>{t('ad.negotiable')}</option>
           </select>
           {getFieldError('pricingType') && (
             <p className="mt-1 text-sm text-primary-600">{getFieldError('pricingType')}</p>
@@ -95,8 +95,8 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {data.pricingType === PricingType.HOURLY 
-              ? (isRTL ? 'قیمت ساعتی (€)' : 'Price per Hour (€)')
-              : (isRTL ? 'قیمت (€)' : 'Price (€)')
+              ? (t('ad.pricePerHour') + ' (€)')
+              : (t('ad.price') + ' (€)')
             } <span className="text-primary-500">*</span>
           </label>
           <input
@@ -126,13 +126,13 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'محدوده یا منطقه' : 'Area or District'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.areaOrDistrict')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="text"
             value={data.serviceRadius ? String(data.serviceRadius) : ''}
             onChange={(e) => updateField('serviceRadius', e.target.value || undefined)}
-            placeholder={isRTL ? 'محدوده خدمات' : 'Service area'}
+            placeholder={t('ad.serviceArea')}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             dir={isRTL ? 'rtl' : 'ltr'}
           />
@@ -140,7 +140,7 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {isRTL ? 'سال‌های تجربه' : 'Years of Experience'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+            {t('ad.yearsOfExperience')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
           </label>
           <input
             type="number"
@@ -157,7 +157,7 @@ export default function ServiceForm({ data, onChange, errors = {} }: ServiceForm
       {/* Certificates */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isRTL ? 'گواهینامه‌ها' : 'Certificates'} <span className="text-gray-400 text-xs">({isRTL ? 'اختیاری' : 'Optional'})</span>
+          {t('ad.certificates')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
         </label>
         <textarea
           value={data.certificates || ''}
