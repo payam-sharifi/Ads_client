@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useI18n } from '@/lib/contexts/I18nContext';
-import { RealEstateOfferType, PropertyType, RealEstateMetadata } from '@/lib/types/category.types';
+import { RealEstateOfferType, PropertyType, HouseSubtype, RealEstateMetadata } from '@/lib/types/category.types';
 
 interface RealEstateFormProps {
   data: Partial<RealEstateMetadata>;
@@ -67,7 +67,14 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
           </label>
           <select
             value={data.propertyType || ''}
-            onChange={(e) => updateField('propertyType', e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v !== PropertyType.HOUSE) {
+                onChange({ ...data, propertyType: v as PropertyType, houseSubtype: undefined });
+              } else {
+                updateField('propertyType', v);
+              }
+            }}
             className={`w-full px-3 py-2 border rounded-lg ${
               getFieldError('propertyType') ? 'border-primary-500' : 'border-gray-300'
             } focus:outline-none focus:ring-2 focus:ring-primary-500 relative z-20`}
@@ -86,6 +93,32 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
             <p className="mt-1 text-sm text-primary-600">{getFieldError('propertyType')}</p>
           )}
         </div>
+
+        {data.propertyType === PropertyType.HOUSE && (
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('ad.houseSubtype')} <span className="text-gray-400 text-xs">({t('common.optional')})</span>
+            </label>
+            <select
+              value={data.houseSubtype || ''}
+              onChange={(e) =>
+                updateField('houseSubtype', e.target.value ? (e.target.value as HouseSubtype) : undefined)
+              }
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              dir={isRTL ? 'rtl' : 'ltr'}
+            >
+              <option value="">{t('common.select')}…</option>
+              <option value={HouseSubtype.DETACHED}>{t('ad.houseDetached')}</option>
+              <option value={HouseSubtype.TERRACED}>{t('ad.houseTerraced')}</option>
+              <option value={HouseSubtype.MULTI_FAMILY}>{t('ad.houseMultiFamily')}</option>
+              <option value={HouseSubtype.BUNGALOW}>{t('ad.houseBungalow')}</option>
+              <option value={HouseSubtype.FARMHOUSE}>{t('ad.houseFarmhouse')}</option>
+              <option value={HouseSubtype.SEMI_DETACHED}>{t('ad.houseSemiDetached')}</option>
+              <option value={HouseSubtype.VILLA}>{t('ad.houseVilla')}</option>
+              <option value={HouseSubtype.OTHER}>{t('ad.houseOther')}</option>
+            </select>
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -212,6 +245,27 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
           />
         </div>
       </div>
+
+      {/* Plot area (houses / land) */}
+      {(data.propertyType === PropertyType.HOUSE || data.propertyType === PropertyType.LAND) && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t('ad.plotArea')} (m²) <span className="text-gray-400 text-xs">({t('common.optional')})</span>
+          </label>
+          <input
+            type="number"
+            value={data.plotArea ?? ''}
+            onChange={(e) => {
+              const raw = e.target.value;
+              updateField('plotArea', raw === '' ? undefined : Math.max(0, Number(raw) || 0));
+            }}
+            placeholder="400"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            dir="ltr"
+            min={0}
+          />
+        </div>
+      )}
 
       {/* Living Area & Rooms */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -345,6 +399,7 @@ export default function RealEstateForm({ data, onChange, errors = {} }: RealEsta
           {[
             { key: 'furnished' as const, label: t('ad.furnished') },
             { key: 'balcony' as const, label: t('ad.balcony') },
+            { key: 'terrace' as const, label: t('ad.terrace') },
             { key: 'elevator' as const, label: t('ad.elevator') },
             { key: 'parkingIncluded' as const, label: t('ad.parkingIncluded') },
             { key: 'cellar' as const, label: t('ad.cellar') },

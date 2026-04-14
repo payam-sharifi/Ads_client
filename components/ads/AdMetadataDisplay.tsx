@@ -4,7 +4,7 @@ import React from 'react';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { MainCategoryType, RealEstateMetadata, VehicleMetadata, ServiceMetadata, JobMetadata } from '@/lib/types/category.types';
 import { Ad } from '@/lib/hooks/useAds';
-import { getLocalizedPropertyType, getLocalizedServiceCategory } from '@/lib/utils/localizedNames';
+import { getLocalizedPropertyType, getLocalizedHouseSubtype, getLocalizedServiceCategory } from '@/lib/utils/localizedNames';
 
 interface AdMetadataDisplayProps {
   ad: Ad;
@@ -42,6 +42,20 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
             <span className="font-medium text-gray-900">
               {getLocalizedPropertyType(realEstate.propertyType, locale)}
             </span>
+          </div>
+        )}
+        {realEstate.houseSubtype && (
+          <div>
+            <span className="text-sm text-gray-500 block mb-1">{t('ad.houseSubtype')}</span>
+            <span className="font-medium text-gray-900">
+              {getLocalizedHouseSubtype(realEstate.houseSubtype, locale)}
+            </span>
+          </div>
+        )}
+        {realEstate.plotArea != null && realEstate.plotArea > 0 && (
+          <div>
+            <span className="text-sm text-gray-500 block mb-1">{t('ad.plotArea')}</span>
+            <span className="font-medium text-gray-900">{realEstate.plotArea} m²</span>
           </div>
         )}
         {realEstate.postalCode && (
@@ -155,6 +169,11 @@ export default function AdMetadataDisplay({ ad }: AdMetadataDisplayProps) {
             {realEstate.balcony && (
               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
                 {t('ad.balcony')}
+              </span>
+            )}
+            {realEstate.terrace && (
+              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
+                {t('ad.terrace')}
               </span>
             )}
             {realEstate.elevator && (

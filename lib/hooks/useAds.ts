@@ -80,6 +80,32 @@ export interface FilterAdsParams {
   limit?: number;
   sortBy?: string;
   sortOrder?: 'ASC' | 'DESC';
+  condition?: string;
+  offerType?: string;
+  propertyType?: string;
+  houseSubtype?: string;
+  minArea?: number;
+  maxArea?: number;
+  minPlotArea?: number;
+  maxPlotArea?: number;
+  rooms?: string;
+  minYearBuilt?: number;
+  maxYearBuilt?: number;
+  furnished?: string;
+  terrace?: string;
+  brand?: string;
+  model?: string;
+  minYear?: number;
+  maxYear?: number;
+  maxMileage?: number;
+  fuelType?: string;
+  transmission?: string;
+  serviceCategory?: string;
+  pricingType?: string;
+  jobType?: string;
+  experienceLevel?: string;
+  minSalary?: number;
+  maxSalary?: number;
 }
 
 export interface AdsResponse {

@@ -5,6 +5,7 @@ import { useAuthStore } from '@/lib/stores/authStore';
 export interface LoginRequest {
   email: string;
   password: string;
+  'cf-turnstile-token': string;
 }
 
 export interface SignupRequest {

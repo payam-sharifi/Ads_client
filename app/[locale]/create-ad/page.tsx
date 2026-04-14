@@ -86,12 +86,7 @@ export default function CreateAdPage() {
   const { data: categories } = useCategories();
   const { data: cities } = useCities();
   
-  const filteredCities = cities?.filter(city => {
-    const cityNameFa = city.name?.fa?.toLowerCase() || '';
-    const cityNameDe = city.name?.de?.toLowerCase() || '';
-    const cityNameEn = city.name?.en?.toLowerCase() || '';
-    return !cityNameFa.includes('تهران') && !cityNameDe.includes('tehran') && !cityNameEn.includes('tehran');
-  }) || [];
+  const filteredCities = cities ?? [];
   
   const createAdMutation = useCreateAd();
   const uploadImageMutation = useUploadImage();

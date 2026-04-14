@@ -44,9 +44,23 @@ export enum PropertyType {
   PARKING = 'parking',
 }
 
+/** Haustyp (house for sale style, e.g. Kleinanzeigen) */
+export enum HouseSubtype {
+  DETACHED = 'detached',
+  TERRACED = 'terraced',
+  MULTI_FAMILY = 'multi_family',
+  BUNGALOW = 'bungalow',
+  FARMHOUSE = 'farmhouse',
+  SEMI_DETACHED = 'semi_detached',
+  VILLA = 'villa',
+  OTHER = 'other',
+}
+
 export interface RealEstateMetadata {
   offerType: RealEstateOfferType;
   propertyType: PropertyType;
+  houseSubtype?: HouseSubtype;
+  plotArea?: number;
   postalCode: string;
   district?: string;
   price?: number;
@@ -61,6 +75,7 @@ export interface RealEstateMetadata {
   availableFrom?: string;
   furnished?: boolean;
   balcony?: boolean;
+  terrace?: boolean;
   elevator?: boolean;
   parkingIncluded?: boolean;
   cellar?: boolean;

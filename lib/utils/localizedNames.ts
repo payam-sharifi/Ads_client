@@ -1,5 +1,5 @@
 import type { Locale } from '@/lib/utils/locale';
-import { PropertyType, ServiceCategory } from '@/lib/types/category.types';
+import { PropertyType, HouseSubtype, ServiceCategory } from '@/lib/types/category.types';
 
 /**
  * Multilingual name structure from backend
@@ -76,6 +76,33 @@ export function getLocalizedPropertyType(
   if (!localized) return String(propertyType);
   
   return locale === 'fa' ? localized.fa : localized.de;
+}
+
+const houseSubtypeLabels: Record<HouseSubtype, { fa: string; de: string; en: string }> = {
+  [HouseSubtype.DETACHED]: {
+    fa: 'خانهٔ مستقل',
+    de: 'Einfamilienhaus freistehend',
+    en: 'Detached house',
+  },
+  [HouseSubtype.TERRACED]: { fa: 'خانهٔ ردیفی', de: 'Reihenhaus', en: 'Terraced house' },
+  [HouseSubtype.MULTI_FAMILY]: { fa: 'چندخانواره', de: 'Mehrfamilienhaus', en: 'Multi-family house' },
+  [HouseSubtype.BUNGALOW]: { fa: 'بانگالو', de: 'Bungalow', en: 'Bungalow' },
+  [HouseSubtype.FARMHOUSE]: { fa: 'خانه روستایی', de: 'Bauernhaus', en: 'Farmhouse' },
+  [HouseSubtype.SEMI_DETACHED]: { fa: 'دوبلکس نیمه‌جدا', de: 'Doppelhaushälfte', en: 'Semi-detached' },
+  [HouseSubtype.VILLA]: { fa: 'ویلا', de: 'Villa', en: 'Villa' },
+  [HouseSubtype.OTHER]: { fa: 'سایر', de: 'Andere Haustypen', en: 'Other' },
+};
+
+export function getLocalizedHouseSubtype(
+  subtype: HouseSubtype | string | undefined | null,
+  locale: Locale,
+): string {
+  if (!subtype) return '';
+  const row = houseSubtypeLabels[subtype as HouseSubtype];
+  if (!row) return String(subtype);
+  if (locale === 'fa') return row.fa;
+  if (locale === 'de') return row.de;
+  return row.en;
 }
 
 /**

@@ -3,22 +3,35 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { useI18n } from '@/lib/contexts/I18nContext';
 import { useLogin } from '@/lib/hooks/useAuth';
 import Button from '@/components/common/Button';
 import { toast } from 'react-toastify';
 
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
+
 export default function LoginPage() {
   const router = useRouter();
-  const { t, isRTL } = useI18n();
+  const { t } = useI18n();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [turnstileToken, setTurnstileToken] = React.useState<string | null>(null);
+  const turnstileRef = React.useRef<TurnstileInstance | null>(null);
   const loginMutation = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!turnstileToken) {
+      toast.error(t('auth.turnstileRequired'));
+      return;
+    }
     try {
-      const response = await loginMutation.mutateAsync({ email, password });
+      const response = await loginMutation.mutateAsync({
+        email,
+        password,
+        'cf-turnstile-token': turnstileToken,
+      });
       toast.success(t('auth.loginSuccess'));
       setTimeout(() => {
         // Redirect admin/super admin to /admin, regular users to /dashboard
@@ -30,7 +43,14 @@ export default function LoginPage() {
         }
       }, 1000);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || t('auth.loginError'));
+      const raw = error?.response?.data?.message;
+      const message = Array.isArray(raw) ? raw[0] : raw;
+      const text = typeof message === 'string' ? message : t('auth.loginError');
+      if (typeof message === 'string' && message.toLowerCase().includes('captcha')) {
+        setTurnstileToken(null);
+        turnstileRef.current?.reset();
+      }
+      toast.error(text);
     }
   };
 
@@ -70,7 +90,30 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <Button type="submit" className="w-full text-sm md:text-sm py-2 md:py-1.5" disabled={loginMutation.isPending}>
+          {TURNSTILE_SITE_KEY ? (
+            <div className="flex justify-center" dir="ltr">
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                options={{ size: 'flexible' }}
+                onSuccess={(token) => setTurnstileToken(token)}
+                onExpire={() => {
+                  setTurnstileToken(null);
+                  toast.error(t('auth.turnstileExpired'));
+                }}
+                onError={() => {
+                  setTurnstileToken(null);
+                  toast.error(t('auth.turnstileError'));
+                }}
+              />
+            </div>
+          ) : null}
+
+          <Button
+            type="submit"
+            className="w-full text-sm md:text-sm py-2 md:py-1.5"
+            disabled={loginMutation.isPending || !turnstileToken}
+          >
             {loginMutation.isPending ? t('common.loading') : t('auth.login')}
           </Button>
 

@@ -46,9 +46,16 @@ export default function CategoryPage() {
         condition: '',
         offerType: '',
         propertyType: '',
+        houseSubtype: '',
         minArea: '',
         maxArea: '',
+        minPlotArea: '',
+        maxPlotArea: '',
         rooms: '',
+        minYearBuilt: '',
+        maxYearBuilt: '',
+        furnished: '',
+        terrace: '',
         brand: '',
         model: '',
         minYear: '',
@@ -74,9 +81,16 @@ export default function CategoryPage() {
       // Real Estate filters
       offerType: params.get('offerType') || '',
       propertyType: params.get('propertyType') || '',
+      houseSubtype: params.get('houseSubtype') || '',
       minArea: params.get('minArea') || '',
       maxArea: params.get('maxArea') || '',
+      minPlotArea: params.get('minPlotArea') || '',
+      maxPlotArea: params.get('maxPlotArea') || '',
       rooms: params.get('rooms') || '',
+      minYearBuilt: params.get('minYearBuilt') || '',
+      maxYearBuilt: params.get('maxYearBuilt') || '',
+      furnished: params.get('furnished') || '',
+      terrace: params.get('terrace') || '',
       // Vehicle filters
       brand: params.get('brand') || '',
       model: params.get('model') || '',
@@ -114,7 +128,9 @@ export default function CategoryPage() {
     
     const filterKeys = [
       'cityId', 'minPrice', 'maxPrice', 'search', 'condition',
-      'offerType', 'propertyType', 'minArea', 'maxArea', 'rooms',
+      'offerType', 'propertyType', 'houseSubtype', 'minArea', 'maxArea',
+      'minPlotArea', 'maxPlotArea', 'rooms', 'minYearBuilt', 'maxYearBuilt',
+      'furnished', 'terrace',
       'brand', 'model', 'minYear', 'maxYear', 'maxMileage', 'fuelType', 'transmission',
       'serviceCategory', 'pricingType',
       'jobType', 'experienceLevel', 'minSalary', 'maxSalary'
@@ -214,14 +230,35 @@ export default function CategoryPage() {
   if (filters.propertyType) {
     adsQueryParams.propertyType = filters.propertyType;
   }
+  if (filters.houseSubtype) {
+    adsQueryParams.houseSubtype = filters.houseSubtype;
+  }
   if (filters.minArea) {
     adsQueryParams.minArea = Number(filters.minArea);
   }
   if (filters.maxArea) {
     adsQueryParams.maxArea = Number(filters.maxArea);
   }
+  if (filters.minPlotArea) {
+    adsQueryParams.minPlotArea = Number(filters.minPlotArea);
+  }
+  if (filters.maxPlotArea) {
+    adsQueryParams.maxPlotArea = Number(filters.maxPlotArea);
+  }
   if (filters.rooms) {
     adsQueryParams.rooms = filters.rooms;
+  }
+  if (filters.minYearBuilt) {
+    adsQueryParams.minYearBuilt = Number(filters.minYearBuilt);
+  }
+  if (filters.maxYearBuilt) {
+    adsQueryParams.maxYearBuilt = Number(filters.maxYearBuilt);
+  }
+  if (filters.furnished === 'true') {
+    adsQueryParams.furnished = 'true';
+  }
+  if (filters.terrace === 'true') {
+    adsQueryParams.terrace = 'true';
   }
   if (filters.brand) {
     adsQueryParams.brand = filters.brand;
@@ -271,6 +308,7 @@ export default function CategoryPage() {
   // Build filter options based on category type
   const getFilterOptions = (): FilterOption[] => {
     const baseFilters: FilterOption[] = [];
+    const allLabel = locale === 'fa' ? 'همه' : locale === 'de' ? 'Alle' : 'All';
 
     if (!categoryType) {
       // Default filters for unknown category types
@@ -297,62 +335,120 @@ export default function CategoryPage() {
           ...baseFilters,
           {
             key: 'offerType',
-            label: locale === 'fa' ? 'نوع معامله' : 'Transaction Type',
+            label: t('ad.transactionType'),
             type: 'select',
             options: [
-              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
-              { value: 'sale', label: locale === 'fa' ? 'فروش' : 'Sale' },
-              { value: 'rent', label: locale === 'fa' ? 'اجاره' : 'Rent' },
+              { value: '', label: allLabel },
+              { value: 'sale', label: t('ad.sale') },
+              { value: 'rent', label: t('ad.rent') },
             ],
           },
           {
             key: 'propertyType',
-            label: locale === 'fa' ? 'نوع ملک' : 'Property Type',
+            label: t('ad.propertyType'),
             type: 'select',
             options: [
-              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
-              { value: 'apartment', label: locale === 'fa' ? 'آپارتمان' : 'Apartment' },
-              { value: 'house', label: locale === 'fa' ? 'خانه' : 'House' },
-              { value: 'commercial', label: locale === 'fa' ? 'تجاری' : 'Commercial' },
-              { value: 'land', label: locale === 'fa' ? 'زمین' : 'Land' },
-              { value: 'parking', label: locale === 'fa' ? 'پارکینگ' : 'Parking' },
+              { value: '', label: allLabel },
+              { value: 'apartment', label: t('ad.apartment') },
+              { value: 'house', label: t('ad.house') },
+              { value: 'commercial', label: t('ad.commercial') },
+              { value: 'land', label: t('ad.land') },
+              { value: 'parking', label: t('ad.parking') },
+            ],
+          },
+          {
+            key: 'houseSubtype',
+            label: t('ad.houseSubtype'),
+            type: 'select',
+            options: [
+              { value: '', label: allLabel },
+              { value: 'detached', label: t('ad.houseDetached') },
+              { value: 'terraced', label: t('ad.houseTerraced') },
+              { value: 'multi_family', label: t('ad.houseMultiFamily') },
+              { value: 'bungalow', label: t('ad.houseBungalow') },
+              { value: 'farmhouse', label: t('ad.houseFarmhouse') },
+              { value: 'semi_detached', label: t('ad.houseSemiDetached') },
+              { value: 'villa', label: t('ad.houseVilla') },
+              { value: 'other', label: t('ad.houseOther') },
             ],
           },
           {
             key: 'minPrice',
-            label: locale === 'fa' ? 'حداقل قیمت (€)' : 'Min Price (€)',
+            label: `${t('category.minPrice')} (€)`,
             type: 'number',
             placeholder: '0',
           },
           {
             key: 'maxPrice',
-            label: locale === 'fa' ? 'حداکثر قیمت (€)' : 'Max Price (€)',
+            label: `${t('category.maxPrice')} (€)`,
             type: 'number',
             placeholder: '1000000',
           },
           {
             key: 'minArea',
-            label: locale === 'fa' ? 'حداقل متراژ (m²)' : 'Min Area (m²)',
+            label: t('category.livingAreaMin'),
             type: 'number',
             placeholder: '0',
           },
           {
             key: 'maxArea',
-            label: locale === 'fa' ? 'حداکثر متراژ (m²)' : 'Max Area (m²)',
+            label: t('category.livingAreaMax'),
             type: 'number',
             placeholder: '500',
           },
           {
+            key: 'minPlotArea',
+            label: t('category.plotAreaMin'),
+            type: 'number',
+            placeholder: '0',
+          },
+          {
+            key: 'maxPlotArea',
+            label: t('category.plotAreaMax'),
+            type: 'number',
+            placeholder: '5000',
+          },
+          {
             key: 'rooms',
-            label: locale === 'fa' ? 'تعداد اتاق' : 'Rooms',
+            label: t('ad.rooms'),
             type: 'select',
             options: [
-              { value: '', label: locale === 'fa' ? 'همه' : 'All' },
+              { value: '', label: allLabel },
               { value: '1', label: '1' },
               { value: '2', label: '2' },
               { value: '3', label: '3' },
               { value: '4', label: '4' },
               { value: '5+', label: '5+' },
+            ],
+          },
+          {
+            key: 'minYearBuilt',
+            label: t('category.yearBuiltMin'),
+            type: 'number',
+            placeholder: '1950',
+          },
+          {
+            key: 'maxYearBuilt',
+            label: t('category.yearBuiltMax'),
+            type: 'number',
+            placeholder: String(new Date().getFullYear()),
+          },
+          {
+            key: 'furnished',
+            label: t('ad.furnished'),
+            type: 'select',
+            options: [
+              { value: '', label: allLabel },
+              { value: 'true', label: t('category.furnishedOnly') },
+            ],
+          },
+          {
+            key: 'terrace',
+            label: t('ad.terrace'),
+            type: 'select',
+            options: [
+              { value: '', label: allLabel },
+              { value: 'true', label: t('category.withTerrace') },
             ],
           },
         ];
@@ -590,9 +686,16 @@ export default function CategoryPage() {
       condition: '',
       offerType: '',
       propertyType: '',
+      houseSubtype: '',
       minArea: '',
       maxArea: '',
+      minPlotArea: '',
+      maxPlotArea: '',
       rooms: '',
+      minYearBuilt: '',
+      maxYearBuilt: '',
+      furnished: '',
+      terrace: '',
       brand: '',
       model: '',
       minYear: '',
